@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'pages/add_page_1.dart';
-import 'pages/home_page.dart';
-import 'pages/my_page.dart';
-import 'pages/plan_page.dart';
+import 'pages/add_page/add_page_1.dart';
+import 'pages/home_page/home_page.dart';
+import 'pages/my_page/my_page.dart';
+import 'pages/plan_page/plan_page.dart';
 import 'components/bottom_navi_bar.dart';
 
 class MainScreen extends StatefulWidget {
@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: true,
+      canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (!didPop){
           await _onPop();

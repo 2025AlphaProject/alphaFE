@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import '../pages/add_page/add_page_2.dart';
 
 class DropItem extends StatelessWidget {
   final String title;
@@ -29,10 +31,19 @@ class DropItem extends StatelessWidget {
             scrollDirection: Axis.horizontal, // 가로 스크롤 활성화
             child: Row(
               children: items.map((item) {
-                return CardItem(
-                  imageUrl: item['imageUrl']!,
-                  title: item['title']!,
-                  description: item['description']!,
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => AddPage_2(title: title, place: item['title']!,))
+                    );
+                  },
+                  child: CardItem(
+                    imageUrl: item['imageUrl']!,
+                    title: item['title']!,
+                    description: item['description']!,
+                  ),
                 );
               }).toList(),
             ),
