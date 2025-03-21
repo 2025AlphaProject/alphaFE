@@ -8,14 +8,15 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // AppBar에 그림자 효과 추가
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
             color: Color(0x3F000000),
             blurRadius: 4,
-            offset: Offset(0, 2)
+            offset: Offset(0, 2),
           )
-        ]
+        ],
       ),
       height: 120,
       child: AppBar(
@@ -25,6 +26,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
+  // AppBar 높이 설정 (kToolbarHeight = 기본 높이)
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
