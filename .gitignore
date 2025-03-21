@@ -1,6 +1,6 @@
-# ----------------------
-# 📦 Flutter 관련
-# ----------------------
+# -----------------------------------
+# 🚀 Flutter 관련 (캐시 및 빌드 파일)
+# -----------------------------------
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -8,25 +8,18 @@
 .pub/
 .pub-cache/
 build/
-generated_plugin_registrant.dart
 
-# Flutter 웹
+# 웹 관련
 web/.dart_tool/
 
-# Flutter 데스크탑
+# 데스크탑 관련
 macos/Flutter/ephemeral/
 windows/Flutter/ephemeral/
 linux/Flutter/ephemeral/
 
-# Flutter iOS 관련
-ios/Flutter/
-ios/Pods/
-ios/.symlinks/
-ios/Runner.xcworkspace/
-ios/Runner.xcodeproj/project.xcworkspace/
-ios/Runner.xcodeproj/xcuserdata/
-
-# Flutter Android 관련
+# -----------------------------------
+# 📂 Android 관련 (자동 생성 파일)
+# -----------------------------------
 android/.gradle/
 android/.idea/
 android/captures/
@@ -35,40 +28,48 @@ android/app/debug/
 android/app/profile/
 android/app/release/
 
-# Flutter macOS 관련
-macos/.symlinks/
-macos/Pods/
-macos/Runner.xcworkspace/
-macos/Runner.xcodeproj/project.xcworkspace/
-macos/Runner.xcodeproj/xcuserdata/
+# NDK (Native Development Kit) 관련
+android/app/.cxx/
 
-# 기타 플랫폼
-linux/.dart_tool/
-windows/.dart_tool/
+# Gradle 관련 빌드 파일
+android/gradle/wrapper/
+android/gradle/wrapper/dists/
+android/gradle/wrapper/gradle-wrapper.jar
 
-# ----------------------
-# 🛠 IDE 및 에디터 관련
-# ----------------------
+# -----------------------------------
+# 📂 iOS 관련 (자동 생성 파일)
+# -----------------------------------
+ios/Flutter/
+ios/Pods/
+ios/.symlinks/
+ios/Runner.xcworkspace/
+ios/Runner.xcodeproj/project.xcworkspace/
+ios/Runner.xcodeproj/xcuserdata/
+
+# -----------------------------------
+# 🛠 IDE 및 에디터 관련 설정 파일
+# -----------------------------------
 .idea/                       # Android Studio 프로젝트 설정
 *.iml                        # IntelliJ 모듈 파일
-.vscode/                    # VS Code 설정 (선택적으로 포함 가능)
+.vscode/                     # VS Code 설정 (필요하면 주석 해제)
+.metadata                     # Flutter 프로젝트 설정 파일 (개인별 설정)
+*.log                         # 로그 파일 제외
 
-# ----------------------
-# 🔐 환경/민감 정보
-# ----------------------
+# -----------------------------------
+# 🔐 환경 파일 (API 키, 민감 정보)
+# -----------------------------------
 .env
 .env.*
 
-# ----------------------
-# 🗑️ 기타
-# ----------------------
-*.log
-*.tmp
+# -----------------------------------
+# 🧪 테스트 및 분석 관련
+# -----------------------------------
+coverage/
+
+# -----------------------------------
+# ⚠️ 기타 불필요한 파일
+# -----------------------------------
 *.swp
 .DS_Store
+*.tmp
 *.lock
-
-# ----------------------
-# 🧪 테스트 및 분석
-# ----------------------
-coverage/
