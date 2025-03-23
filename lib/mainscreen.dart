@@ -6,7 +6,14 @@ import 'pages/plan_page/plan_page.dart';
 import 'components/bottom_navi_bar.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  final String username;
+  final String welcome_message;
+
+  const MainScreen({
+    required this.username,
+    required this.welcome_message,
+    Key? key
+  }) : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -14,13 +21,14 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
-
   // 각 탭 별 Navigator 상태를 추적하기 위한 키 리스트
   late List<GlobalKey<NavigatorState>> _navigatorKeys;
 
   // 하단 탭에 연결될 페이지 목록
-  final List<Widget> _pages = [
-    const HomePage(),
+  List<Widget> get _pages => [
+    HomePage(
+        username: widget.username,
+        welcome_message: widget.welcome_message),
     const PlanPage(),
     const AddPage(),
     const MyPage(),
@@ -39,14 +47,14 @@ class _MainScreenState extends State<MainScreen> {
 
   // 안드로이드 '뒤로 가기' 동작 처리
   Future<bool> _onPop() async {
-    final canPop = await _navigatorKeys[_currentIndex].currentState?.maybePop() ?? false;
+    final canPop = await _navigatorKeys[_currentIndex].currentState
+        ?.maybePop() ?? false;
     return !canPop;
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      // 시스템 뒤로가기 버튼 제어: 앱이 곧바로 종료되지 않도록 처리
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
@@ -54,29 +62,24 @@ class _MainScreenState extends State<MainScreen> {
         }
         true;
       },
-
       child: Scaffold(
         extendBody: true,
 
-        // IndexedStack으로 탭별 상태 유지 및 중첩 네비게이션 처리
-        body: IndexedStack(
-          index: _currentIndex,
-          children: List.generate(_pages.length, (index) {
-            return Navigator(
-              key: _navigatorKeys[index],
-              onGenerateRoute: (settings) => MaterialPageRoute(
-                builder: (context) => _pages[index],
+        //  IndexedStack 제거 → 상태 유지 안함
+        //  선택된 탭 페이지만 직접 렌더링
+        body: Navigator(
+          key: _navigatorKeys[_currentIndex],
+          onGenerateRoute: (settings) =>
+              MaterialPageRoute(
+                builder: (context) => _pages[_currentIndex],
               ),
-            );
-          }),
         ),
 
-        // 하단 커스텀 네비게이션 바
         bottomNavigationBar: CustomBottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
             setState(() {
-              _currentIndex = index; // 탭 전환 시 상태 갱신
+              _currentIndex = index;
             });
           },
         ),
