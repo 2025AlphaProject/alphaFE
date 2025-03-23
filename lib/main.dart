@@ -37,6 +37,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+
+  // username, welcome_message : homepage에서 사용될 텍스트 정보
   final String username = '홍길동';
   final String welcome_message = '오늘도 좋은 하루에요👋';
 
