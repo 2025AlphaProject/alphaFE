@@ -63,7 +63,6 @@ class _MainScreenState extends State<MainScreen> {
         true;
       },
       child: Scaffold(
-        extendBody: true,
 
         //  IndexedStack 제거 → 상태 유지 안함
         //  선택된 탭 페이지만 직접 렌더링
@@ -75,13 +74,17 @@ class _MainScreenState extends State<MainScreen> {
               ),
         ),
 
-        bottomNavigationBar: CustomBottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
+        // Container로 감싸 네비바에서 색상이 적용되지 않는 부분까지 색을 덧씌움, extendBody 비활성화
+        bottomNavigationBar: Container(
+          color: Color(0xFFFFFFFF),
+          child: CustomBottomNavigationBar(
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+          ),
         ),
       ),
     );
