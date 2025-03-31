@@ -1,7 +1,8 @@
+// 필수 패키지 import
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-import 'dart:async';
+import 'dart:async'; // Timer 사용을 위해 필요
 import 'add_page_3.dart';
 import '../../components/app_bar.dart';
 import '../../components/proceed_button.dart';
@@ -18,34 +19,39 @@ class AddPage_2 extends StatefulWidget {
 
 class _AddPage_2State extends State<AddPage_2> {
   late ScrollController _scrollController;
+
+  // 버튼 노출 여부 상태 (true = 보임, false = 숨김)
   bool _visibleButton = true;
+
+  // 스크롤이 멈췄을 때 지연 후 버튼을 다시 보이게 하기 위한 타이머
   Timer? _idleTimer;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    _scrollController = ScrollController(); // 스크롤 추적용 컨트롤러 초기화
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _idleTimer?.cancel();
+    _idleTimer?.cancel(); // 타이머도 안전하게 해제
     super.dispose();
   }
 
+  // 스크롤 상태를 감지하여 버튼을 숨기거나 다시 보여주는 함수
   void myScrollNotification(ScrollNotification notification) {
     if (notification is UserScrollNotification) {
       final direction = notification.direction;
       print("📢 direction: $direction");
 
       if (direction == ScrollDirection.idle) {
-        // idle 상태가 유지될 경우 → 타이머 시작 (없을 때만)
+        // 사용자가 스크롤을 멈췄을 경우 → 타이머가 없을 때만 생성
         _idleTimer ??= Timer(const Duration(milliseconds: 2000), () {
-          showFloatButton();
+          showFloatButton(); // 0.75초 이상 멈춰있으면 버튼 다시 표시
         });
       } else {
-        // 스크롤 중이면 → 타이머 초기화 & 버튼 숨김
+        // 스크롤 중일 경우 → 타이머 취소 및 버튼 숨기기
         _idleTimer?.cancel();
         _idleTimer = null;
 
@@ -56,6 +62,7 @@ class _AddPage_2State extends State<AddPage_2> {
     }
   }
 
+  // 버튼 다시 보이기
   void showFloatButton() {
     if (!_visibleButton) {
       setState(() {
@@ -64,6 +71,7 @@ class _AddPage_2State extends State<AddPage_2> {
     }
   }
 
+  // 버튼 숨기기
   void hideFloatButton() {
     if (_visibleButton) {
       setState(() {
@@ -80,10 +88,11 @@ class _AddPage_2State extends State<AddPage_2> {
       body: Stack(
         alignment: Alignment.center,
         children: [
+          // 스크롤 이벤트 감지를 위한 NotificationListener
           NotificationListener<ScrollNotification>(
             onNotification: (notification) {
               myScrollNotification(notification);
-              return false;
+              return false; // 다른 위젯에도 이벤트 전달 허용
             },
             child: SingleChildScrollView(
               controller: _scrollController,
@@ -98,26 +107,28 @@ class _AddPage_2State extends State<AddPage_2> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 26),
-                      _buildTitleBlock(),
+                      _buildTitleBlock(), // 상단 텍스트
                       const SizedBox(height: 24),
+                      // 여행지 카드들
                       PlaceInfoBlock(
-                        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/여의도_한강공원.jpg/1280px-여의도_한강공원.jpg',
+                        imageUrl: 'https://upload.wikimedia.org/...jpg',
                         title: '한강공원',
                         description: '한강의 바람과 함께 산책을 즐길 수 있는 공간입니다.',
                       ),
                       const SizedBox(height: 24),
                       PlaceInfoBlock(
-                        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Seoul_Tower_%284394893276%29.jpg',
+                        imageUrl: 'https://upload.wikimedia.org/...jpg',
                         title: 'N서울타워',
                         description: '남산 위에서 서울 전경을 감상할 수 있는 타워입니다.',
                       ),
                       const SizedBox(height: 24),
                       PlaceInfoBlock(
-                        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Bukchon_Hanok_Village_북촌_한옥마을_October_1_2020_15.jpg/1920px-Bukchon_한옥마을.jpg',
+                        imageUrl: 'https://upload.wikimedia.org/...jpg',
                         title: '북촌 한옥마을',
                         description: '조선시대의 전통 한옥이 밀집한 역사적인 마을입니다.',
                       ),
-                      const SizedBox(height: 100),
+
+                      const SizedBox(height: 100), // 하단 여유 공간
                     ],
                   ),
                 ),
@@ -125,54 +136,71 @@ class _AddPage_2State extends State<AddPage_2> {
             ),
           ),
 
-          // 버튼 영역 (애니메이션 없음)
+          // 버튼 영역 (애니메이션 적용)
           Visibility(
-            visible: _visibleButton,
+            visible: _visibleButton, // 버튼 보임 여부
             maintainSize: false,
             maintainAnimation: true,
             maintainState: true,
             child: Stack(
               children: [
-
-                // ✅ 애니메이션 적용된 Positioned
                 Positioned(
-                  bottom: 30,
+                  bottom: 30, // 화면 하단에서 30만큼 위에 위치
                   left: 0,
-                  right: 0, // 가운데 정렬할 수 있도록 추가
+                  right: 0, // 좌우 전체 너비 확보
+
+                  // 위젯을 슬라이드 애니메이션과 함께 화면에 표시하거나 숨기기 위한 래퍼
                   child: AnimatedSlide(
-                    duration: const Duration(milliseconds: 300),
-                    offset: _visibleButton ? Offset.zero : const Offset(0, 1.2),
-                    curve: Curves.easeInOut,
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 300),
-                      opacity: _visibleButton ? 1.0 : 0.0,
-                      child: Center( // 버튼 가운데 정렬
-                        child: ProceedButton(
-                          size_w: 200,
-                          size_h: 45,
-                          text: "이 코스로 할게요!",
-                          fontSize_: 15,
-                          fontWeight_: FontWeight.bold,
-                          padding_: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(builder: (context) => AddPage_3()),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
+                            // 애니메이션이 실행될 총 시간 (0.3초 동안 이동)
+                            duration: const Duration(milliseconds: 300),
+
+                            // 이동할 위치를 지정하는 offset (Offset(x, y))
+                            // - Offset.zero → 원래 위치 (보임)
+                            // - Offset(0, 1.2) → y축으로 아래로 120% 만큼 이동 (사라짐)
+                            offset: _visibleButton ? Offset.zero : const Offset(0, 1.2),
+
+                            // 움직임의 가속도 커브 (시작은 느리게 → 빠르게 → 다시 느리게)
+                            curve: Curves.easeInOut,
+
+                            // 자식 위젯에 불투명도 애니메이션 적용
+                            child: AnimatedOpacity(
+                              // 투명도 애니메이션 지속 시간 (슬라이드와 동일하게 0.3초)
+                              duration: const Duration(milliseconds: 300),
+
+                              // 투명도 값 설정
+                              // - 1.0: 완전히 보임
+                              // - 0.0: 완전히 투명 (보이지 않음)
+                              opacity: _visibleButton ? 1.0 : 0.0,
+
+                              // 실제 표시될 버튼 위젯 (중앙 정렬 포함)
+                              child: Center(
+                                child: ProceedButton(
+                                  size_w: 200,
+                                  size_h: 45,
+                                  text: "이 코스로 할게요!",
+                                  fontSize_: 15,
+                                  fontWeight_: FontWeight.bold,
+                                  padding_: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(builder: (context) => AddPage_3()),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        )
                 ),
               ],
-            )
+            ),
           )
         ],
       ),
     );
   }
 
+  // 상단 텍스트 UI 구성
   Widget _buildTitleBlock() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
