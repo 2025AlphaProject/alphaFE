@@ -74,6 +74,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
         ),
 
+
         // Container로 감싸 네비바에서 색상이 적용되지 않는 부분까지 색을 덧씌움, extendBody 비활성화
         bottomNavigationBar: Container(
           color: Color(0xFFFFFFFF),
