@@ -43,11 +43,13 @@ class _AddPage_2State extends State<AddPage_2> {
   void myScrollNotification(ScrollNotification notification) {
     if (notification is UserScrollNotification) {
       final direction = notification.direction;
+
+      // (임시) 유저의 스크롤 방향을 콘솔창에 출력, 개발 완료 시 제거
       print("📢 direction: $direction");
 
       if (direction == ScrollDirection.idle) {
         // 사용자가 스크롤을 멈췄을 경우 → 타이머가 없을 때만 생성
-        _idleTimer ??= Timer(const Duration(milliseconds: 2000), () {
+        _idleTimer ??= Timer(const Duration(milliseconds: 750), () {
           showFloatButton(); // 0.75초 이상 멈춰있으면 버튼 다시 표시
         });
       } else {

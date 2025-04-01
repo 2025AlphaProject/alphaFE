@@ -22,11 +22,12 @@
 *   4. my page
 *     - my_page.dart
 * components : 네비바, 앱바, 각종 블록 단위 요소들을 각 페이지마다 호출해 사용할 수 있도록 구성
-*   1. app_bar.dart : 그림자, 색상, 크기(높이) 정의
+*   1. app_bar.dart : 그림자, 색상, 크기(높이) 정의 -> DefaultAppBar, SearchAppBar
 *   2. bottom_navi_bar.dart : 색상, radius, Items(아이콘, 라벨) 정의
 *   3. trip_generator_card.dart : 추가 탭의 첫 번째 페이지에 사용되는 드롭다운 박스 요소
 *   4. plan_card.dart : 홈, 계획 탭에 사용되는 여행 정보를 나타내는 카드 요소
 *   5. proceed_button.dart : 계획, 홈 탭에서 사용되는 버튼(검은색), 주로 다음 단계로 건너가기 위한 버튼으로 사용됨
+*   6. placeinfo_card.dart : 추가 탭의 두 번째 페이지에 사용되는 여헹 코스의 장소 나열 시에 사용되는 카드 요소
 * */
 
 import 'package:flutter/material.dart';

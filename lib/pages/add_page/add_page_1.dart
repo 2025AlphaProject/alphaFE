@@ -42,17 +42,17 @@ class AddPage extends StatelessWidget {
 
               SizedBox(height: 50),
 
-              // 서초구 DropItem
+              // 서초구 GeneratorItem
               GeneratorItem(
                 title: "서초구",
               ),
 
-              // 용산구 DropItem
+              // 용산구 GeneratorItem
               GeneratorItem(
                 title: "용산구",
               ),
 
-              // 마포구 DropItem (현재 아이템 없음)
+              // 마포구 GeneratorItem (현재 아이템 없음)
               GeneratorItem(
                 title: "마포구",
               ),
