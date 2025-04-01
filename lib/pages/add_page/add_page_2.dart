@@ -162,34 +162,22 @@ class _AddPage_2State extends State<AddPage_2> {
                             // 움직임의 가속도 커브 (시작은 느리게 → 빠르게 → 다시 느리게)
                             curve: Curves.easeInOut,
 
-                            // 자식 위젯에 불투명도 애니메이션 적용
-                            child: AnimatedOpacity(
-                              // 투명도 애니메이션 지속 시간 (슬라이드와 동일하게 0.3초)
-                              duration: const Duration(milliseconds: 300),
-
-                              // 투명도 값 설정
-                              // - 1.0: 완전히 보임
-                              // - 0.0: 완전히 투명 (보이지 않음)
-                              opacity: _visibleButton ? 1.0 : 0.0,
-
-                              // 실제 표시될 버튼 위젯 (중앙 정렬 포함)
-                              child: Center(
-                                child: ProceedButton(
-                                  size_w: 200,
-                                  size_h: 45,
-                                  text: "이 코스로 할게요!",
-                                  fontSize_: 15,
-                                  fontWeight_: FontWeight.bold,
-                                  padding_: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(builder: (context) => AddPage_3()),
-                                  );
-                                },
-                              ),
+                            child: Center(
+                              child: ProceedButton(
+                                size_w: 200,
+                                size_h: 45,
+                                text: "이 코스로 할게요!",
+                                fontSize_: 15,
+                                fontWeight_: FontWeight.bold,
+                                padding_: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(builder: (context) => AddPage_3()),
+                                );
+                              },
                             ),
-                          ),
+                                                        ),
                         )
                 ),
               ],
