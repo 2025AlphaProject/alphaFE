@@ -51,6 +51,21 @@ dev_dependencies:
   kakao_flutter_sdk: ^1.5.0
   image_picker: ^1.1.2
   geolocator: ^13.0.4
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.0
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: 'assets/icon.png'
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/icon.png
+  android: true
+  ios: true
+  web: false
+  android_gravity: center
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -67,6 +82,7 @@ flutter:
   assets:
      - assets/seoul_image.jpg
      - .env
+     - assets/icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
