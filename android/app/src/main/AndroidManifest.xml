@@ -6,7 +6,7 @@
         </intent>
     </queries>
     <application
-        android:label="alpha_fe"
+        android:label="커네버"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
