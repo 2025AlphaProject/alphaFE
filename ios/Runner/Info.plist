@@ -45,5 +45,24 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao6ab453dcb5587da9b04b6dd106ff2bcf</string>
+			</array>
+		</dict>
+	</array>
+	<key>KAKAO_APP_KEY</key>
+	<string>6ab453dcb5587da9b04b6dd106ff2bcf</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kakaokompassauth</string>
+		<string>kakaolink</string>
+		<string>kakaotalk</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>앱에서 카메라를 사용하여 사진을 찍기 위해 권한이 필요합니다.</string>
 </dict>
 </plist>
