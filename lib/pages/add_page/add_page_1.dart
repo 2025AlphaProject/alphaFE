@@ -2,8 +2,17 @@ import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';           // 공통 AppBar 컴포넌트
 import '../../components/trip_generator_card.dart';    // 여행지 선택용 드롭다운 카드
 
+const List<String> districts = [
+  "강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구",
+  "도봉구", "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구",
+  "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구"
+];
+
 class AddPage extends StatelessWidget {
+  // 서울시 행정구역 목록
+
   const AddPage({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,20 +51,8 @@ class AddPage extends StatelessWidget {
 
               SizedBox(height: 50),
 
-              // 서초구 GeneratorItem
-              GeneratorItem(
-                title: "서초구",
-              ),
-
-              // 용산구 GeneratorItem
-              GeneratorItem(
-                title: "용산구",
-              ),
-
-              // 마포구 GeneratorItem (현재 아이템 없음)
-              GeneratorItem(
-                title: "마포구",
-              ),
+              // 행정구역 목록에 있는 요소들에 대해 GeneratorItem 생성
+              ...districts.map((name) => GeneratorItem(title: name)).toList(),
             ],
           ),
         ),

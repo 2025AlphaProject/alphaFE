@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:async'; // Timer 사용을 위해 필요
+import 'dart:convert'; // jsonDecode 사용을 위해 필요
+import 'package:web_socket_channel/web_socket_channel.dart'; // 웹소켓 사용을 위해 필요
 import 'add_page_3.dart';
 import '../../components/app_bar.dart';
 import '../../components/proceed_button.dart';
@@ -26,17 +28,33 @@ class _AddPage_2State extends State<AddPage_2> {
   // 스크롤이 멈췄을 때 지연 후 버튼을 다시 보이게 하기 위한 타이머
   Timer? _idleTimer;
 
+  // API로부터 받은 장소 정보 저장
+  List<Map<String, dynamic>> _places = [];
+
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController(); // 스크롤 추적용 컨트롤러 초기화
+
+    // 웹소켓 연결 및 데이터 수신
+    connectWebSocket();
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    _idleTimer?.cancel(); // 타이머도 안전하게 해제
-    super.dispose();
+  // 웹소켓 연결 및 데이터 수신
+  void connectWebSocket() async {
+    final channel = WebSocketChannel.connect(
+      Uri.parse('ws://localhost:8000/tour/recommend/?user_id=111&areaCode=1&sigunguName=${widget.title}'),
+    );
+
+    channel.stream.listen((message) {
+      final data = jsonDecode(message);
+      if (data["status"] == "SUCCESS" && data["result"] != null) {
+        final List<dynamic> firstCourse = data["result"][0];
+        setState(() {
+          _places = firstCourse.cast<Map<String, dynamic>>();
+        });
+      }
+    });
   }
 
   // 스크롤 상태를 감지하여 버튼을 숨기거나 다시 보여주는 함수
@@ -111,25 +129,23 @@ class _AddPage_2State extends State<AddPage_2> {
                       const SizedBox(height: 26),
                       _buildTitleBlock(), // 상단 텍스트
                       const SizedBox(height: 24),
-                      // 여행지 카드들
-                      PlaceInfoBlock(
-                        imageUrl: 'https://upload.wikimedia.org/...jpg',
-                        title: '한강공원',
-                        description: '한강의 바람과 함께 산책을 즐길 수 있는 공간입니다.',
-                      ),
-                      const SizedBox(height: 24),
-                      PlaceInfoBlock(
-                        imageUrl: 'https://upload.wikimedia.org/...jpg',
-                        title: 'N서울타워',
-                        description: '남산 위에서 서울 전경을 감상할 수 있는 타워입니다.',
-                      ),
-                      const SizedBox(height: 24),
-                      PlaceInfoBlock(
-                        imageUrl: 'https://upload.wikimedia.org/...jpg',
-                        title: '북촌 한옥마을',
-                        description: '조선시대의 전통 한옥이 밀집한 역사적인 마을입니다.',
-                      ),
-
+                      // 장소 데이터가 있으면 PlaceInfoBlock으로 표시
+                      ..._places.take(5).map((place) {
+                        final rawUrl = place['image1'] ?? '';
+                        final proxyUrl = rawUrl.startsWith('http://')
+                            ? 'https://images.weserv.nl/?url=${Uri.encodeComponent(rawUrl.replaceFirst('http://', ''))}'
+                            : rawUrl;
+                        return Column(
+                          children: [
+                            PlaceInfoBlock(
+                              imageUrl: proxyUrl,
+                              title: place['title'] ?? '제목 없음',
+                              description: place['address'] ?? '주소 정보 없음',
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        );
+                      }).toList(),
                       const SizedBox(height: 100), // 하단 여유 공간
                     ],
                   ),
