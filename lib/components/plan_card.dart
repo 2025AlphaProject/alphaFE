@@ -1,6 +1,5 @@
 import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
 import 'package:flutter/material.dart';
-import '../pages/connection_example.dart'; // 연결될 페이지 import
 
 class PlanCard extends StatelessWidget {
   final String title;      // 카드 제목

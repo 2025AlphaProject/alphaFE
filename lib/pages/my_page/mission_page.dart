@@ -1,85 +1,162 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../../components/app_bar.dart';
+import 'package:alpha_fe/pages/my_page/mission_page_2.dart';
 
-class Mission_Page extends StatelessWidget {
+class Mission_Page extends StatefulWidget {
   const Mission_Page({Key? key}) : super(key: key);
 
   @override
+  State<Mission_Page> createState() => _Mission_PageState();
+}
+
+class _Mission_PageState extends State<Mission_Page> {
+  List<Map<String, dynamic>> _missions = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMissions();
+  }
+
+  Future<void> _fetchMissions() async {
+    final response = await http.get(Uri.parse('http://localhost:8000/mission/list/'));
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      setState(() {
+        _missions = data.cast<Map<String, dynamic>>();
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    int completed = _missions.where((m) => m['isCompleted'] == true).length;
+    int total = _missions.length;
+
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
+      backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "미션페이지"),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        padding: EdgeInsets.all(width * 0.05),
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 44),
-              Center(                //미션 진행도 원형 상태바
-                child: SizedBox(
-                  height: 150, width: 150,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      CircularProgressIndicator(
-                        value: 9 / 10,  //나중에 이부분 미션 개수랑 성공 여부에 따라 값 달라질 부분
-                        strokeWidth: 20,
-                        backgroundColor: Colors.grey.shade300,
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF000000)),
-                      ),
-                      Center(
-                        child: Text(
-                          '9/10', // 나중에 미션 개수랑 성공 여부에 따락 값 달라질 부분
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: width * 0.1),
+
+            // ✅ 반응형 원형 진행률 표시
+            LayoutBuilder(
+              builder: (context, constraints) {
+                double size = constraints.maxWidth * 0.5;
+                return Center(
+                  child: SizedBox(
+                    height: size,
+                    width: size,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        CircularProgressIndicator(
+                          value: total == 0 ? 0 : completed / total,
+                          strokeWidth: width * 0.05,
+                          backgroundColor: Colors.grey.shade300,
+                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF000000)),
                         ),
-                      )
-                    ],
+                        Center(
+                          child: Text(
+                            '$completed/$total',
+                            style: TextStyle(
+                              fontSize: size * 0.15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(height: 40),
-              Column(            //미션 및 설명들
-                children: [ //이것도 미션 리스트 어케 받아오냐에 따라 달라짐
-                  _missionItem(false, "미션 ",["내용1","내용2"]),
-                  _missionItem(false, "미션1 ",["내용1","내용2"]),
-                  _missionItem(true, "미션2 ",["내용1","내용2"]),
-                  _missionItem(true, "미션3",["내용1","내용2",""]),
-                ],
-              ),
-            ]
+                );
+              },
+            ),
+
+            SizedBox(height: width * 0.1),
+
+            // ✅ 미션 카드 리스트
+            Column(
+              children: _missions.map((mission) {
+                return _missionItem(context, mission, width);
+              }).toList(),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-Widget _missionItem(bool isCompleted, String mission, List<String> tasks) {  //미션이랑 미션 내용 나타내는거 위젯으로 그냥 해 놓음
-  return Card(
-    child: Padding(padding: EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                isCompleted ? Icons.check_circle : Icons.cancel,
-                color: isCompleted ? Color(0xFF008000) : Color(0xFFFF0000),
+Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double width) {
+  final bool isCompleted = mission['isCompleted'] ?? false;
+
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: width * 0.02),
+    child: ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: width * 0.95,
+      ),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MissionPage_2(
+                content: mission['content'], //미션 내용 보내는거 상세페이지로
+                isCompleted: isCompleted, //미션 성공여부 여긴 나중에 api 수정된면 바꿔야함
               ),
-              SizedBox(width: 7,),
-              Text(mission,
-                style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),
-              ),
-            ],
+            ),
+          );
+        },
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(width * 0.04),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      isCompleted ? Icons.check_circle : Icons.cancel,
+                      color: isCompleted ? const Color(0xFF008000) : const Color(0xFFFF0000),
+                      size: width * 0.06,
+                    ),
+                    SizedBox(width: width * 0.02),
+                    Text(
+                      "미션 ${mission['id']}", //미션 id
+                      style: TextStyle(
+                        fontSize: width * 0.05,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: width * 0.08, top: width * 0.01),
+                  child: Text(
+                    "• ${mission['content']}", //미션  내용
+                    style: TextStyle(fontSize: width * 0.04),
+                  ),
+                ),
+              ],
+            ),
           ),
-          Column(
-            children: tasks
-                .map((task) => Padding(
-              padding: const EdgeInsets.only(left: 24.0, top: 4),
-              child: Text("• $task", style: TextStyle(fontSize: 15)),
-            ))
-                .toList(),
-          )
-        ],
+        ),
       ),
     ),
   );
