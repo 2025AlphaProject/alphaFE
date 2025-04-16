@@ -200,7 +200,9 @@ class _AddPage_2State extends State<AddPage_2> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            CupertinoPageRoute(builder: (context) => AddPage_3()),
+                            CupertinoPageRoute(
+                              builder: (_) => AddPage_3(),
+                            ),
                           );
                         },
                       ),

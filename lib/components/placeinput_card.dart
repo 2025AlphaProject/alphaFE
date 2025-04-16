@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../pages/add_page/searchplace_page.dart';
 
 class PlaceInputCard extends StatefulWidget {
   final void Function(String imageUrl, String title, String description, double mapX, double mapY) onComplete;
@@ -34,8 +35,30 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
         children: [
           ElevatedButton(
             onPressed: () async {
-              // TODO: 외부 지도 검색 화면 연결 및 결과 처리 로직 작성
-              // 예시: Navigator.push(...) 또는 showModalBottomSheet(...) 사용
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SearchPlacePage(
+                    onPlaceSelected: ({
+                      required String title,
+                      required String address,
+                      required String imageUrl,
+                      required double mapX,
+                      required double mapY,
+                    }) {
+                      if (mounted) {
+                        setPlaceInfo({
+                          'title': title,
+                          'address': address,
+                          'imageUrl': imageUrl,
+                          'mapX': mapX,
+                          'mapY': mapY,
+                        });
+                      }
+                    },
+                  ),
+                ),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.grey.shade700,
@@ -93,6 +116,14 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
         ],
       ),
     );
+  }
+
+  void setPlaceInfo(Map<String, dynamic> place) {
+    _imageUrlController.text = place['imageUrl'] ?? '';
+    _titleController.text = place['title'] ?? '';
+    _descriptionController.text = place['address'] ?? '';
+    _mapXController.text = (place['mapX'] ?? '').toString();
+    _mapYController.text = (place['mapY'] ?? '').toString();
   }
 
   @override

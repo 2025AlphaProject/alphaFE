@@ -32,8 +32,34 @@
 
 import 'package:flutter/material.dart';
 import 'mainscreen.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:logger/logger.dart';
 
-void main() {
+// 로거 사용을 위한 전역변수 선언
+final logger = Logger();
+
+// 네이버맵 sdk 초기화 함수
+Future<void> initNaverMapSdk() async {
+  await FlutterNaverMap().init(
+      clientId: 'aazbk1nhu2',
+
+      // 인증 실패 시 실행될 콜백
+      onAuthFailed: (ex) => switch (ex) {
+        NQuotaExceededException(:final message) => logger.d('사용량 초과 (message: $message)'),
+        NUnauthorizedClientException() ||
+        NClientUnspecifiedException() ||
+        NAnotherAuthFailedException() =>
+          logger.d('인증 실패: $ex'),
+      }
+  );
+}
+
+Future<void> main() async {
+
+  //네이버맵 초기화
+  WidgetsFlutterBinding.ensureInitialized();
+  await initNaverMapSdk();
+
   runApp(const MyApp());
 }
 
