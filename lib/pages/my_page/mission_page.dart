@@ -13,8 +13,7 @@ class Mission_Page extends StatefulWidget {
 class _Mission_PageState extends State<Mission_Page> {
   List<Map<String, dynamic>> _missions = [];
   bool _isLoading = true;
-  //이거 어떻게 액세스 토큰 받아오는지 정확히 몰라서 물어보고 형식 수정할 예정
-  String accessToken = 'd9wAZGqbBRQ-BZAlIn8Da5dLGtTYimccAAAAAQoNDSEAAAGWR__5yZgXPJRhmZ-F';
+  String accessToken = ""; //TODO: 카카오 액세스 토큰 연결
 
   @override
   void initState() {
