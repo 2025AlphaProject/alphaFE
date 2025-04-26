@@ -24,10 +24,10 @@ class _AddPage_2State extends State<AddPage_2> {
   bool _visibleButton = true;
   Timer? _idleTimer;
 
-  // 장소 데이터 목록 (API + 사용자 입력)
+  // 장소 데이터 목록 (API에서 받아온 데이터와 사용자가 추가한 입력 모두 포함)
   List<PlaceInfoBlock> _placeWidgets = [];
 
-  // 현재 + 장소 추가 입력폼이 열려있는지 여부
+  // 현재 장소 추가 입력폼이 열려있는지 여부
   bool _isAddingPlace = false;
 
   @override
@@ -37,6 +37,7 @@ class _AddPage_2State extends State<AddPage_2> {
     connectWebSocket();
   }
 
+  // 웹소켓 연결 후 요청된 행정구역에 대한 코스 데이터를 받아 UI에 반영
   void connectWebSocket() async {
     final channel = WebSocketChannel.connect(
       Uri.parse('ws://localhost:8000/tour/recommend/?user_id=111&areaCode=1&sigunguName=${widget.title}'),
@@ -67,6 +68,7 @@ class _AddPage_2State extends State<AddPage_2> {
     });
   }
 
+  // 스크롤 상태에 따라 '이 코스로 할게요!' 버튼의 애니메이션을 제어
   void myScrollNotification(ScrollNotification notification) {
     if (notification is UserScrollNotification) {
       final direction = notification.direction;
@@ -98,6 +100,7 @@ class _AddPage_2State extends State<AddPage_2> {
     }
   }
 
+  // 사용자가 새 장소를 추가 완료하면 PlaceInfoBlock 리스트에 추가하고 입력폼 닫기
   void addNewPlace(String imageUrl, String title, String description, double mapX, double mapY) {
     setState(() {
       _placeWidgets.add(
@@ -115,6 +118,8 @@ class _AddPage_2State extends State<AddPage_2> {
       body: Stack(
         alignment: Alignment.center,
         children: [
+
+          // 스크롤 리스너를 통해 버튼의 애니메이션 상태를 제어
           NotificationListener<ScrollNotification>(
             onNotification: (notification) {
               myScrollNotification(notification);
@@ -129,6 +134,8 @@ class _AddPage_2State extends State<AddPage_2> {
                     minHeight: MediaQuery.of(context).size.height,
                     minWidth: MediaQuery.of(context).size.width,
                   ),
+
+                  // 장소 정보 블록들을 나열하는 최상위 Column
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -136,7 +143,7 @@ class _AddPage_2State extends State<AddPage_2> {
                       _buildTitleBlock(),
                       const SizedBox(height: 24),
 
-                      // Place 목록 표시
+                      // 장소 목록 표시
                       ..._placeWidgets.map((place) => Column(
                         children: [
                           place,
@@ -144,12 +151,16 @@ class _AddPage_2State extends State<AddPage_2> {
                         ],
                       )),
 
-                      // 입력 UI or + 버튼
+                      // 장소 추가 입력폼 또는 '+ 장소 추가' 버튼 표시
                       _isAddingPlace
+
+                          // '+ 장소 추가' 버튼 클릭 시 입력폼으로 전환
                           ? PlaceInputCard(
                         onComplete: addNewPlace,
                         onCancel: () => setState(() => _isAddingPlace = false),
                       )
+
+                          // 기본 상태, '+ 장소 추가' 버튼 표시
                           : GestureDetector(
                         onTap: () => setState(() => _isAddingPlace = true),
                         child: Container(
@@ -173,7 +184,7 @@ class _AddPage_2State extends State<AddPage_2> {
             ),
           ),
 
-          // 고정 버튼
+          // '이 코스로 할게요!' 버튼, 고정 위치에 애니메이션 효과 적용
           Visibility(
             visible: _visibleButton,
             maintainSize: false,
@@ -217,6 +228,7 @@ class _AddPage_2State extends State<AddPage_2> {
     );
   }
 
+  // PlaceInfoBlock 목록 상단에 표시되는 안내 문구
   Widget _buildTitleBlock() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,6 +245,8 @@ class _AddPage_2State extends State<AddPage_2> {
           children: [
             Text('최근 업데이트', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF7F7F7F))),
             SizedBox(width: 5),
+
+            // TODO: 최근 업데이트 날짜 구현 필요
             Text('2025.00.00', style: TextStyle(fontSize: 11, color: Color(0xFF7F7F7F))),
           ],
         ),

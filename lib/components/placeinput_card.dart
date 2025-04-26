@@ -1,6 +1,8 @@
+
 import 'package:flutter/material.dart';
 import '../pages/add_page/searchplace_page.dart';
 
+// 사용자가 장소를 입력하거나 검색하여 정보를 입력할 수 있는 카드
 class PlaceInputCard extends StatefulWidget {
   final void Function(String imageUrl, String title, String description, double mapX, double mapY) onComplete;
   final VoidCallback onCancel;
@@ -15,6 +17,8 @@ class PlaceInputCard extends StatefulWidget {
   State<PlaceInputCard> createState() => _PlaceInputCardState();
 }
 
+// PlaceInputCard의 상태 관리 클래스
+// 텍스트 필드 컨트롤러로 입력값을 관리
 class _PlaceInputCardState extends State<PlaceInputCard> {
   final _imageUrlController = TextEditingController();
   final _titleController = TextEditingController();
@@ -22,6 +26,8 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
   final _mapXController = TextEditingController();
   final _mapYController = TextEditingController();
 
+  // 카드 UI 구성
+  // 검색 버튼, 텍스트 필드, 취소/완료 버튼
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -33,6 +39,7 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
       ),
       child: Column(
         children: [
+          // 🔹 '장소 찾아보기' 버튼: 외부 검색 화면으로 이동
           ElevatedButton(
             onPressed: () async {
               final result = await Navigator.push(
@@ -72,6 +79,9 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
             ),
           ),
           const SizedBox(height: 12),
+
+          // 장소 정보를 입력하는 필드들, 검색을 통해 장소를 선택하면 자동으로 채워짐
+          // 이미지 URL, 장소명, 설명, 위도(mapX), 경도(mapY)
           TextField(
             controller: _imageUrlController,
             decoration: const InputDecoration(labelText: '이미지 URL'),
@@ -93,11 +103,14 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
             decoration: const InputDecoration(labelText: 'mapY'),
           ),
           const SizedBox(height: 12),
+
+          // 완료, 취소 버튼
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(onPressed: widget.onCancel, child: const Text("취소")),
               ElevatedButton(
+                // 🔹 완료 버튼 클릭 시 현재 입력된 정보로 onComplete 콜백 호출
                 onPressed: () {
                   final mapX = double.tryParse(_mapXController.text) ?? 0.0;
                   final mapY = double.tryParse(_mapYController.text) ?? 0.0;
@@ -118,6 +131,7 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
     );
   }
 
+  // 외부 검색 화면에서 장소를 선택했을 때 입력값을 자동으로 채워넣음
   void setPlaceInfo(Map<String, dynamic> place) {
     _imageUrlController.text = place['imageUrl'] ?? '';
     _titleController.text = place['title'] ?? '';
@@ -126,6 +140,7 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
     _mapYController.text = (place['mapY'] ?? '').toString();
   }
 
+  // 페이지 종료 시 텍스트 필드 컨트롤러 메모리 해제
   @override
   void dispose() {
     _imageUrlController.dispose();
