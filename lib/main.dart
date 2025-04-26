@@ -8,19 +8,13 @@
 *   - 라우팅 순서는 피그마 페이지에서 각 탭별로 왼쪽 -> 오른쪽 순서
 *
 * < 전반적인 코드 실행 흐름 >
-* 1. main.dart : runApp()을 통해 앱 실행, MainScreen으로 라우팅
+* 1. main.dart : runApp()을 통해 앱 실행, MainScreen으로 라우팅, 초기화가 필요한 패키지들 초기화 진행
 * 2. mainscreen.dart : bottomNavigationBar의 동작 처리, 각 페이지(home, plan, add, my)로 라우팅
-* pages : 각 페이지에 대한 dart 파일
+* pages : 각 페이지에 대한 dart 파일들
 *   1. home page
-*     - home_page.dart
 *   2. plan page
-*     - plan_page.dart
 *   3. add page
-*     - add_page_1.dart
-*     - add_page_2.dart
-*     - add_page_3.dart
 *   4. my page
-*     - my_page.dart
 * components : 네비바, 앱바, 각종 블록 단위 요소들을 각 페이지마다 호출해 사용할 수 있도록 구성
 *   1. app_bar.dart : 그림자, 색상, 크기(높이) 정의 -> DefaultAppBar, SearchAppBar
 *   2. bottom_navi_bar.dart : 색상, radius, Items(아이콘, 라벨) 정의
@@ -28,12 +22,43 @@
 *   4. plan_card.dart : 홈, 계획 탭에 사용되는 여행 정보를 나타내는 카드 요소
 *   5. proceed_button.dart : 계획, 홈 탭에서 사용되는 버튼(검은색), 주로 다음 단계로 건너가기 위한 버튼으로 사용됨
 *   6. placeinfo_card.dart : 추가 탭의 두 번째 페이지에 사용되는 여헹 코스의 장소 나열 시에 사용되는 카드 요소
+*   7. placeinput_card.dart : 장소 정보를 입력하는 카드 컴포넌트, 사용자가 직접 입력하거나 검색 결과를 가져와 장소 정보를 설정할 수 있음
+*   8. camera.dart
+*   9. gps.dart
 * */
 
 import 'package:flutter/material.dart';
 import 'mainscreen.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:logger/logger.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+// 로거 사용을 위한 전역변수 선언
+final logger = Logger();
+
+// 네이버맵 sdk 초기화 함수
+Future<void> initNaverMapSdk() async {
+  await dotenv.load();
+  await FlutterNaverMap().init(
+      clientId: 'aazbk1nhu2',
+
+      // 인증 실패 시 실행될 콜백
+      onAuthFailed: (ex) => switch (ex) {
+        NQuotaExceededException(:final message) => logger.d('사용량 초과 (message: $message)'),
+        NUnauthorizedClientException() ||
+        NClientUnspecifiedException() ||
+        NAnotherAuthFailedException() =>
+          logger.d('인증 실패: $ex'),
+      }
+  );
+}
+
+Future<void> main() async {
+
+  // //네이버맵 초기화
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await initNaverMapSdk();
+
   runApp(const MyApp());
 }
 
