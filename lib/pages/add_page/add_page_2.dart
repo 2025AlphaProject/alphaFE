@@ -40,7 +40,7 @@ class _AddPage_2State extends State<AddPage_2> {
   // 웹소켓 연결 후 요청된 행정구역에 대한 코스 데이터를 받아 UI에 반영
   void connectWebSocket() async {
     final channel = WebSocketChannel.connect(
-      Uri.parse('ws://localhost:8000/tour/recommend/?user_id=111&areaCode=1&sigunguName=${widget.title}'),
+      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=111&areaCode=1&sigunguName=${widget.title}'),
     );
 
     channel.stream.listen((message) {
