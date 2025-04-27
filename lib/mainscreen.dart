@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/add_page/add_page_1.dart';
+import 'pages/add_page/add_page_0.dart';
 import 'pages/home_page/home_page.dart';
 import 'pages/my_page/my_page.dart';
 import 'pages/plan_page/plan_page.dart';
@@ -30,7 +30,7 @@ class _MainScreenState extends State<MainScreen> {
         username: widget.username,
         welcome_message: widget.welcome_message),
     const PlanPage(),
-    const AddPage(),
+    AddPage_0(),
     const MyPage(),
   ];
 
