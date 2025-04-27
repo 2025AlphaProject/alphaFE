@@ -1,28 +1,117 @@
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
+import 'package:dio/dio.dart';
+import 'package:alpha_fe/components/plan_card.dart';
+import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';
 
-class PlanPage2 extends StatelessWidget {
-  const PlanPage2({Key? key}) : super(key: key);
+class PlanPage2 extends StatefulWidget {
+  final int tour_id;
 
+  const PlanPage2({Key? key, required this.tour_id}) : super(key: key);
+
+  @override
+  State<PlanPage2> createState() => _PlanPage2State();
+}
+
+class _PlanPage2State extends State<PlanPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "계획보기 앱바 영역"),
-      body: plan_page2_body(),
+      body: plan_page2_body(tour_id: widget.tour_id),
     );
   }
 }
 
 class plan_page2_body extends StatefulWidget {
-  const plan_page2_body({super.key});
+  final int tour_id;
+
+  const plan_page2_body({Key? key, required this.tour_id}) : super(key: key);
 
   @override
   State<plan_page2_body> createState() => _plan_page2_bodyState();
 }
 
 class _plan_page2_bodyState extends State<plan_page2_body> {
+  String tourName = "";
+  String startDate = "";
+  String endDate = "";
   final TextEditingController _textController = TextEditingController();
+  String accessToken = ""; //TODO: 카카오 액세스 토큰 연결
+  String get dateRange => "$startDate ~ $endDate";
+
+  List<Map<String, dynamic>> courseData = [];
+
+  Future<void> fetchTourCourse() async {
+    final dio = Dio();
+    try {
+      final response = await dio.get(
+        'http://localhost:8000/tour/course/${widget.tour_id}/',
+      );
+      if (response.statusCode == 200) {
+        setState(() {
+          courseData = List<Map<String, dynamic>>.from(response.data);
+        });
+      }
+    } catch (e) {
+      print("코스 불러오기 실패: $e");
+    }
+  }
+
+  Future<void> fetchTourName() async {
+    final dio = Dio();
+    try {
+      final response = await dio.get(
+        'http://localhost:8000/tour/${widget.tour_id}/',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        final tourinfo = response.data;
+        setState(() {
+          tourName = tourinfo['tour_name'] ?? "";
+          startDate = tourinfo['start_date'] ?? "";
+          endDate = tourinfo['end_date'] ?? "";
+        });
+      }
+    } catch (e) {
+      print("여행 불러오기 실패: $e");
+    }
+  }
+  Future<void> fetchTourEdit() async {
+    final dio = Dio();
+    try{
+      final response = await dio.post(
+        'http://localhost:8000/tour/${widget.tour_id}/',
+        data: {
+
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      if(response.statusCode == 200){
+        print("수정 완료: ${response.data}");
+      }
+    } catch(e){
+
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTourCourse();
+    fetchTourName();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,17 +121,41 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Memo(controller: _textController), //이안에 메모랑 여행정보 있음
+            Row(
+              children: [
+                Memo(controller: _textController),//이안에 메모랑 여행정보 있음
+                SizedBox(width: 10,),
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                      ),
+                      isScrollControlled: true,
+                      backgroundColor: Colors.white,
+                      builder: (context) => TravelEditMenu(
+                        startDate: startDate,
+                        endDate: endDate,
+                        tour_id: widget.tour_id,
+                        tourName: tourName,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
             Traveler_List(),//동행자들
             DashedLine(),
-            travel_plan(),
-        
+            travel_plan(courseData: courseData),
           ],
         ),
       ),
     );
   }
 }
+
 
 //메모 관련 코드 아직 수정이 필요함
 class Memo extends StatefulWidget {
@@ -107,12 +220,147 @@ class _MemoState extends State<Memo> {
   }
 }
 
-//여행 디데이 및 여행명 이것도 변수 수정 필요
-class Plan_Name extends StatelessWidget {
-  const Plan_Name({super.key});
+
+// 전체적인 편집관련
+class TravelEditMenu extends StatelessWidget {
+  final String startDate;
+  final String endDate;
+  final int tour_id;
+  final String tourName;
+
+  const TravelEditMenu({
+    super.key,
+    required this.startDate,
+    required this.endDate,
+    required this.tour_id,
+    required this.tourName,
+  });
 
   @override
   Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding:
+        const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("편집", style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
+            _EditMenu(
+              text: "여행계획 수정",
+              onTap: () {},
+            ),
+            _EditMenu(
+              text: "여행제목 수정",
+              onTap: () {
+                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    TextEditingController _nameController = TextEditingController(text: tourName);
+                    return AlertDialog(
+                      title: const Text("여행제목 수정"),
+                      content: TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          hintText: "새 여행제목 입력",
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context); // 취소
+                          },
+                          child: const Text("취소"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            // TODO: 서버로 수정된 제목 전송 추가 가능
+                            Navigator.pop(context);
+                          },
+                          child: const Text("확인"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+            _EditMenu(
+              text: "여행날짜 수정",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => planEditDate(
+                      startDate: startDate,
+                      endDate: endDate,
+                      tour_id: tour_id,
+                    ),
+                  ),
+                );
+              },
+            ),
+            _EditMenu(
+              text: "여행 삭제",
+              isDestructive: true,
+              onTap: () {},
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// 단일 편집메뉴
+class _EditMenu extends StatelessWidget {
+  final String text;
+  final bool isDestructive;
+  final VoidCallback onTap;
+
+  const _EditMenu({
+    super.key,
+    required this.text,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.pop(context); // 선택 후 닫기
+        onTap();
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            color: isDestructive ? Colors.red : Colors.black,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+//여행 디데이 및 여행명
+class Plan_Name extends StatelessWidget {
+  const Plan_Name({super.key});
+
+
+  @override
+  Widget build(BuildContext context) {
+    final remainingDays = calculateRemainingDays(
+      context.findAncestorStateOfType<_plan_page2_bodyState>()?.endDate ?? "",
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(8,0,0,0),
       child: Column(
@@ -127,7 +375,7 @@ class Plan_Name extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 1),
               child: Text(
-                "D-99", //이거 디데이 인자로 바꿀예정
+                "$remainingDays", //이거 디데이 인자로 바꿀예정
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 8,
@@ -136,10 +384,26 @@ class Plan_Name extends StatelessWidget {
               ),
             ),
           ),
-          Padding(padding: EdgeInsets.fromLTRB(3, 0, 0, 0),
+          Padding(
+            padding: EdgeInsets.fromLTRB(3, 0, 0, 0),
             child: Text(
-              "성북구 산책",
+              context.findAncestorStateOfType<_plan_page2_bodyState>()?.tourName ?? "",
               style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(3, 0, 0, 0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.calendar_today, size: 13, color: Colors.grey),
+                const SizedBox(width: 5),
+                Text(
+                  context.findAncestorStateOfType<_plan_page2_bodyState>()?.dateRange ?? "",
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
             ),
           ),
         ],
@@ -147,6 +411,7 @@ class Plan_Name extends StatelessWidget {
     );
   }
 }
+
 
 //동행자들
 class Traveler_List extends StatefulWidget {
@@ -241,6 +506,7 @@ class _Traveler_ListState extends State<Traveler_List> {
   }
 }
 
+
 //점선 구분선
 class DashedLine extends StatelessWidget {
   final Axis axis; // 가로 or 세로 방향
@@ -289,30 +555,15 @@ class DashedLine extends StatelessWidget {
   }
 }
 
+
 //여행 코스
 class travel_plan extends StatelessWidget {
-  const travel_plan({super.key});
+  final List<Map<String, dynamic>> courseData;
+
+  const travel_plan({super.key, required this.courseData});
 
   @override
   Widget build(BuildContext context) {
-    // 여기 api 맞춰서 수정 예정
-    final List<Map<String, String>> placeList = [
-      {
-        "imageUrl": 'https://avatars.githubusercontent.com/u/46028234?v=4',
-        "placeName": "서울숲",
-        "planName": "서울 도심 여행",
-        "roadAddress": "서울 성동구 서울숲2길",
-        "numberAddress": "성수동1가 685",
-      },
-      {
-        "imageUrl": 'https://avatars.githubusercontent.com/u/46028234?v=4',
-        "placeName": "경복궁",
-        "planName": "역사 테마",
-        "roadAddress": "서울 종로구 사직로",
-        "numberAddress": "세종로 1-91",
-      },
-    ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -329,40 +580,43 @@ class travel_plan extends StatelessWidget {
             ],
           ),
         ),
-        // 🔽 리스트뷰로 카드 반복 + 스크롤
-        SizedBox(
-          height: 300, // 스크롤 가능한 높이 제한
-          child: ListView.builder(
-            itemCount: placeList.length,
-            itemBuilder: (context, index) {
-              final item = placeList[index];
-              return place_card(
-                imageUrl: item['imageUrl']!,
-                placeName: item['placeName']!,
-                planName: item['planName']!,
-                roadAddress: item['roadAddress']!,
-                numberAddress: item['numberAddress']!,
-              );
-            },
-          ),
-        ),
+        ...courseData.map((day) {
+          final date = day['date'];
+          final places = day['places'] as List<dynamic>;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text("📅 $date", style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              ...places.map((place) {
+                return place_card(
+                  imageUrl: place['image_url'] ?? '',
+                  placeName: place['name'] ?? '',
+                  roadAddress: place['mapX'] ?? '',
+                  numberAddress: place['mapY'] ?? '',
+                );
+              }).toList()
+            ],
+          );
+        }).toList(),
       ],
     );
   }
 }
 
+
 //장소별
 class place_card extends StatelessWidget {
   final String imageUrl;
   final String placeName;
-  final String planName;
   final String roadAddress;
   final String numberAddress;
 
   const place_card({super.key,
     required this.imageUrl,
     required this.placeName,
-    required this.planName,
     required this.roadAddress,
     required this.numberAddress,
   });
@@ -374,27 +628,20 @@ class place_card extends StatelessWidget {
         children: [
           Row(
             children: [
-              Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        imageUrl,
-                        width: 130,
-                        height: 110,
-                      ),
-                    ),
-                    Text(
-                      placeName,
-                    )
-                  ]
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.network(
+                  imageUrl,
+                  width: 130,
+                  height: 110,
+                ),
               ),
               Column(
                 children: [
                   Row( //여행명
                     children: [
                       Icon(Icons.pin_drop),
-                      Text(planName),
+                      Text(placeName),
                     ],
                   ),
                   Row( //주소
@@ -445,6 +692,7 @@ class place_card extends StatelessWidget {
     );
   }
 }
+
 
 //장소별 문화행사
 class Events extends StatefulWidget {

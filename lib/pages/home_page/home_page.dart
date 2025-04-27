@@ -54,6 +54,7 @@ class HomePage extends StatelessWidget {
                 endDate: "2025.03.25",
                 size_h: 320,
                 size_w: 300,
+                tour_id: 1,
               ),
             ),
             SizedBox(height: 60,),
