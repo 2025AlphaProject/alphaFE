@@ -38,7 +38,6 @@ final logger = Logger();
 
 // 네이버맵 sdk 초기화 함수
 Future<void> initNaverMapSdk() async {
-  await dotenv.load();
   await FlutterNaverMap().init(
       clientId: 'aazbk1nhu2',
 
@@ -55,10 +54,8 @@ Future<void> initNaverMapSdk() async {
 
 Future<void> main() async {
 
-  // //네이버맵 초기화
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await initNaverMapSdk();
-
+  // dotenv 사용을 위한 초기화 코드
+  await dotenv.load();
   runApp(const MyApp());
 }
 

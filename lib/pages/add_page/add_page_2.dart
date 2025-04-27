@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:dio/dio.dart';
 import 'add_page_3.dart';
 import '../../components/app_bar.dart';
 import '../../components/proceed_button.dart';
@@ -12,8 +14,13 @@ import '../../components/placeinput_card.dart';
 
 class AddPage_2 extends StatefulWidget {
   final String title;
+  final int tourId;
 
-  const AddPage_2({required this.title, Key? key}) : super(key: key);
+  const AddPage_2({
+    required this.title,
+    required this.tourId,
+    Key? key
+  }) : super(key: key);
 
   @override
   State<AddPage_2> createState() => _AddPage_2State();
@@ -108,6 +115,95 @@ class _AddPage_2State extends State<AddPage_2> {
       );
       _isAddingPlace = false;
     });
+  }
+
+  //
+  Future<void> saveTourCourse() async {
+    final dio = Dio();
+    final baseUrl = 'http://conever.duckdns.org:8000';
+
+    try {
+      // tour_id값을 이용해 여행 시작 날짜 불러옴
+      final startDateResponse = await dio.get(
+          '$baseUrl/tour/${widget.tourId}/',
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}'
+            }
+          )
+
+      );
+      final startDate = startDateResponse.data['start_date'];
+
+      // 등록할 JSON 데이터의 places 인자에 들어갈 데이터 생성
+      final List<Map<String, dynamic>> courseData = _placeWidgets.map((place) => {
+        'name': '<${place.title}>',
+        'mapX': place.mapX,
+        'mapY': place.mapY,
+        'image': place.imageUrl,
+        'road_address': '<${place.description}>'
+      }).toList();
+
+      // 내 여행 경로 저장
+      final response = await dio.post(
+        '$baseUrl/tour/course/',
+        data: {
+          'tour_id': '${widget.tourId}',
+          'date': startDate,
+          'places': courseData
+        },
+      options: Options(
+      headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}'
+          },
+        ),
+      );
+
+      print(response);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // 성공 시 다음 페이지로 이동
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (_) => AddPage_3(
+              message: "여행 저장 성공, tourId = ${widget.tourId}",
+            ),
+          ),
+        );
+      } else {
+        print('등록 실패');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // PlaceInfoBlock 목록 상단에 표시되는 안내 문구
+  Widget _buildTitleBlock() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text("📍${widget.title}", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(width: 10),
+            const Text('근처 코스를 알려드릴게요', style: TextStyle(fontSize: 14, color: Color(0xFF757575))),
+          ],
+        ),
+        const SizedBox(height: 8),
+        const Row(
+          children: [
+            Text('최근 업데이트', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF7F7F7F))),
+            SizedBox(width: 5),
+
+            // TODO: 최근 업데이트 날짜 구현 필요
+            Text('2025.00.00', style: TextStyle(fontSize: 11, color: Color(0xFF7F7F7F))),
+          ],
+        ),
+      ],
+    );
   }
 
   @override
@@ -209,12 +305,8 @@ class _AddPage_2State extends State<AddPage_2> {
                         fontWeight_: FontWeight.bold,
                         padding_: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                              builder: (_) => AddPage_3(),
-                            ),
-                          );
+                          // 최종 경로 확정
+                          saveTourCourse();
                         },
                       ),
                     ),
@@ -228,29 +320,7 @@ class _AddPage_2State extends State<AddPage_2> {
     );
   }
 
-  // PlaceInfoBlock 목록 상단에 표시되는 안내 문구
-  Widget _buildTitleBlock() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text("📍${widget.title}", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(width: 10),
-            const Text('근처 코스를 알려드릴게요', style: TextStyle(fontSize: 14, color: Color(0xFF757575))),
-          ],
-        ),
-        const SizedBox(height: 8),
-        const Row(
-          children: [
-            Text('최근 업데이트', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF7F7F7F))),
-            SizedBox(width: 5),
 
-            // TODO: 최근 업데이트 날짜 구현 필요
-            Text('2025.00.00', style: TextStyle(fontSize: 11, color: Color(0xFF7F7F7F))),
-          ],
-        ),
-      ],
-    );
-  }
+
+
 }

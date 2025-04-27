@@ -1,12 +1,16 @@
+// 추가 페이지에서 사용되는 행정구역 선택 버튼 아이템입니다
+// 해당 버튼은 항상 AddPage_2 로 연결됩니다
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../pages/add_page/add_page_2.dart';
 
 class GeneratorItem extends StatelessWidget {
   final String title;
+  final int tourId;
 
   const GeneratorItem({
     required this.title,
+    required this.tourId,
     Key? key,
   }) : super(key: key);
 
@@ -24,7 +28,7 @@ class GeneratorItem extends StatelessWidget {
           Navigator.push(
             context,
             CupertinoPageRoute(
-              builder: (context) => AddPage_2(title: title),
+              builder: (context) => AddPage_2(title: title, tourId: tourId,),
             ),
           );
         },
