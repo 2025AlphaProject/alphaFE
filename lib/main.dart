@@ -32,6 +32,7 @@ import 'mainscreen.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
@@ -39,7 +40,7 @@ final logger = Logger();
 // 네이버맵 sdk 초기화 함수
 Future<void> initNaverMapSdk() async {
   await FlutterNaverMap().init(
-      clientId: 'aazbk1nhu2',
+      clientId: dotenv.env['NAVER_DYNAMIC_MAP'],
 
       // 인증 실패 시 실행될 콜백
       onAuthFailed: (ex) => switch (ex) {
