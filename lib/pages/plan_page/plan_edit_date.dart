@@ -1,7 +1,9 @@
+import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class planEditDate extends StatefulWidget {
   final String startDate;
@@ -28,6 +30,7 @@ class _planEditDateState extends State<planEditDate> {
   late DateTime _initialStartDate;
   late DateTime _initialEndDate;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
+  final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
 
   @override
   void initState() {
@@ -178,16 +181,23 @@ class _planEditDateState extends State<planEditDate> {
                                         'start_date': _rangeStart!.toIso8601String().split('T').first,
                                         'end_date': _rangeEnd!.toIso8601String().split('T').first,
                                       },
+                                      options: Options(
+                                        headers: {
+                                          'Authorization': 'Bearer $accessToken',
+                                          'Content-Type': 'application/json',
+                                        },
+                                      ),
                                     );
 
                                     if (response.statusCode == 200) {
-                                      Navigator.pop(context); // 다이얼로그 닫기
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('여행 날짜가 수정되었습니다.')),
+                                      if (!mounted) return; // 안전 체크 추가
+
+                                      Navigator.of(context).pop(); // 다이얼로그 닫기
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (context) => PlanPage2(tour_id: widget.tour_id),
+                                        ),
                                       );
-                                      Future.delayed(const Duration(milliseconds: 500), () {
-                                        Navigator.pop(context); // 페이지 pop
-                                      });
                                     } else {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text('수정 실패: ${response.statusCode}')),

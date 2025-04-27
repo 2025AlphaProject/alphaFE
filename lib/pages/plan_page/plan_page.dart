@@ -2,6 +2,7 @@ import 'package:alpha_fe/components/plan_card.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PlanPage extends StatelessWidget {
   const PlanPage({Key? key}) : super(key: key);
@@ -29,7 +30,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
   late PageController _pageController;
   late int initialPage;
   bool _isLoading = true;
-  String accessToken = ""; //TODO: 카카오 액세스 토큰 연결
+  final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
 
   SortType _sortType = SortType.dDayAsc;
 
@@ -60,7 +61,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
         final List<dynamic> data = response.data;
         final parsedData = data.map<Map<String, dynamic>>((item) =>
         {
-          'tour_id': item['tour_id'],
+          'tour_id': item['id'],
           'title': item['tour_name'],
           'startDate': item['start_date'],
           'endDate': item['end_date'],
@@ -69,7 +70,9 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
         setState(() {
           _cardData = parsedData;
           _isLoading = false;
-          _initController();
+          if (_cardData.isNotEmpty) {
+            _initController();
+          }
         });
       } else {
         setState(() {
@@ -129,15 +132,14 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     final cards = sortedCardData;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
 
     return _isLoading
         ? const Center(child: CircularProgressIndicator())
-        : Column(
+        : _cardData.isEmpty
+            ? const Center(child: Text('등록된 여행이 없습니다.'))
+            : Column(
       children: [
         SizedBox(height: screenWidth * 0.25), // ⬅️ 반응형으로 변경
 
@@ -266,18 +268,22 @@ class _PlanPageIndicatorState extends State<PlanPageIndicator> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dotSize = screenWidth * 0.02;
+    final dotActiveWidth = screenWidth * 0.03;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(widget.count, (index) {
         final isActive = _currentPage == index;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          margin: EdgeInsets.symmetric(horizontal: widget.dotSize * 0.3),
-          width: isActive ? widget.dotActiveWidth : widget.dotSize,
-          height: widget.dotSize,
+          margin: EdgeInsets.symmetric(horizontal: dotSize * 0.3),
+          width: isActive ? dotActiveWidth : dotSize,
+          height: dotSize,
           decoration: BoxDecoration(
             color: isActive ? Colors.black87 : Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(widget.dotSize * 0.5),
+            borderRadius: BorderRadius.circular(dotSize * 0.5),
           ),
         );
       }),

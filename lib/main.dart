@@ -54,6 +54,7 @@ Future<void> initNaverMapSdk() async {
 }
 
 Future<void> main() async {
+  //await dotenv.load(fileName: ".env");
 
   // //네이버맵 초기화
   // WidgetsFlutterBinding.ensureInitialized();
