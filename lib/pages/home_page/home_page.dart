@@ -4,7 +4,7 @@ import '../../components/plan_card.dart'; // 여행 계획 카드 컴포넌트
 import '../../components/proceed_button.dart'; // 버튼 컴포넌트
 
 class HomePage extends StatelessWidget {
-  final String username;
+  final String? username;
   final String welcome_message;
 
   const HomePage({
