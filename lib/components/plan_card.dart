@@ -1,6 +1,5 @@
 import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
 import 'package:flutter/material.dart';
-import '../pages/connection_example.dart'; // 연결될 페이지 import
 
 // 종료일까지 남은 일 수 계산 (공용 함수로)
 int calculateRemainingDays(String endDate) {
@@ -57,12 +56,10 @@ class PlanCard extends StatelessWidget {
           },
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
-      
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
-      
               children: [
                 // D-day 표시 영역
                 Card(
@@ -83,17 +80,13 @@ class PlanCard extends StatelessWidget {
                     ),
                   ),
                 ),
-      
                 const SizedBox(height: 8),
-      
                 // 여행 제목
                 Text(
                   title,
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
-      
                 const SizedBox(height: 8),
-      
                 // 여행 날짜 범위 (달력 아이콘 + 텍스트)
                 Row(
                   mainAxisSize: MainAxisSize.min,
