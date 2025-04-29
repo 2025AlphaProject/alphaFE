@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:dio/dio.dart';
 
 // 전체적인 편집관련
 class TravelEditMenu extends StatelessWidget {
@@ -38,7 +40,7 @@ class TravelEditMenu extends StatelessWidget {
                 Navigator.pop(context);
                 showDialog(
                   context: context,
-                  builder: (context) => EditTourNameDialog(tourName: tourName),
+                  builder: (context) => EditTourNameDialog(tourName: tourName, tour_id: tour_id,),
                 );
               },
             ),
@@ -107,8 +109,13 @@ class _EditMenu extends StatelessWidget {
 // 여행제목 수정 다이얼로그
 class EditTourNameDialog extends StatefulWidget {
   final String tourName;
+  final int tour_id;
 
-  const EditTourNameDialog({Key? key, required this.tourName}) : super(key: key);
+
+  const EditTourNameDialog({Key? key,
+    required this.tourName,
+    required this.tour_id
+  }) : super(key: key);
 
   @override
   _EditTourNameDialogState createState() => _EditTourNameDialogState();
@@ -116,6 +123,7 @@ class EditTourNameDialog extends StatefulWidget {
 
 class _EditTourNameDialogState extends State<EditTourNameDialog> {
   late TextEditingController _nameController;
+  final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
 
   @override
   void initState() {
@@ -147,10 +155,36 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
           child: const Text("취소"),
         ),
         ElevatedButton(
-          onPressed: () {
-            // TODO: 서버로 수정된 제목 전송 추가 가능
-            Navigator.pop(context);
-          },
+          onPressed: () async {
+              try {
+                final dio = Dio();
+                final response = await dio.put(
+                  'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
+                  data: {
+                    'tour_name' :_nameController.text,
+                  },
+                  options: Options(
+                    headers: {
+                      'Authorization': 'Bearer $accessToken',
+                      'Content-Type': 'application/json',
+                    },
+                  ),
+                );
+
+                if (response.statusCode == 200) {
+                  if (!mounted) return; // 안전 체크 추가
+                  Navigator.of(context).pop(); // 다이얼로그 닫기
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('수정 실패: ${response.statusCode}')),
+                  );
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('오류 발생: $e')),
+                );
+              }
+            },
           child: const Text("확인"),
         ),
       ],

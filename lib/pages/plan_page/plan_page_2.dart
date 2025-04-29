@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:alpha_fe/components/plan_card.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/components/plan_course_event.dart';
+import 'package:alpha_fe/pages/plan_page/add_user.dart';
 
 class PlanPage2 extends StatefulWidget {
   final int tour_id;
@@ -41,6 +42,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   String endDate = "";
   String userName = "";
   String userProfileImageUrl = "";
+  List<Map<String, String>> travelers = [];
   final TextEditingController _textController = TextEditingController();
   final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
   String get dateRange => "$startDate ~ $endDate";
@@ -106,9 +108,13 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
           tourName = tourinfo['tour_name'] ?? "";
           startDate = tourinfo['start_date'] ?? "";
           endDate = tourinfo['end_date'] ?? "";
-          if (tourinfo['user'] != null && (tourinfo['user'] as List).isNotEmpty) {
-            userName = tourinfo['user'][0]['username'] ?? "";
-            userProfileImageUrl = tourinfo['user'][0]['profile_image_url'] ?? "";
+          if (tourinfo['user'] != null && tourinfo['user'] is List) {
+            travelers = (tourinfo['user'] as List).map<Map<String, String>>((user) {
+              return {
+                'name': user['username'] ?? '이름없음',
+                'imageUrl': user['profile_image_url'] ?? 'https://via.placeholder.com/150',
+              };
+            }).toList();
           }
         });
       }
@@ -323,12 +329,7 @@ class Traveler_List extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final parentState = context.findAncestorStateOfType<_plan_page2_bodyState>();
-    final travelers = [
-      {
-        "name": parentState?.userName ?? "이름없음",
-        "imageUrl": parentState?.userProfileImageUrl ?? "https://via.placeholder.com/150",
-      }
-    ];
+    final travelers = parentState?.travelers ?? [];
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -365,8 +366,11 @@ class Traveler_List extends StatelessWidget {
                   // ➕ 초대 버튼
                   GestureDetector(
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('초대 기능은 아직 구현되지 않았어요!')),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfileListPage(tour_id: parentState!.widget.tour_id),
+                        ),
                       );
                     },
                     child: Column(
@@ -439,6 +443,3 @@ class DashedLine extends StatelessWidget {
     );
   }
 }
-
-
-
