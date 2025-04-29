@@ -122,28 +122,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
       print("여행 불러오기 실패: $e");
     }
   }
-  Future<void> fetchTourEdit() async {
-    final dio = Dio();
-    try{
-      final response = await dio.post(
-        'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
-        data: {
 
-        },
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-      if(response.statusCode == 200){
-        print("수정 완료: ${response.data}");
-      }
-    } catch(e){
-
-    }
-  }
 
   @override
   void initState() {

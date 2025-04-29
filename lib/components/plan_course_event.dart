@@ -1,4 +1,7 @@
+import 'package:alpha_fe/pages/plan_page/near_event.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:alpha_fe/pages/plan_page/near_event.dart';
 
 //여행 코스
 class travel_plan extends StatelessWidget {
@@ -40,6 +43,8 @@ class travel_plan extends StatelessWidget {
                   placeName: place['name'] ?? '',
                   roadAddress: place['road_address'] ?? '',
                   numberAddress: place['parcel_address'] ?? '',
+                  mapX: place['mapX']?? '',
+                  mapY: place['mapY']?? '',
                 );
               }).toList(),
             ],
@@ -56,12 +61,16 @@ class place_card extends StatelessWidget {
   final String placeName;
   final String roadAddress;
   final String numberAddress;
+  final double mapX;
+  final double mapY;
 
   const place_card({super.key,
     required this.imageUrl,
     required this.placeName,
     required this.roadAddress,
     required this.numberAddress,
+    required this.mapX,
+    required this.mapY,
   });
 
   @override
@@ -116,20 +125,7 @@ class place_card extends StatelessWidget {
               ),
             ],
           ),
-          Events(
-            events: [
-              {
-                "title": "예술의 전당 공연",
-                "icon": "🎭",
-                "price": "유료",
-              },
-              {
-                "title": "시민 야외 콘서트",
-                "icon": "🎶",
-                "price": "무료",
-              },
-            ],
-          ),
+          Events(mapX: mapX, mapY: mapY),
         ],
       ),
     );
@@ -139,8 +135,13 @@ class place_card extends StatelessWidget {
 
 //장소별 문화행사
 class Events extends StatefulWidget {
-  final List<Map<String, String>> events;
-  const Events({super.key, required this.events});
+  final double mapX;
+  final double mapY;
+
+  const Events({super.key,
+    required this.mapX,
+    required this.mapY
+  });
 
   @override
   State<Events> createState() => _EventsState();
@@ -148,6 +149,41 @@ class Events extends StatefulWidget {
 //이부분 리스트 받아오는거 수정해야지
 class _EventsState extends State<Events> {
   bool _isExpanded = false;
+  List<Map<String, dynamic>> events = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchEvents();
+  }
+
+  Future<void> fetchEvents() async {
+    try {
+      final dio = Dio();
+      final response = await dio.get(
+        'http://conever.duckdns.org:8000/tour/near_event/',
+        queryParameters: {
+          'mapX': widget.mapX,
+          'mapY': widget.mapY,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        final List data = response.data;
+        setState(() {
+          events = List<Map<String, dynamic>>.from(data);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('오류 발생: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,12 +200,13 @@ class _EventsState extends State<Events> {
           child: Row(
             children: [
               Icon(
-                _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                _isExpanded ? Icons.keyboard_arrow_up : Icons
+                    .keyboard_arrow_down,
                 color: Colors.grey,
               ),
               const SizedBox(width: 4),
               Text(
-                _isExpanded ? "추가된 행사 닫기" : "추가된 행사 보기",
+                _isExpanded ? "주변 행사 닫기" : "주변 행사 보기",
                 style: const TextStyle(color: Colors.grey),
               ),
             ],
@@ -184,40 +221,61 @@ class _EventsState extends State<Events> {
           crossFadeState: _isExpanded
               ? CrossFadeState.showFirst
               : CrossFadeState.showSecond,
-          firstChild: Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: widget.events.map((event) {
-              return Container(
-                width: 150,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+          firstChild: events.isEmpty
+              ? Row(
                   children: [
-                    Text(event['icon']!, style: const TextStyle(fontSize: 24)),
-                    const SizedBox(height: 8),
-                    Text(
-                      event['title']!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
+                    SizedBox(width: 10,),
+                    const Text(
+                      "주변 행사가 없습니다.",
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      event['price'] == "무료" ? "🆓 무료" : "💰 유료",
-                      style: const TextStyle(fontSize: 13),
-                    ),
                   ],
+                )
+              : Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: events.map((event) {
+                    return ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => nearEvents(eventData: event),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        side: BorderSide(color: Colors.grey.shade300),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            event['category'],
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            event['title'] ?? '',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
                 ),
-              );
-            }).toList(),
-          ),
           secondChild: const SizedBox.shrink(),
         ),
       ],
