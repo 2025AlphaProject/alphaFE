@@ -28,10 +28,10 @@
 * */
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'mainscreen.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:logger/logger.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // 로거 사용을 위한 전역변수 선언
@@ -58,6 +58,13 @@ Future<void> main() async {
   // dotenv 사용을 위한 초기화 코드
   await dotenv.load();
   runApp(const MyApp());
+
+  // 화면 세로로 고정
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 }
 
 class MyApp extends StatelessWidget {
