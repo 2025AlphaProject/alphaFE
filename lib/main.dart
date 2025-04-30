@@ -28,19 +28,20 @@
 * */
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'mainscreen.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:dio/dio.dart';
 
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
 
 // 네이버맵 sdk 초기화 함수
 Future<void> initNaverMapSdk() async {
-  await dotenv.load();
   await FlutterNaverMap().init(
-      clientId: 'aazbk1nhu2',
+      clientId: dotenv.env['NAVER_DYNAMIC_MAP'],
 
       // 인증 실패 시 실행될 콜백
       onAuthFailed: (ex) => switch (ex) {
@@ -53,31 +54,68 @@ Future<void> initNaverMapSdk() async {
   );
 }
 
+// 유저 정보 불러오기 함수
+Future<String?> fetchCurrentUsername() async {
+  final dio = Dio();
+  final baseUrl = 'http://conever.duckdns.org:8000';
+  String? userName;
+
+  try {
+    final response = await dio.get(
+      '$baseUrl/user/me/',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}',
+          'Accept': 'application/json'
+        },
+      ),
+    );
+    userName = response.data['username'];
+  } catch (e) {
+    print('❗️ 사용자 정보 불러오기 실패: $e');
+  }
+
+  return userName;
+}
+
 Future<void> main() async {
-  //await dotenv.load(fileName: ".env");  //액세스 토큰 넣고 실행할려면 이거 주석없애야함
+  // 비동기 초기화 <- await 관련 코드 오류 방지하기 위해 사용
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // //네이버맵 초기화
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await initNaverMapSdk();
+  // dotenv 사용을 위한 초기화
+  await dotenv.load();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const MyApp());
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+  // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
+  //await initNaverMapSdk();
+
+  // 유저 이름 받아오기
+  final username = await fetchCurrentUsername();
+
+  // 앱 실행
+  runApp(MyApp(username: username));
+
+  // 화면 세로로 고정
 }
 
 class MyApp extends StatelessWidget {
 
-  // username, welcome_message : homepage에서 사용될 텍스트 정보
-  final String username = '홍길동';
+  final String? username;
   final String welcome_message = '오늘도 좋은 하루에요👋';
 
-  const MyApp({super.key});
+  const MyApp({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: MainScreen(
-        username: username,
-        welcome_message: welcome_message),
+        username: username ?? '알 수 없는 유저',
+        welcome_message: welcome_message,
+      ),
     );
   }
 }

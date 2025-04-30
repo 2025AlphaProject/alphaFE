@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'pages/add_page/add_page_1.dart';
+import 'pages/add_page/add_page_0.dart';
 import 'pages/home_page/home_page.dart';
 import 'pages/my_page/my_page.dart';
 import 'pages/plan_page/plan_page.dart';
 import 'components/bottom_navi_bar.dart';
 
 class MainScreen extends StatefulWidget {
-  final String username;
+  final String? username;
   final String welcome_message;
 
   const MainScreen({
@@ -30,7 +30,7 @@ class _MainScreenState extends State<MainScreen> {
         username: widget.username,
         welcome_message: widget.welcome_message),
     const PlanPage(),
-    const AddPage(),
+    AddPage_0(),
     const MyPage(),
   ];
 
@@ -77,6 +77,7 @@ class _MainScreenState extends State<MainScreen> {
 
         // Container로 감싸 네비바에서 색상이 적용되지 않는 부분까지 색을 덧씌움, extendBody 비활성화
         bottomNavigationBar: Container(
+          height: MediaQuery.of(context).size.height*0.12,
           color: Color(0xFFFFFFFF),
           child: CustomBottomNavigationBar(
             currentIndex: _currentIndex,
