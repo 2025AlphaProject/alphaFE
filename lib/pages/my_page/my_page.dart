@@ -3,7 +3,7 @@ import '../../components/app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'mission_page.dart';
 import 'my_page_Q&A.dart';
-
+import 'package:dio/dio.dart';
 
 class MyPage extends StatelessWidget {
   const MyPage({Key? key}) : super(key: key);
@@ -18,168 +18,206 @@ class MyPage extends StatelessWidget {
   }
 }
 
-class MyPageBody extends StatelessWidget { // 이 페이지만 바디 따로 해 놓음
+class MyPageBody extends StatefulWidget {
+  const MyPageBody({super.key});
+
   @override
-  Widget build(BuildContext context)  {
+  State<MyPageBody> createState() => _MyPageBodyState();
+}
+
+class _MyPageBodyState extends State<MyPageBody> {
+  String? username;
+  String? profileImageUrl;
+  bool _isLoading = true;
+  int tourCount = 0;
+  int missionCount = 0;
+  String accessToken = ""; //TODO: 카카오 액세스 토큰 연결
+
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserInfo();
+    _fetchTourCount();
+    _fetchMissionCount();
+  }
+
+  //프로필 사진 및 이름 - [GET] 유저 정보 가져오기
+  Future<void> _fetchUserInfo() async {
+    final dio = Dio();
+
+    final response = await dio.get(
+      'http://conever.duckdns.org:8000/user/me/',
+      options: Options(headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      }),
+    );
+
+    final data = response.data;
+    if (data is Map<String, dynamic>) {
+      setState(() {
+        username = data['username'];
+        profileImageUrl = data['profile_image_url'];
+        _isLoading = false;
+      });
+    } else {
+      print('⚠️ 예상한 JSON 형식이 아닙니다: $data');
+    }
+  }
+
+  //여행 수 표시 - [GET] 내 여행 가져오기(리스트)
+  Future<void> _fetchTourCount() async {
+    final dio = Dio();
+    try {
+      final response = await dio.get(
+        'http://conever.duckdns.org:8000/tour/',
+        options: Options(headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        }),
+      );
+      setState(() {
+        tourCount = response.data.length;
+      });
+    } catch (e) {
+      print('여행 리스트 불러오기 실패: $e');
+    }
+  }
+
+  //미션 수 표시 - [GET] 미션 리스트 가져오기
+  Future<void> _fetchMissionCount() async {
+    final dio = Dio();
+    try {
+      final response = await dio.get(
+        'http://conever.duckdns.org:8000/mission/list/',
+        options: Options(headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        }),
+      );
+      setState(() {
+        missionCount = response.data.length;
+      });
+    } catch (e) {
+      print('미션 리스트 불러오기 실패: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator()); //연결 안되면 로딩뜨는거
+    }
+
+    final safeUrl = profileImageUrl?.replaceFirst('http://', 'https://') ?? '';
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 26),
+      padding: EdgeInsets.symmetric(vertical: width * 0.02, horizontal: width * 0.06),
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(  //프로필 나타내는거
-              children: [
-                SizedBox(height: 20),
-                Container(                  //프로필 사진
-                  width: 100, height: 100,
-                  alignment: Alignment.center,
-                  child: CircleAvatar(
-                    radius: 45,
-                    backgroundImage: NetworkImage(
-                        'https://avatars.githubusercontent.com/u/46028234?v=4'
-                    ),
-                    backgroundColor: Colors.transparent,
-                  ),
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column( //이게 프로필 사진, 이름
+            children: [
+              SizedBox(height: width * 0.05),
+              Container(
+                width: width * 0.25,
+                height: width * 0.25,
+                alignment: Alignment.center,
+                child: CircleAvatar(
+                  radius: width * 0.125,
+                  backgroundImage: NetworkImage(safeUrl),
+                  backgroundColor: Colors.transparent,
                 ),
-                SizedBox(height: 0),
-                Text(   //이름
-                  '조시연',
-                  style: TextStyle(
-                      color: Color(0xFF757575),
-                      fontSize:18, fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(2, 2),
-                          blurRadius: 10,
-                          color: Color(0xFFCCCCCC),
-                        )
-                      ]
-                  ),
+              ),
+              SizedBox(height: width * 0.01),
+              Text(
+                username ?? '',
+                style: TextStyle(
+                  color: Color(0xFF757575),
+                  fontSize: width * 0.045,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(offset: Offset(2, 2), blurRadius: 10, color: Color(0xFFCCCCCC))
+                  ],
                 ),
-                Text(      //subtitle 구현
-                  'Subtitle',
-                  style: TextStyle(
-                      color: Color(0xFFB3B3B3),
-                      fontSize:18, fontWeight: FontWeight.w300,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(2, 2),
-                          blurRadius: 10,
-                          color: Color(0xFFCCCCCC),
-                        )
-                      ]
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Row( //여행, 미션, 친구 수
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _StateItem("15", "여행"),
-                SizedBox(width: 33),
-                _StateItem("15", "미션"),
-                // SizedBox(width: 33),
-                // _StateItem("15", "친구") //없앤다 해서 일단 주석처리
-              ],
-            ),
-            SizedBox(height: 30,),
-            SizedBox(    //프로필 수정 버튼 아마 안쓸것 같아서 사라질듯
-                width: 300, height: 40,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) => Mission_Page() //없앨 것 같아서 그냥 아무페이지나 연동해 놓음
-                        )
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFFFFF),
-                    foregroundColor: Color(0xFF000000),
-                    side: BorderSide(color: Color(0xFF000000), width: 0.3),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 2,
-                  ),
-                  child: Text("프로필 수정",
-                    style: TextStyle(
-                      color: Color(0xFF000000),
-                      fontSize: 16, fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                )
-            ),
-            SizedBox(height: 5),
-            // Divider(height: 1, thickness: 2,color: Color(0xFF757575),),
-            SizedBox(height: 15,),
-            Column(
-              children: [  //미션 진행도 같이 다른 마이페이지 세부 기능으로 넘어가기 위한 버튼
-                _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page()),
-                _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문",MyPage_QA()),
-              ],
-            ),
-          ]
+              ),
+            ],
+          ),
+          SizedBox(height: width * 0.05),
+          Row( //여행이랑 미션 수
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _StateItem(tourCount.toString(), "여행", width),
+              SizedBox(width: width * 0.08),
+              _StateItem(missionCount.toString(), "미션", width),
+            ],
+          ),
+          SizedBox(height: width * 0.12),
+          Column( //미션진행도랑 자주묻는 질문
+            children: [
+              _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page(), width),
+              _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", MyPage_QA(), width),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
-Widget _StateItem(String value, String label) {  //여행,미션, 친구 관련
+//여행수랑 미션수 나타내는 위젯
+Widget _StateItem(String value, String label, double width) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
-      Text(value,
+      Text(
+        value,
         style: TextStyle(
           color: Color(0xFF000000),
-          fontSize: 25, fontWeight: FontWeight.bold,
+          fontSize: width * 0.06,
+          fontWeight: FontWeight.bold,
         ),
       ),
-      SizedBox(height: 7,),
-      Text(label,
+      SizedBox(height: width * 0.02),
+      Text(
+        label,
         style: TextStyle(
           color: Color(0xFF757575),
-          fontSize: 12, fontWeight: FontWeight.normal,
+          fontSize: width * 0.03,
         ),
-      )
+      ),
     ],
   );
 }
 
-Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page) {  //각종 다른 기능을 가지고 있는 다른 페이지로 넘어가느거
+//미션 진행도랑 자주묻는 질문 나타내는 위젯
+Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, double width) {
   return Padding(
-    padding: EdgeInsets.symmetric(vertical: 1),
+    padding: EdgeInsets.symmetric(vertical: width * 0.01),
     child: SizedBox(
-      width: 300,
+      width: width * 0.75,
       child: TextButton(
         onPressed: () {
-          Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (context) => page
-              )
-          );
+          Navigator.push(context, CupertinoPageRoute(builder: (context) => page));
         },
         style: TextButton.styleFrom(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           alignment: Alignment.centerLeft,
           foregroundColor: Color(0xFFCCCCCC),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Icon(icon, size: 20, color: Color(0xFF000000)),
-            SizedBox(width: 8),
+            Icon(icon, size: width * 0.045, color: Color(0xFF000000)),
+            SizedBox(width: width * 0.02),
             Text(
               menu,
               style: TextStyle(
                 color: Color(0xFF000000),
-                fontSize: 16,
+                fontSize: width * 0.04,
                 fontWeight: FontWeight.w600,
               ),
             ),

@@ -28,6 +28,7 @@
 * */
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'mainscreen.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:logger/logger.dart';
@@ -83,7 +84,11 @@ Future<void> main() async {
 
   // dotenv 사용을 위한 초기화
   await dotenv.load();
+  WidgetsFlutterBinding.ensureInitialized();
 
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
   //await initNaverMapSdk();
 
@@ -92,6 +97,8 @@ Future<void> main() async {
 
   // 앱 실행
   runApp(MyApp(username: username));
+
+  // 화면 세로로 고정
 }
 
 class MyApp extends StatelessWidget {
