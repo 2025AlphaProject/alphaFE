@@ -1,28 +1,137 @@
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:alpha_fe/components/plan_card.dart';
+import 'package:alpha_fe/components/plan_edit.dart';
+import 'package:alpha_fe/components/plan_course_event.dart';
+import 'package:alpha_fe/pages/plan_page/add_user.dart';
 
-class PlanPage2 extends StatelessWidget {
-  const PlanPage2({Key? key}) : super(key: key);
+class PlanPage2 extends StatefulWidget {
+  final int tour_id;
 
+  const PlanPage2({Key? key, required this.tour_id}) : super(key: key);
+
+  @override
+  State<PlanPage2> createState() => _PlanPage2State();
+}
+
+class _PlanPage2State extends State<PlanPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "계획보기 앱바 영역"),
-      body: plan_page2_body(),
+      body: plan_page2_body(tour_id: widget.tour_id),
     );
   }
 }
 
 class plan_page2_body extends StatefulWidget {
-  const plan_page2_body({super.key});
+  final int tour_id;
+
+  const plan_page2_body({Key? key, required this.tour_id}) : super(key: key);
 
   @override
   State<plan_page2_body> createState() => _plan_page2_bodyState();
 }
 
 class _plan_page2_bodyState extends State<plan_page2_body> {
+  String tourName = "";
+  String startDate = "";
+  String endDate = "";
+  String userName = "";
+  String userProfileImageUrl = "";
+  List<Map<String, String>> travelers = [];
   final TextEditingController _textController = TextEditingController();
+  final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
+  String get dateRange => "$startDate ~ $endDate";
+
+  List<Map<String, dynamic>> courseData = [];
+
+  //여행 경로 가져오기 api
+  Future<void> fetchTourCourse() async {
+    final dio = Dio();
+    try {
+      final response = await dio.get(
+        'http://conever.duckdns.org:8000/tour/course/${widget.tour_id}/',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      if (response.statusCode == 200) { //응답제대로 됬을때
+        final data = response.data;
+        if (data != null && data is List) {
+          setState(() {
+            courseData = data.map<Map<String, dynamic>>((day) {
+              final date = day['date'] ?? '';
+              final places = (day['places'] as List<dynamic>? ?? []).map<Map<String, dynamic>>((place) {
+                return {
+                  'name': place['name'] ?? '',
+                  'mapX': place['mapX'] != null ? place['mapX'].toDouble() : 0.0,
+                  'mapY': place['mapY'] != null ? place['mapY'].toDouble() : 0.0,
+                  'image_url': place['image_url'] ?? '',
+                  'road_address': place['road_address'] ?? '',
+                  'parcel_address': place['parcel_address'] ?? '',
+                };
+              }).toList();
+              return {
+                'date': date,
+                'places': places,
+              };
+            }).toList();
+          });
+        }
+      }
+    } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
+      print("코스 불러오기 실패: $e");
+    }
+  }
+
+  //내 여행 가져오기(하나만) - 제목,날짜,동행자 정보 가져오기
+  Future<void> fetchTourName() async {
+    final dio = Dio();
+    try {
+      final response = await dio.get(
+        'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        final tourinfo = response.data;
+        setState(() {
+          tourName = tourinfo['tour_name'] ?? "";
+          startDate = tourinfo['start_date'] ?? "";
+          endDate = tourinfo['end_date'] ?? "";
+          if (tourinfo['user'] != null && tourinfo['user'] is List) {
+            travelers = (tourinfo['user'] as List).map<Map<String, String>>((user) {
+              return {
+                'name': user['username'] ?? '이름없음',
+                'imageUrl': user['profile_image_url'] ?? 'https://via.placeholder.com/150',
+              };
+            }).toList();
+          }
+        });
+      }
+    } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
+      print("여행 불러오기 실패: $e");
+    }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTourCourse();
+    fetchTourName();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +141,34 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Memo(controller: _textController), //이안에 메모랑 여행정보 있음
+            Row(
+              children: [
+                Memo(controller: _textController),//이안에 메모랑 여행정보 있음 안쓸거명 여행정보부분빼고 없애기
+                SizedBox(width: 10,),
+                IconButton( //여행관련 편집을 위한 버튼
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                      ),
+                      isScrollControlled: true,
+                      backgroundColor: Colors.white,
+                      builder: (context) => TravelEditMenu(
+                        startDate: startDate,
+                        endDate: endDate,
+                        tour_id: widget.tour_id,
+                        tourName: tourName,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
             Traveler_List(),//동행자들
-            DashedLine(),
-            travel_plan(),
-        
+            DashedLine(), //이건 디자인용 점선
+            travel_plan(courseData: courseData), //여행경로
           ],
         ),
       ),
@@ -44,7 +176,8 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   }
 }
 
-//메모 관련 코드 아직 수정이 필요함
+
+//메모 관련 코드 아직 수정이 필요함 - 안쓸거명 여행정보 부분 빼고 없애기
 class Memo extends StatefulWidget {
   final TextEditingController controller;
 
@@ -81,7 +214,7 @@ class _MemoState extends State<Memo> {
             ],
           ),
         ),
-        Plan_Name(),
+        Plan_Name(),//이게 여행정보
         const SizedBox(height: 12),
 
         // 입력창
@@ -107,12 +240,17 @@ class _MemoState extends State<Memo> {
   }
 }
 
-//여행 디데이 및 여행명 이것도 변수 수정 필요
+
+//여행 디데이 및 여행명
 class Plan_Name extends StatelessWidget {
   const Plan_Name({super.key});
 
+
   @override
   Widget build(BuildContext context) {
+    final remainingDays = calculateRemainingDays(
+      context.findAncestorStateOfType<_plan_page2_bodyState>()?.endDate ?? "",
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(8,0,0,0),
       child: Column(
@@ -127,7 +265,7 @@ class Plan_Name extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 1),
               child: Text(
-                "D-99", //이거 디데이 인자로 바꿀예정
+                "D-$remainingDays", //이거 디데이 인자로 바꿀예정
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 8,
@@ -136,10 +274,26 @@ class Plan_Name extends StatelessWidget {
               ),
             ),
           ),
-          Padding(padding: EdgeInsets.fromLTRB(3, 0, 0, 0),
+          Padding(
+            padding: EdgeInsets.fromLTRB(3, 0, 0, 0),
             child: Text(
-              "성북구 산책",
+              context.findAncestorStateOfType<_plan_page2_bodyState>()?.tourName ?? "",
               style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(3, 0, 0, 0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.calendar_today, size: 13, color: Colors.grey),
+                const SizedBox(width: 5),
+                Text(
+                  context.findAncestorStateOfType<_plan_page2_bodyState>()?.dateRange ?? "",
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
             ),
           ),
         ],
@@ -148,41 +302,16 @@ class Plan_Name extends StatelessWidget {
   }
 }
 
-//동행자들
-class Traveler_List extends StatefulWidget {
+
+// 동행자들
+class Traveler_List extends StatelessWidget {
   const Traveler_List({Key? key}) : super(key: key);
 
   @override
-  State<Traveler_List> createState() => _Traveler_ListState();
-}
-
-class _Traveler_ListState extends State<Traveler_List> {
-  List<Map<String, String>> travelers = [
-    {
-      "name": "이영욱",
-      "imageUrl": 'https://avatars.githubusercontent.com/u/46028234?v=4',
-    },
-    {
-      "name": "조시연",
-      "imageUrl": 'https://avatars.githubusercontent.com/u/46028234?v=4',
-    },
-    {
-      "name": "신윤솔",
-      "imageUrl": 'https://avatars.githubusercontent.com/u/46028234?v=4',
-    },
-  ];
-
-  void _inviteTraveler() {
-    setState(() {
-      travelers.add({
-        "name": "새 여행자",
-        "imageUrl": "assets/images/new_user.png",
-      });
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final parentState = context.findAncestorStateOfType<_plan_page2_bodyState>();
+    final travelers = parentState?.travelers ?? [];
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -205,8 +334,7 @@ class _Traveler_ListState extends State<Traveler_List> {
                       children: [
                         CircleAvatar(
                           radius: 28,
-                          backgroundImage:
-                          NetworkImage(traveler["imageUrl"]!),
+                          backgroundImage: NetworkImage(traveler["imageUrl"]!),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -218,7 +346,14 @@ class _Traveler_ListState extends State<Traveler_List> {
                   )),
                   // ➕ 초대 버튼
                   GestureDetector(
-                    onTap: _inviteTraveler,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfileListPage(tour_id: parentState!.widget.tour_id),//누르면 여행자 추가 페이지로 이동
+                        ),
+                      );
+                    },
                     child: Column(
                       children: [
                         CircleAvatar(
@@ -241,7 +376,8 @@ class _Traveler_ListState extends State<Traveler_List> {
   }
 }
 
-//점선 구분선
+
+//점선 구분선 - 이건 디자인용
 class DashedLine extends StatelessWidget {
   final Axis axis; // 가로 or 세로 방향
   final double length;
@@ -288,249 +424,3 @@ class DashedLine extends StatelessWidget {
     );
   }
 }
-
-//여행 코스
-class travel_plan extends StatelessWidget {
-  const travel_plan({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // 여기 api 맞춰서 수정 예정
-    final List<Map<String, String>> placeList = [
-      {
-        "imageUrl": 'https://avatars.githubusercontent.com/u/46028234?v=4',
-        "placeName": "서울숲",
-        "planName": "서울 도심 여행",
-        "roadAddress": "서울 성동구 서울숲2길",
-        "numberAddress": "성수동1가 685",
-      },
-      {
-        "imageUrl": 'https://avatars.githubusercontent.com/u/46028234?v=4',
-        "placeName": "경복궁",
-        "planName": "역사 테마",
-        "roadAddress": "서울 종로구 사직로",
-        "numberAddress": "세종로 1-91",
-      },
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Text("🧭 예정된 코스"),
-              SizedBox(width: 10),
-              IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: (){},
-              ),
-            ],
-          ),
-        ),
-        // 🔽 리스트뷰로 카드 반복 + 스크롤
-        SizedBox(
-          height: 300, // 스크롤 가능한 높이 제한
-          child: ListView.builder(
-            itemCount: placeList.length,
-            itemBuilder: (context, index) {
-              final item = placeList[index];
-              return place_card(
-                imageUrl: item['imageUrl']!,
-                placeName: item['placeName']!,
-                planName: item['planName']!,
-                roadAddress: item['roadAddress']!,
-                numberAddress: item['numberAddress']!,
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-//장소별
-class place_card extends StatelessWidget {
-  final String imageUrl;
-  final String placeName;
-  final String planName;
-  final String roadAddress;
-  final String numberAddress;
-
-  const place_card({super.key,
-    required this.imageUrl,
-    required this.placeName,
-    required this.planName,
-    required this.roadAddress,
-    required this.numberAddress,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        imageUrl,
-                        width: 130,
-                        height: 110,
-                      ),
-                    ),
-                    Text(
-                      placeName,
-                    )
-                  ]
-              ),
-              Column(
-                children: [
-                  Row( //여행명
-                    children: [
-                      Icon(Icons.pin_drop),
-                      Text(planName),
-                    ],
-                  ),
-                  Row( //주소
-                    children: [
-                      Icon(Icons.home),
-                      Column(
-                          children: [
-                            Row(
-                              children: [
-                                SizedBox(
-                                  child: Text("도로명"),
-                                ),
-                                Text(roadAddress) //여기 바꿔야함
-                              ],
-                            ),
-                            Row( //지번
-                              children: [
-                                SizedBox(
-                                  child: Text("지번"),
-                                ),
-                                Text(numberAddress) //여기 바꿔야함
-                              ],
-                            ),
-                          ]
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Events(
-            events: [
-              {
-                "title": "예술의 전당 공연",
-                "icon": "🎭",
-                "price": "유료",
-              },
-              {
-                "title": "시민 야외 콘서트",
-                "icon": "🎶",
-                "price": "무료",
-              },
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-//장소별 문화행사
-class Events extends StatefulWidget {
-  final List<Map<String, String>> events;
-  const Events({super.key, required this.events});
-
-  @override
-  State<Events> createState() => _EventsState();
-}
-//이부분 리스트 받아오는거 수정해야지
-class _EventsState extends State<Events> {
-  bool _isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 🔽 드롭다운 버튼
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _isExpanded = !_isExpanded;
-            });
-          },
-          child: Row(
-            children: [
-              Icon(
-                _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                color: Colors.grey,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                _isExpanded ? "추가된 행사 닫기" : "추가된 행사 보기",
-                style: const TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 12),
-
-        // 🔳 카드 목록 (보일 때만)
-        AnimatedCrossFade(
-          duration: const Duration(milliseconds: 300),
-          crossFadeState: _isExpanded
-              ? CrossFadeState.showFirst
-              : CrossFadeState.showSecond,
-          firstChild: Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: widget.events.map((event) {
-              return Container(
-                width: 150,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(event['icon']!, style: const TextStyle(fontSize: 24)),
-                    const SizedBox(height: 8),
-                    Text(
-                      event['title']!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      event['price'] == "무료" ? "🆓 무료" : "💰 유료",
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-          secondChild: const SizedBox.shrink(),
-        ),
-      ],
-    );
-  }
-}
-
