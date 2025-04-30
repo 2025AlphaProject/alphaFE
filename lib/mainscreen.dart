@@ -6,7 +6,7 @@ import 'pages/plan_page/plan_page.dart';
 import 'components/bottom_navi_bar.dart';
 
 class MainScreen extends StatefulWidget {
-  final String username;
+  final String? username;
   final String welcome_message;
 
   const MainScreen({
