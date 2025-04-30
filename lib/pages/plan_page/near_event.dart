@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:alpha_fe/components/app_bar.dart';
 
+//각 장소별 상세정보페이지
 class nearEvents extends StatelessWidget {
   final Map<String, dynamic> eventData;
   const nearEvents({super.key,
@@ -10,7 +12,7 @@ class nearEvents extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("주변 문화행사")),
+      appBar: DefaultAppBar(title: '문화행사'),
       body: nearEvent(eventData),
     );
   }
@@ -29,7 +31,7 @@ class _nearEventState extends State<nearEvent> {
   @override
   Widget build(BuildContext context) {
     final event = widget.eventData;
-    return SingleChildScrollView(
+    return SingleChildScrollView(// 사진 크기 때문에 scrollview로
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -40,28 +42,34 @@ class _nearEventState extends State<nearEvent> {
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
-            Container(
-              width: double.infinity,
-              height: 300,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(8),
+            if (event['img_url'] != null && event['img_url'].toString().isNotEmpty) //사진 url 있으면 사진 나타내기
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                clipBehavior: Clip.hardEdge,
+                child: Image.network(
+                  event['img_url'],
+                  fit: BoxFit.fitWidth,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                  errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image, size: 48)),
+                ),
               ),
-              clipBehavior: Clip.hardEdge,
-              child: event['image_url'] != null && event['image_url'].toString().isNotEmpty
-                  ? Image.network(event['image_url'], fit: BoxFit.cover)
-                  : const Center(child: Icon(Icons.image_not_supported, size: 48)),
-            ),
             const SizedBox(height: 24),
-            infoRow("유형", event['category'] ?? "-"),
+            infoRow("유형", event['category'] ?? "-"), //전시유형
             const SizedBox(height: 8),
-            infoRow("행사 기간", "${event['start_date'] ?? '-'} ~ ${event['end_date'] ?? '-'}"),
+            infoRow("행사 기간", "${event['start_date'] ?? '-'} ~ ${event['end_date'] ?? '-'}"),  //기간
             const SizedBox(height: 8),
-            infoRow(
+            infoRow( //행사별 웹사이트로 이동 가능 링크 연동
               "웹사이트",
               (event['homepage_url'] == null || event['homepage_url'].toString().isEmpty)
                   ? "-"
-                  : "웹사이트 보기→",
+                  : "웹사이트 보러가기→",
               isLink: event['homepage_url'] != null && event['homepage_url'].toString().isNotEmpty,
               url: event['homepage_url'],
             ),
@@ -71,6 +79,7 @@ class _nearEventState extends State<nearEvent> {
     );
   }
 
+  //행사별 사이트 링크 연결
   Widget infoRow(String label, String value, {bool isLink = false, String? url}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,9 +92,9 @@ class _nearEventState extends State<nearEvent> {
           child: isLink
               ? GestureDetector(
                   onTap: () async {
-                    if (url != null && await canLaunchUrl(Uri.parse(url))) {
+                    if (url != null && await canLaunchUrl(Uri.parse(url))) {  //성공시 외부 링크로 이동
                       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-                    } else {
+                    } else {//열기 실패시
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("웹사이트를 열 수 없습니다.")),
                       );

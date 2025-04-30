@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:dio/dio.dart';
-import 'package:alpha_fe/pages/plan_page/plan_page.dart';
+import 'package:alpha_fe/main.dart';
 
 // 전체적인 편집관련
 class TravelEditMenu extends StatelessWidget {
@@ -32,7 +32,7 @@ class TravelEditMenu extends StatelessWidget {
           children: [
             const Text("편집", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
-            _EditMenu(
+            _EditMenu( //여행경로 삭제(코스 다 삭제 하기)
               text: "여행경로 삭제",
               onTap: () {
                 showDialog(
@@ -41,7 +41,7 @@ class TravelEditMenu extends StatelessWidget {
                 );
               },
             ),
-            _EditMenu(
+            _EditMenu( //여행 제목 수정
               text: "여행제목 수정",
               onTap: () {
                 showDialog(
@@ -50,13 +50,13 @@ class TravelEditMenu extends StatelessWidget {
                 );
               },
             ),
-            _EditMenu(
+            _EditMenu( //여행날짜 수정
               text: "여행날짜 수정",
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => planEditDate(
+                    builder: (context) => planEditDate( // 여행날짜 수정 페이지로 이동)
                       startDate: startDate,
                       endDate: endDate,
                       tour_id: tour_id,
@@ -65,7 +65,7 @@ class TravelEditMenu extends StatelessWidget {
                 );
               },
             ),
-            _EditMenu(
+            _EditMenu(  //여행 자체를 삭제
               text: "여행 삭제",
               isDestructive: true,
               onTap: () {
@@ -83,7 +83,7 @@ class TravelEditMenu extends StatelessWidget {
   }
 }
 
-// 단일 편집메뉴
+// 단일 편집메뉴 - 수정할 각각 버튼틀
 class _EditMenu extends StatelessWidget {
   final String text;
   final bool isDestructive;
@@ -166,7 +166,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
           child: const Text("취소"),
         ),
         ElevatedButton(
-          onPressed: () async {
+          onPressed: () async { //수정한 여행 제목 저장
               try {
                 final dio = Dio();
                 final response = await dio.put(
@@ -185,12 +185,15 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                 if (response.statusCode == 200) {
                   if (!mounted) return; // 안전 체크 추가
                   Navigator.of(context).pop(); // 다이얼로그 닫기
-                } else {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const MyApp()), //처음으로 되돌아감
+                  );
+                } else { //TODO: 오류뜰때 어케할지 수정해야함
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('수정 실패: ${response.statusCode}')),
                   );
                 }
-              } catch (e) {
+              } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('오류 발생: $e')),
                 );
@@ -202,6 +205,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
     );
   }
 }
+
 
 // 여행 삭제
 class DeleteTour extends StatefulWidget {
@@ -229,7 +233,7 @@ class _DeleteTourState extends State<DeleteTour> {
           child: Text('취소'),
         ),
         ElevatedButton(
-          onPressed: () async {
+          onPressed: () async { //내 여행 삭제하기
             try {
               final dio = Dio();
               final response = await dio.delete(
@@ -248,15 +252,15 @@ class _DeleteTourState extends State<DeleteTour> {
                 Navigator.of(context).pop(); // 다이얼로그 닫기
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => PlanPage(),
+                    builder: (context) => const MyApp() //처음으로 되돌아감
                   ),
                 );
-              } else {
+              } else { //TODO: 오류뜰때 어케할지 수정해야함
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('수정 실패: ${response.statusCode}')),
                 );
               }
-            } catch (e) {
+            } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('오류 발생: $e')),
               );
@@ -268,6 +272,7 @@ class _DeleteTourState extends State<DeleteTour> {
     );
   }
 }
+
 
 // 여행 경로 삭제
 class DeleteCourse extends StatefulWidget {
@@ -295,7 +300,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
           child: Text('취소'),
         ),
         ElevatedButton(
-          onPressed: () async {
+          onPressed: () async { //여행경로 삭제하기
             try {
               final dio = Dio();
               final response = await dio.delete(
@@ -314,15 +319,15 @@ class _DeleteCourseState extends State<DeleteCourse> {
                 Navigator.of(context).pop(); // 다이얼로그 닫기
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => PlanPage(),
+                    builder: (context) => const MyApp() //처음으로 되돌아감
                   ),
                 );
-              } else {
+              } else { //TODO: 오류뜰때 어케할지 수정해야함
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('수정 실패: ${response.statusCode}')),
                 );
               }
-            } catch (e) {
+            } catch (e) {//TODO: 오류뜰때 어케할지 수정해야함
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('오류 발생: $e')),
               );

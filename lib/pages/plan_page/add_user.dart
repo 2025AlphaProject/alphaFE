@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:alpha_fe/components/app_bar.dart';
+import 'package:alpha_fe/main.dart';
 
 class ProfileListPage extends StatelessWidget {
   final int tour_id;
@@ -9,7 +11,7 @@ class ProfileListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("친구 추가")),
+      appBar: const DefaultAppBar(title: "친구추가"),
       body: ProfileListBody(tour_id: tour_id),
     );
   }
@@ -63,7 +65,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
           padding: const EdgeInsets.all(8.0),
           child: TextField(
             controller: _searchController,
-            decoration: InputDecoration(
+            decoration: InputDecoration( //원하는 유저 검색가능
               hintText: '검색...',
               prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(
@@ -89,7 +91,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                     children: [
                       Expanded(
                         child: ListTile(
-                          leading: CircleAvatar(
+                          leading: CircleAvatar( //유저 나타내기
                             backgroundImage: profile['profile_image_url'] != null && profile['profile_image_url'] != ""
                                 ? NetworkImage(profile['profile_image_url'])
                                 : null,
@@ -100,7 +102,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                           title: Text(profile['username']),
                         ),
                       ),
-                      IconButton(
+                      IconButton( //해당유저 추가 버튼
                         onPressed: () {
                           showDialog(
                             context: context,
@@ -132,9 +134,8 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                         );
                                         if (response.statusCode == 201) {
                                           Navigator.pop(context); // close the dialog
-                                          Navigator.pop(context); // close the ProfileListPage
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('유저가 성공적으로 추가되었습니다.')),
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(builder: (context) => const MyApp()), //처음으로 되돌아감
                                           );
                                         }
                                       } catch (e) {

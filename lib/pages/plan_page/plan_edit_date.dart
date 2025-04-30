@@ -4,6 +4,7 @@ import '../../components/app_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:alpha_fe/main.dart';
 
 class planEditDate extends StatefulWidget {
   final String startDate;
@@ -35,10 +36,10 @@ class _planEditDateState extends State<planEditDate> {
   @override
   void initState() {
     super.initState();
-    _initialStartDate = DateTime.parse(widget.startDate); // No replaceAll needed
-    _initialEndDate = DateTime.parse(widget.endDate); // No replaceAll needed
-    _rangeStart = _initialStartDate;
-    _rangeEnd = _initialEndDate;
+    _initialStartDate = DateTime.parse(widget.startDate); // 원래 날짜
+    _initialEndDate = DateTime.parse(widget.endDate); // 원래 날짜
+    _rangeStart = _initialStartDate; //바뀔날짜
+    _rangeEnd = _initialEndDate; //바뀔날짜
     _focusedDay = _rangeStart!;
     _selectedDay = null;
     _isSelectionCompleted = false;
@@ -53,7 +54,7 @@ class _planEditDateState extends State<planEditDate> {
         padding: const EdgeInsets.all(16.0),
         child: Stack(
           children: [
-            TableCalendar(
+            TableCalendar( //달력띄우기와 그쪽 디자인, 선택한 날짜부분 디자인 영역
               firstDay: DateTime.utc(2020, 1, 1),
               lastDay: DateTime.utc(2030, 12, 31),
               focusedDay: _focusedDay,
@@ -90,17 +91,18 @@ class _planEditDateState extends State<planEditDate> {
                 weekendStyle: TextStyle(color: Colors.red),
               ),
               onDaySelected: (selectedDay, focusedDay) {
+                //여기부터가 선택로직
                 setState(() {
                   if (_rangeStart == null || (_rangeStart != null && _rangeEnd != null)) {
-                    _rangeStart = selectedDay;
+                    _rangeStart = selectedDay; //첫선택 이거나 이미 날짜 두개 선택되어있는테 선택 다시한거면 시작날짜
                     _rangeEnd = null;
                     _isSelectionCompleted = false;
                   } else if (_rangeStart != null && _rangeEnd == null) {
-                    if (selectedDay.isBefore(_rangeStart!)) {
+                    if (selectedDay.isBefore(_rangeStart!)) { //두번째 선택날짜가 시작날짜 이전이면 시작날짜로 생각
                       _rangeStart = selectedDay;
                       _rangeEnd = null;
                       _isSelectionCompleted = false;
-                    } else {
+                    } else { //이후면 날짜 선택 완료
                       _rangeEnd = selectedDay;
                       _isSelectionCompleted = true;
                     }
@@ -117,7 +119,7 @@ class _planEditDateState extends State<planEditDate> {
                   _rangeSelectionMode = RangeSelectionMode.toggledOn;
                 });
               },
-              calendarBuilders: CalendarBuilders(
+              calendarBuilders: CalendarBuilders( //오늘 나타내는 디자인쪽
                 todayBuilder: (context, date, _) {
                   return Center(
                     child: Column(
@@ -163,7 +165,7 @@ class _planEditDateState extends State<planEditDate> {
                       showDialog(
                         context: context,
                         builder: (context) {
-                          return AlertDialog(
+                          return AlertDialog( //shodialog 누르면 나타나기
                             title: Text('날짜 수정 확인'),
                             content: Text('선택한 기간으로 여행 일정을 수정하시겠습니까?'),
                             actions: [
@@ -172,7 +174,7 @@ class _planEditDateState extends State<planEditDate> {
                                 child: Text('취소'),
                               ),
                               ElevatedButton(
-                                onPressed: () async {
+                                onPressed: () async { //날짜 수정 api
                                   try {
                                     final dio = Dio();
                                     final response = await dio.put(
@@ -195,15 +197,15 @@ class _planEditDateState extends State<planEditDate> {
                                       Navigator.of(context).pop(); // 다이얼로그 닫기
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
-                                          builder: (context) => PlanPage2(tour_id: widget.tour_id),
+                                          builder: (context) => MyApp(), // 처음으로 다시 돌아가기
                                         ),
                                       );
-                                    } else {
+                                    } else { //TODO: 오류뜰때 어케할지 수정해야함
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text('수정 실패: ${response.statusCode}')),
                                       );
                                     }
-                                  } catch (e) {
+                                  } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text('오류 발생: $e')),
                                     );
@@ -217,7 +219,7 @@ class _planEditDateState extends State<planEditDate> {
                       );
                     },
                     child: Text(
-                      "${_rangeStart!.year}.${_rangeStart!.month}.${_rangeStart!.day} - ${_rangeEnd!.month}.${_rangeEnd!.day} / 등록 완료",
+                      "${_rangeStart!.year}.${_rangeStart!.month}.${_rangeStart!.day} - ${_rangeEnd!.month}.${_rangeEnd!.day} / 수정",
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),

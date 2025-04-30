@@ -49,6 +49,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
 
   List<Map<String, dynamic>> courseData = [];
 
+  //여행 경로 가져오기 api
   Future<void> fetchTourCourse() async {
     final dio = Dio();
     try {
@@ -61,7 +62,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
           },
         ),
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200) { //응답제대로 됬을때
         final data = response.data;
         if (data != null && data is List) {
           setState(() {
@@ -85,11 +86,12 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
           });
         }
       }
-    } catch (e) {
+    } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
       print("코스 불러오기 실패: $e");
     }
   }
 
+  //내 여행 가져오기(하나만) - 제목,날짜,동행자 정보 가져오기
   Future<void> fetchTourName() async {
     final dio = Dio();
     try {
@@ -118,7 +120,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
           }
         });
       }
-    } catch (e) {
+    } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
       print("여행 불러오기 실패: $e");
     }
   }
@@ -141,9 +143,9 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
           children: [
             Row(
               children: [
-                Memo(controller: _textController),//이안에 메모랑 여행정보 있음
+                Memo(controller: _textController),//이안에 메모랑 여행정보 있음 안쓸거명 여행정보부분빼고 없애기
                 SizedBox(width: 10,),
-                IconButton(
+                IconButton( //여행관련 편집을 위한 버튼
                   icon: Icon(Icons.edit),
                   onPressed: () {
                     showModalBottomSheet(
@@ -165,8 +167,8 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
               ],
             ),
             Traveler_List(),//동행자들
-            DashedLine(),
-            travel_plan(courseData: courseData),
+            DashedLine(), //이건 디자인용 점선
+            travel_plan(courseData: courseData), //여행경로
           ],
         ),
       ),
@@ -175,7 +177,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
 }
 
 
-//메모 관련 코드 아직 수정이 필요함
+//메모 관련 코드 아직 수정이 필요함 - 안쓸거명 여행정보 부분 빼고 없애기
 class Memo extends StatefulWidget {
   final TextEditingController controller;
 
@@ -212,7 +214,7 @@ class _MemoState extends State<Memo> {
             ],
           ),
         ),
-        Plan_Name(),
+        Plan_Name(),//이게 여행정보
         const SizedBox(height: 12),
 
         // 입력창
@@ -348,7 +350,7 @@ class Traveler_List extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ProfileListPage(tour_id: parentState!.widget.tour_id),
+                          builder: (context) => ProfileListPage(tour_id: parentState!.widget.tour_id),//누르면 여행자 추가 페이지로 이동
                         ),
                       );
                     },
@@ -375,7 +377,7 @@ class Traveler_List extends StatelessWidget {
 }
 
 
-//점선 구분선
+//점선 구분선 - 이건 디자인용
 class DashedLine extends StatelessWidget {
   final Axis axis; // 가로 or 세로 방향
   final double length;

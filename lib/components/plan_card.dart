@@ -1,7 +1,7 @@
 import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
 import 'package:flutter/material.dart';
 
-// 종료일까지 남은 일 수 계산 (공용 함수로)
+// 종료일까지 남은 일 수 계산
 int calculateRemainingDays(String endDate) {
   final today = DateTime.now();
   final endDateObj = DateTime.parse(endDate.replaceAll('.', '-'));

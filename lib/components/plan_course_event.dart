@@ -55,7 +55,7 @@ class travel_plan extends StatelessWidget {
   }
 }
 
-//장소별
+//장소별 정보 위젯
 class place_card extends StatelessWidget {
   final String imageUrl;
   final String placeName;
@@ -157,6 +157,7 @@ class _EventsState extends State<Events> {
     fetchEvents();
   }
 
+  // 장소 주변 행사정보 가져오기
   Future<void> fetchEvents() async {
     try {
       final dio = Dio();
@@ -178,7 +179,7 @@ class _EventsState extends State<Events> {
           events = List<Map<String, dynamic>>.from(data);
         });
       }
-    } catch (e) {
+    } catch (e) {  //TODO: 오류뜰때 어케할지 수정해야함
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('오류 발생: $e')),
       );
@@ -190,7 +191,7 @@ class _EventsState extends State<Events> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 🔽 드롭다운 버튼
+        // 🔽 드롭다운 버튼 - 문화행사정보 숨기기용
         GestureDetector(
           onTap: () {
             setState(() {
@@ -222,7 +223,7 @@ class _EventsState extends State<Events> {
               ? CrossFadeState.showFirst
               : CrossFadeState.showSecond,
           firstChild: events.isEmpty
-              ? Row(
+              ? Row( //주변행사가 없을때
                   children: [
                     SizedBox(width: 10,),
                     const Text(
@@ -234,7 +235,7 @@ class _EventsState extends State<Events> {
                     ),
                   ],
                 )
-              : Wrap(
+              : Wrap( //주변행사 있을때
                   spacing: 12,
                   runSpacing: 12,
                   children: events.map((event) {
@@ -243,7 +244,7 @@ class _EventsState extends State<Events> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => nearEvents(eventData: event),
+                            builder: (context) => nearEvents(eventData: event), //행사정보 상세페이지로 이동
                           ),
                         );
                       },
@@ -256,7 +257,7 @@ class _EventsState extends State<Events> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                       ),
-                      child: Column(
+                      child: Column( //경로 페이지에서는 행사유형과 이름만 표시
                         children: [
                           Text(
                             event['category'],

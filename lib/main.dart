@@ -54,7 +54,7 @@ Future<void> initNaverMapSdk() async {
 }
 
 Future<void> main() async {
-  //await dotenv.load(fileName: ".env");
+  //await dotenv.load(fileName: ".env");  //액세스 토큰 넣고 실행할려면 이거 주석없애야함
 
   // //네이버맵 초기화
   // WidgetsFlutterBinding.ensureInitialized();

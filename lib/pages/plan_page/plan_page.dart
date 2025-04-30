@@ -102,6 +102,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     );
   }
 
+  //날짜 계산
   int calculateDday(String endDate) {
     final today = DateTime.now();
     final end = DateTime.parse(endDate.replaceAll('.', '-'));
@@ -109,7 +110,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
         .difference(today)
         .inDays;
   }
-
+  //정렬관련
   List<Map<String, dynamic>> get sortedCardData {
     final sorted = List<Map<String, dynamic>>.from(_cardData);
     switch (_sortType) {
@@ -135,20 +136,18 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     final screenWidth = MediaQuery.of(context).size.width;
     final cards = sortedCardData;
 
-    return _isLoading
+    return _isLoading //페이지 불러올때까지 로딩 띄우기 일단 이건 다른페이지에도 넣을 예정
         ? const Center(child: CircularProgressIndicator())
         : _cardData.isEmpty
             ? const Center(child: Text('등록된 여행이 없습니다.'))
             : Column(
       children: [
-        SizedBox(height: screenWidth * 0.25), // ⬅️ 반응형으로 변경
+        SizedBox(height: screenWidth * 0.25),
 
-        // 🔻 정렬 기준 드롭다운
+        // 정렬 기준 드롭다운
         Container(
           height: screenWidth * 0.08,
-          // ⬅️ 반응형
           width: screenWidth * 0.35,
-          // ⬅️ 반응형
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
           decoration: BoxDecoration(
             color: Color(0xFFFFFFFF),
@@ -186,9 +185,9 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
         SizedBox(height: screenWidth * 0.05),
 
-        // 📌 카드 슬라이더
+        // 카드 슬라이더
         SizedBox(
-          height: screenWidth * 0.8, // ⬅️ 반응형으로 변경
+          height: screenWidth * 0.8,
           child: PageView.builder(
             controller: _pageController,
             itemCount: cards.length,
@@ -211,7 +210,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
         SizedBox(height: screenWidth * 0.05),
 
-        // 📌 페이지 인디케이터
+        // 페이지 인디케이터
         PlanPageIndicator(
           controller: _pageController,
           count: cards.length,
@@ -223,6 +222,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
   }
 }
 
+//페이지 인디케이터
 class PlanPageIndicator extends StatefulWidget {
   final PageController controller;
   final int count;
