@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../components/proceed_button.dart';
 import '../../components/app_bar.dart';
 
 // TODO: 여행 이름과 날짜를 확정짓고 '다음' 을 눌러 여행 id가 발급된 상태에서 다른 탭으로 전환할 때 별도의 처리가 필요(무분별한 여행 id 생성 방지)
@@ -30,8 +31,32 @@ class _AddPage_0State extends State<AddPage_0> {
   Future<void> _selectDateRange() async {
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
+      locale: const Locale('ko', 'KR'),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365*5)),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Color(0xFF2C2C2C),
+            colorScheme: ColorScheme.light(
+              primary: Color(0xFF2C2C2C),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Color(0xFF2C2C2C),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+            ),
+            dialogBackgroundColor: Colors.white,
+            hintColor: Color(0xFFB5B5B5),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
@@ -43,10 +68,11 @@ class _AddPage_0State extends State<AddPage_0> {
 
   // 입력한 여행 정보로 서버에 여행 등록 요청
   Future<void> _registerTour() async {
-    if (_titleController.text.isEmpty || _selectedDateRange == null) {
-      // 입력값이 없으면 알림 표시
+    if (_titleController.text.isEmpty ||
+        _titleController.text.length > 10 ||
+        _selectedDateRange == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('여행 이름과 날짜를 모두 입력해주세요')),
+        SnackBar(content: Text('여행 이름(10자 이내)과 날짜를 모두 입력해주세요')),
       );
       return;
     }
@@ -99,50 +125,158 @@ class _AddPage_0State extends State<AddPage_0> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('여행 정보 입력')),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
+    return Scaffold(
+      backgroundColor: Color(0xFFFFFFFF),
+      appBar: const DefaultAppBar(title: "새 여행지 추가"),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.08,
+          vertical: screenHeight * 0.03,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            // 여행 이름 입력 필드
-            Text('여행 이름', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-
-            TextField(
-              controller: _titleController,
-              maxLength: 10,
-              decoration: InputDecoration(
-                hintText: '여행 이름을 입력하세요',
-              ),
-            ),
-
-            SizedBox(height: 20),
-
-            // 여행 날짜 선택 버튼
-            Text('여행 날짜', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-
-            SizedBox(height: 8),
-
-            ElevatedButton(
-              onPressed: _selectDateRange,
+            // 페이지 제목
+            Center(
               child: Text(
-                _selectedDateRange == null
-                  ? '여행 날짜 선택'
-                  : '${_selectedDateRange!.start.year}.${_selectedDateRange!.start.month}.${_selectedDateRange!.start.day} ~ ${_selectedDateRange!.end.year}.${_selectedDateRange!.end.month}.${_selectedDateRange!.end.day}'
+                "여행 추가하기",
+                style: TextStyle(
+                  fontSize: screenWidth * 0.065,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
 
-            Spacer(),
+            SizedBox(height: screenHeight * 0.05),
 
-            // 다음 버튼 - 입력받은 데이터로 tour_id 발급 및 행정구역 선택 페이지로 전환
+            // 여행 제목 입력 - 10글자 제한
+            Text("✏️ 여행 제목",
+                style: TextStyle(
+                  fontSize: screenWidth * 0.05,
+                  fontWeight: FontWeight.bold,
+                )),
+            SizedBox(height: screenHeight * 0.01),
             SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _registerTour,
-                child: Text('다음'),
+              height: screenHeight * 0.06,
+              child: TextField(
+                controller: _titleController,
+                maxLength: 10,
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: "여행에 대한 정보를 간단한 제목으로 지어보세요",
+                  hintStyle: TextStyle(
+                    fontSize: screenWidth * 0.035,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  counterText: "",
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.02,
+                    horizontal: screenWidth * 0.03,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.005),
+            Text("• 한글, 영문, 특수기호 구분없이 10자 이내로 입력",
+                style: TextStyle(fontSize: screenWidth * 0.035, color: Colors.grey)),
+            Text("• 결정 후 수정할 수 없으니 신중히 정해주세요",
+                style: TextStyle(fontSize: screenWidth * 0.035, color: Colors.grey)),
+
+            SizedBox(height: screenHeight * 0.05),
+
+            // 여행 날짜 입력 - material.dart의 DateRangePicker 사용
+            Text("✏️ 여행 날짜",
+                style: TextStyle(
+                  fontSize: screenWidth * 0.05,
+                  fontWeight: FontWeight.bold,
+                )),
+            SizedBox(height: screenHeight * 0.01),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+
+                // 날짜 표시 필드
+                Expanded(
+                  child: SizedBox(
+                    height: screenHeight * 0.06,
+                    child: TextField(
+                      readOnly: true,
+                      cursorColor: Color(0xFF2C2C2C),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        hintText: _selectedDateRange == null
+                            ? ""
+                            : "${_selectedDateRange!.start.year}.${_selectedDateRange!.start.month.toString().padLeft(2, '0')}.${_selectedDateRange!.start.day.toString().padLeft(2, '0')} ~ "
+                              "${_selectedDateRange!.end.year}.${_selectedDateRange!.end.month.toString().padLeft(2, '0')}.${_selectedDateRange!.end.day.toString().padLeft(2, '0')}",
+                        hintStyle: TextStyle(
+                          fontSize: screenWidth * 0.035,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        filled: true,
+                        fillColor: Color(0xFFF5F5F5),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        counterText: "",
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: screenHeight * 0.02,
+                          horizontal: screenWidth * 0.03,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(width: screenWidth * 0.02),
+
+                // 날짜 선택 버튼 - showDateRangePicker 호출
+                SizedBox(
+                  height: screenHeight * 0.058,
+                  width: screenWidth * 0.14,
+                  child: ElevatedButton(
+                    onPressed: _selectDateRange,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2C2C2C),
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      "🗓️",
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.045,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const Spacer(),
+
+            // 새 여행 만들기 버튼 - 여행 id 발급 및 행정구역 선택 페이지로 이동
+            Center(
+              child: ProceedButton(
+                size_w: screenWidth * 0.8,
+                size_h: screenHeight * 0.06,
+                text: "새 여행 만들기",
+                fontSize_: screenWidth * 0.045,
+                fontWeight_: FontWeight.bold,
+                padding_: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                onTap: _registerTour,
               ),
             ),
           ],
