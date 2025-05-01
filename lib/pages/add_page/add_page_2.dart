@@ -68,6 +68,8 @@ class _AddPage_2State extends State<AddPage_2> {
               description: place['address'] ?? '주소 정보 없음',
               mapX: double.tryParse(place['mapX'] ?? '0') ?? 0.0,
               mapY: double.tryParse(place['mapY'] ?? '0') ?? 0.0,
+              width: MediaQuery.of(context).size.width * 0.63,
+              height: MediaQuery.of(context).size.width * 0.63 * 0.69,
             );
           }).toList();
         });
@@ -111,7 +113,15 @@ class _AddPage_2State extends State<AddPage_2> {
   void addNewPlace(String imageUrl, String title, String description, double mapX, double mapY) {
     setState(() {
       _placeWidgets.add(
-        PlaceInfoBlock(imageUrl: imageUrl, title: title, description: description, mapX: mapX, mapY: mapY,),
+        PlaceInfoBlock(
+          imageUrl: imageUrl,
+          title: title,
+          description: description,
+          mapX: mapX,
+          mapY: mapY,
+          width: MediaQuery.of(context).size.width * 0.58,
+          height: MediaQuery.of(context).size.width * 0.58 * 0.69,
+        ),
       );
       _isAddingPlace = false;
     });
@@ -187,19 +197,19 @@ class _AddPage_2State extends State<AddPage_2> {
       children: [
         Row(
           children: [
-            Text("📍${widget.title}", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(width: 10),
-            const Text('근처 코스를 알려드릴게요', style: TextStyle(fontSize: 14, color: Color(0xFF757575))),
+            Text("📍${widget.title}", style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.06, fontWeight: FontWeight.bold)),
+            SizedBox(width: MediaQuery.of(context).size.width * 0.038),
+            Text('근처 코스를 알려드릴게요', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035, color: const Color(0xFF757575))),
           ],
         ),
-        const SizedBox(height: 8),
-        const Row(
+        SizedBox(height: MediaQuery.of(context).size.width * 0.03),
+        Row(
           children: [
-            Text('최근 업데이트', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF7F7F7F))),
-            SizedBox(width: 5),
+            Text('최근 업데이트', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.027, fontWeight: FontWeight.bold, color: const Color(0xFF7F7F7F))),
+            SizedBox(height: MediaQuery.of(context).size.width * 0.018),
 
             // TODO: 최근 업데이트 날짜 구현 필요
-            Text('2025.00.00', style: TextStyle(fontSize: 11, color: Color(0xFF7F7F7F))),
+            Text('2025.00.00', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.027, color: const Color(0xFF7F7F7F))),
           ],
         ),
       ],
@@ -224,7 +234,10 @@ class _AddPage_2State extends State<AddPage_2> {
             child: SingleChildScrollView(
               controller: _scrollController,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 26),
+                padding: EdgeInsets.symmetric(
+                  vertical: MediaQuery.of(context).size.width * 0.03,
+                  horizontal: MediaQuery.of(context).size.width * 0.06,
+                ),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
                     minHeight: MediaQuery.of(context).size.height,
@@ -235,15 +248,15 @@ class _AddPage_2State extends State<AddPage_2> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 26),
+                      SizedBox(height: MediaQuery.of(context).size.width * 0.063),
                       _buildTitleBlock(),
-                      const SizedBox(height: 24),
+                      SizedBox(height: MediaQuery.of(context).size.width * 0.058),
 
                       // 장소 목록 표시
                       ..._placeWidgets.map((place) => Column(
                         children: [
                           place,
-                          const SizedBox(height: 24),
+                          SizedBox(height: MediaQuery.of(context).size.width * 0.058),
                         ],
                       )),
 
@@ -260,19 +273,22 @@ class _AddPage_2State extends State<AddPage_2> {
                           : GestureDetector(
                         onTap: () => setState(() => _isAddingPlace = true),
                         child: Container(
-                          width: 260,
-                          height: 180,
+                          width: MediaQuery.of(context).size.width * 0.63,
+                          height: MediaQuery.of(context).size.width * 0.63 * 0.69,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade400),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Center(
-                            child: Text('+ 장소 추가'),
+                          child: Center(
+                            child: Text(
+                              '+ 장소 추가',
+                              style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                            ),
                           ),
                         ),
                       ),
 
-                      const SizedBox(height: 100),
+                      SizedBox(height: MediaQuery.of(context).size.width * 0.2835),
                     ],
                   ),
                 ),
@@ -289,7 +305,7 @@ class _AddPage_2State extends State<AddPage_2> {
             child: Stack(
               children: [
                 Positioned(
-                  bottom: 30,
+                  bottom: MediaQuery.of(context).size.width * 0.075,
                   left: 0,
                   right: 0,
                   child: AnimatedSlide(
@@ -298,12 +314,15 @@ class _AddPage_2State extends State<AddPage_2> {
                     curve: Curves.easeInOut,
                     child: Center(
                       child: ProceedButton(
-                        size_w: 200,
-                        size_h: 45,
+                        size_w: MediaQuery.of(context).size.width * 0.53,
+                        size_h: MediaQuery.of(context).size.width * 0.12,
                         text: "이 코스로 할게요!",
-                        fontSize_: 15,
+                        fontSize_: MediaQuery.of(context).size.width * 0.037,
                         fontWeight_: FontWeight.bold,
-                        padding_: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+                        padding_: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.width * 0.03,
+                          horizontal: MediaQuery.of(context).size.width * 0.03,
+                        ),
                         onTap: () {
                           // 최종 경로 확정
                           saveTourCourse();
