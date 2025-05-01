@@ -31,7 +31,7 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 260,
+      width: MediaQuery.of(context).size.width * 0.63,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
@@ -78,7 +78,7 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: MediaQuery.of(context).size.width * 0.63 * 0.045),
 
           // 장소 정보를 입력하는 필드들, 검색을 통해 장소를 선택하면 자동으로 채워짐
           // 이미지 URL, 장소명, 설명, 위도(mapX), 경도(mapY)
@@ -102,7 +102,7 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
             controller: _mapYController,
             decoration: const InputDecoration(labelText: 'mapY'),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: MediaQuery.of(context).size.width * 0.63 * 0.045),
 
           // 완료, 취소 버튼
           Row(
