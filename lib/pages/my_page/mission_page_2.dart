@@ -15,6 +15,7 @@ class MissionPage_2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const DefaultAppBar(title: "미션 앱바 영역"),
+      backgroundColor: Colors.white,
       body: MissionPage_2_body(content: content, isCompleted: isCompleted),
     );
   }
@@ -38,7 +39,6 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-
     return Center(
       child: Padding(
         padding: EdgeInsets.all(width * 0.05),

@@ -3,17 +3,10 @@ import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
 import '../../components/plan_card.dart'; // 여행 계획 카드 컴포넌트
 import '../../components/proceed_button.dart'; // 버튼 컴포넌트
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomePage extends StatefulWidget {
-  final String? username;
-  final String welcome_message;
-
-  const HomePage({
-    required this.username,
-    required this.welcome_message,
-    Key? key
-  }) : super(key: key);
+  final String? accessToken;
+  const HomePage({super.key, this.accessToken});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -22,6 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _isLoading = true;
   Map<String, dynamic>? _nearestPlan;
+  String? _currentUsername;
 
   @override
   void initState() {
@@ -40,7 +34,7 @@ class _HomePageState extends State<HomePage> {
         '$baseUrl/user/me/',
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}',
+            'Authorization': 'Bearer ${widget.accessToken}',
             'Accept': 'application/json'
           },
         ),
@@ -48,13 +42,16 @@ class _HomePageState extends State<HomePage> {
 
       // 현재 사용자 이름 추출
       final currentUsername = userResponse.data['username'];
+      setState(() {
+        _currentUsername = currentUsername;
+      });
 
       // /tour/ API 호출하여 전체 여행 목록 가져오기
       final tourResponse = await dio.get(
         '$baseUrl/tour/',
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}',
+            'Authorization': 'Bearer ${widget.accessToken}',
             'Accept': 'application/json'
           },
         ),
@@ -107,8 +104,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
-    print(MediaQuery.of(context).size.height);
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
 
@@ -125,7 +120,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               // 유저 이름
               Text(
-                '$username님,',
+                _currentUsername ?? '',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: MediaQuery.of(context).size.width * 0.05,
@@ -134,7 +129,7 @@ class _HomePageState extends State<HomePage> {
 
               // 웰컴 메세지
               Text(
-                  welcome_message,
+                  "하이요",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: MediaQuery.of(context).size.width * 0.05,
@@ -152,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                   startDate: "2025.03.18",
                   endDate: "2025.03.25",
                   size_h: MediaQuery.of(context).size.height*0.394,
-                  size_w: MediaQuery.of(context).size.width*0.8,
+                  size_w: MediaQuery.of(context).size.width*0.8, tour_id: 1,
                 ),
               ),
               SizedBox(height: MediaQuery.of(context).size.height*0.073,),

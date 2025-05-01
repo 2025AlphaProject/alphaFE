@@ -4,7 +4,8 @@ import '../../components/app_bar.dart';
 import 'package:alpha_fe/pages/my_page/mission_page_2.dart';
 
 class Mission_Page extends StatefulWidget {
-  const Mission_Page({Key? key}) : super(key: key);
+  final String? accessToken;
+  const Mission_Page({super.key, this.accessToken});
 
   @override
   State<Mission_Page> createState() => _Mission_PageState();
@@ -13,7 +14,6 @@ class Mission_Page extends StatefulWidget {
 class _Mission_PageState extends State<Mission_Page> {
   List<Map<String, dynamic>> _missions = [];
   bool _isLoading = true;
-  String accessToken = ""; //TODO: 카카오 액세스 토큰 연결
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _Mission_PageState extends State<Mission_Page> {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken', //
+            'Authorization': 'Bearer ${widget.accessToken}', //
           },
         ),
       );
@@ -142,7 +142,19 @@ Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double w
             ),
           );
         },
-        child: Card(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                offset: const Offset(0,0),
+                blurRadius: 8,
+                spreadRadius: 1,
+              )
+            ]
+          ),
           child: Padding(
             padding: EdgeInsets.all(width * 0.04),
             child: Column(
@@ -170,7 +182,7 @@ Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double w
                   child: Text(
                     "• ${mission['content']}",
                     style: TextStyle(fontSize: width * 0.04),
-                  ),
+                   ),
                 ),
               ],
             ),
