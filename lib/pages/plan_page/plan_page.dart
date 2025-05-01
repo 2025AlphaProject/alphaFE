@@ -31,6 +31,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
   late int initialPage;
   bool _isLoading = true;
   final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
+  final dio = Dio();
 
   SortType _sortType = SortType.dDayAsc;
 
@@ -40,12 +41,32 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
   void initState() {
     super.initState();
     _fetchTourData();
+    _fetchUserME();
+  }
+  Future<void> _fetchUserME() async {
+    try{
+      final response = await dio.get(
+        'http://conever.duckdns.org:8000/user/me',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}',
+            'Accept': 'application/json'
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        final currentUsername = response.data['username'];
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print('Fetch error: $e');
+    }
   }
 
   //내 여행 가져오기(리스트)
   Future<void> _fetchTourData() async {
-
-    final dio = Dio();
     try {
       final response = await dio.get(
         'http://conever.duckdns.org:8000/tour/',
@@ -57,23 +78,59 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
         ),
       );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
-        final parsedData = data.map<Map<String, dynamic>>((item) =>
-        {
-          'tour_id': item['id'],
-          'title': item['tour_name'],
-          'startDate': item['start_date'],
-          'endDate': item['end_date'],
+      // Fetch the current user
+      String? currentUsername;
+      try {
+        final userResponse = await dio.get(
+          'http://conever.duckdns.org:8000/user/me',
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $accessToken',
+              'Accept': 'application/json'
+            },
+          ),
+        );
+        if (userResponse.statusCode == 200) {
+          currentUsername = userResponse.data['username'];
+        }
+      } catch (e) {
+        // If fetching user fails, show error and stop loading
+        setState(() {
+          _isLoading = false;
+        });
+        print('Fetch user error: $e');
+        return;
+      }
+
+      if (response.statusCode == 200 && currentUsername != null) {
+        final List<dynamic> allPlans = response.data;
+        final List<dynamic> userPlans = allPlans.where((plan) {
+          final List<dynamic> users = plan['user'] ?? [];
+          return users.any((u) => u['username'] == currentUsername);
         }).toList();
 
-        setState(() {
-          _cardData = parsedData;
-          _isLoading = false;
-          if (_cardData.isNotEmpty) {
-            _initController();
-          }
-        });
+        if (userPlans.isNotEmpty) {
+          final parsedData = userPlans.map<Map<String, dynamic>>((item) =>
+          {
+            'tour_id': item['id'],
+            'title': item['tour_name'],
+            'startDate': item['start_date'],
+            'endDate': item['end_date'],
+          }).toList();
+
+          setState(() {
+            _cardData = parsedData;
+            _isLoading = false;
+            if (_cardData.isNotEmpty) {
+              _initController();
+            }
+          });
+        } else {
+          setState(() {
+            _cardData = [];
+            _isLoading = false;
+          });
+        }
       } else {
         setState(() {
           _isLoading = false;
@@ -134,6 +191,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     final cards = sortedCardData;
 
     return _isLoading //페이지 불러올때까지 로딩 띄우기 일단 이건 다른페이지에도 넣을 예정
@@ -142,11 +200,11 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
             ? const Center(child: Text('등록된 여행이 없습니다.'))
             : Column(
       children: [
-        SizedBox(height: screenWidth * 0.25),
+        SizedBox(height: screenHeight * 0.12),
 
         // 정렬 기준 드롭다운
         Container(
-          height: screenWidth * 0.08,
+          height: screenHeight * 0.06,
           width: screenWidth * 0.35,
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
           decoration: BoxDecoration(
@@ -183,11 +241,11 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           ),
         ),
 
-        SizedBox(height: screenWidth * 0.05),
+        SizedBox(height: screenHeight * 0.03),
 
         // 카드 슬라이더
         SizedBox(
-          height: screenWidth * 0.8,
+          height: screenHeight * 0.4,
           child: PageView.builder(
             controller: _pageController,
             itemCount: cards.length,
@@ -199,7 +257,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
                   title: item['title']!,
                   startDate: item['startDate']!,
                   endDate: item['endDate']!,
-                  size_h: screenWidth * 1.0,
+                  size_h: screenHeight * 0.5,
                   size_w: screenWidth * 0.65,
                   tour_id: item['tour_id'],
                 ),
@@ -208,7 +266,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           ),
         ),
 
-        SizedBox(height: screenWidth * 0.05),
+        SizedBox(height: screenHeight * 0.03),
 
         // 페이지 인디케이터
         PlanPageIndicator(
@@ -226,15 +284,15 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 class PlanPageIndicator extends StatefulWidget {
   final PageController controller;
   final int count;
-  final double dotSize;
-  final double dotActiveWidth;
+  final double? dotSize;
+  final double? dotActiveWidth;
 
   const PlanPageIndicator({
     Key? key,
     required this.controller,
     required this.count,
-    this.dotSize = 8.0,
-    this.dotActiveWidth = 12.0,
+    this.dotSize,
+    this.dotActiveWidth,
   }) : super(key: key);
 
   @override
@@ -269,8 +327,8 @@ class _PlanPageIndicatorState extends State<PlanPageIndicator> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final dotSize = screenWidth * 0.02;
-    final dotActiveWidth = screenWidth * 0.03;
+    final dotSize = widget.dotSize ?? screenWidth * 0.02;
+    final dotActiveWidth = widget.dotActiveWidth ?? screenWidth * 0.03;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

@@ -194,12 +194,7 @@ class _planEditDateState extends State<planEditDate> {
                                     if (response.statusCode == 200) {
                                       if (!mounted) return; // 안전 체크 추가
 
-                                      Navigator.of(context).pop(); // 다이얼로그 닫기
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) => MyApp(), // 처음으로 다시 돌아가기
-                                        ),
-                                      );
+                                      Navigator.pop(context, 'updated');
                                     } else { //TODO: 오류뜰때 어케할지 수정해야함
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text('수정 실패: ${response.statusCode}')),

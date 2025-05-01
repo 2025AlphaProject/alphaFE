@@ -1,3 +1,4 @@
+import 'package:alpha_fe/main.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:dio/dio.dart';
@@ -63,28 +64,27 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
         ),
       );
       if (response.statusCode == 200) { //응답제대로 됬을때
-        final data = response.data;
-        if (data != null && data is List) {
-          setState(() {
-            courseData = data.map<Map<String, dynamic>>((day) {
-              final date = day['date'] ?? '';
-              final places = (day['places'] as List<dynamic>? ?? []).map<Map<String, dynamic>>((place) {
-                return {
-                  'name': place['name'] ?? '',
-                  'mapX': place['mapX'] != null ? place['mapX'].toDouble() : 0.0,
-                  'mapY': place['mapY'] != null ? place['mapY'].toDouble() : 0.0,
-                  'image_url': place['image_url'] ?? '',
-                  'road_address': place['road_address'] ?? '',
-                  'parcel_address': place['parcel_address'] ?? '',
-                };
-              }).toList();
+        final tourResponse = response;
+        final List<dynamic> allPlans = tourResponse.data is List ? tourResponse.data : [];
+        setState(() {
+          courseData = allPlans.map<Map<String, dynamic>>((day) {
+            final date = day['date'] ?? '';
+            final places = (day['places'] as List<dynamic>? ?? []).map<Map<String, dynamic>>((place) {
               return {
-                'date': date,
-                'places': places,
+                'name': place['name'] ?? '',
+                'mapX': place['mapX'] != null ? place['mapX'].toDouble() : 0.0,
+                'mapY': place['mapY'] != null ? place['mapY'].toDouble() : 0.0,
+                'image_url': place['image_url'] ?? '',
+                'road_address': place['road_address'] ?? '',
+                'parcel_address': place['parcel_address'] ?? '',
               };
             }).toList();
-          });
-        }
+            return {
+              'date': date,
+              'places': places,
+            };
+          }).toList();
+        });
       }
     } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
       print("코스 불러오기 실패: $e");
@@ -135,40 +135,44 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
 
   @override
   Widget build(BuildContext context) {
+    Future.microtask(() {
+      fetchTourCourse();
+      fetchTourName();
+    });
+
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Memo(controller: _textController),//이안에 메모랑 여행정보 있음 안쓸거명 여행정보부분빼고 없애기
-                SizedBox(width: 10,),
-                IconButton( //여행관련 편집을 위한 버튼
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    showModalBottomSheet(
+                //Memo(controller: _textController),
+                Plan_Name(),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.15,),
+                IconButton(  //편집 아이콘
+                  icon: Icon(Icons.edit, size: MediaQuery.of(context).size.width * 0.06,),
+                  onPressed: () async {
+                    await showDialog(
                       context: context,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                      ),
-                      isScrollControlled: true,
-                      backgroundColor: Colors.white,
-                      builder: (context) => TravelEditMenu(
-                        startDate: startDate,
-                        endDate: endDate,
-                        tour_id: widget.tour_id,
-                        tourName: tourName,
+                      builder: (context) => AlertDialog(
+                        contentPadding: EdgeInsets.zero,
+                        content: TravelEditMenu(
+                            startDate: startDate,
+                            endDate: endDate,
+                            tour_id: widget.tour_id,
+                            tourName: tourName
+                        ),
                       ),
                     );
                   },
                 ),
               ],
             ),
-            Traveler_List(),//동행자들
-            DashedLine(), //이건 디자인용 점선
-            travel_plan(courseData: courseData), //여행경로
+            Traveler_List(),
+            DashedLine(),
+            travel_plan(courseData: courseData),
           ],
         ),
       ),
@@ -206,30 +210,30 @@ class _MemoState extends State<Memo> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Icon(Icons.settings, size: 10,color: Color(0xFFB5B5B5),),
-              SizedBox(width: 5,),
+              Icon(Icons.settings, size: MediaQuery.of(context).size.width * 0.025,color: Color(0xFFB5B5B5),),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.0125,),
               Text(_showInput ? "메모 수정완료" : "메모",
-                style: TextStyle(fontSize: 10,color: Color(0xFFB5B5B5)),
+                style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.025,color: Color(0xFFB5B5B5)),
               ),
             ],
           ),
         ),
-        Plan_Name(),//이게 여행정보
-        const SizedBox(height: 12),
+        //Plan_Name(),//이게 여행정보
+        SizedBox(height: MediaQuery.of(context).size.height * 0.015),
 
         // 입력창
         if (_showInput)
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+            padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.025, 0, 0, 0),
             child: SizedBox(
-              width: 300,
-              height: 28,
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.height * 0.035,
               child: TextField(
                 controller: widget.controller,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "메모를 입력하세요",
                   border: OutlineInputBorder(),
-                  labelStyle: TextStyle(fontSize: 12, color: Color(0xFFB5B5B5)),
+                  labelStyle: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.03, color: Color(0xFFB5B5B5)),
 
                 ),
               ),
@@ -252,46 +256,46 @@ class Plan_Name extends StatelessWidget {
       context.findAncestorStateOfType<_plan_page2_bodyState>()?.endDate ?? "",
     );
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8,0,0,0),
+      padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.025,0,0,0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Card(
             color: Colors.red[600],
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.01),
             ),
             // margin: const EdgeInsets.all(5),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 1),
+              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.03, vertical: MediaQuery.of(context).size.height * 0.0025),
               child: Text(
                 "D-$remainingDays", //이거 디데이 인자로 바꿀예정
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 8,
+                  fontSize: MediaQuery.of(context).size.width * 0.02,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(3, 0, 0, 0),
+            padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.0075, 0, 0, 0),
             child: Text(
               context.findAncestorStateOfType<_plan_page2_bodyState>()?.tourName ?? "",
-              style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.07, fontWeight: FontWeight.bold),
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(3, 0, 0, 0),
+            padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.0075, 0, 0, 0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.calendar_today, size: 13, color: Colors.grey),
-                const SizedBox(width: 5),
+                Icon(Icons.calendar_today, size: MediaQuery.of(context).size.width * 0.035, color: Colors.grey),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.0125),
                 Text(
                   context.findAncestorStateOfType<_plan_page2_bodyState>()?.dateRange ?? "",
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.032, color: Colors.grey),
                 ),
               ],
             ),
@@ -313,61 +317,75 @@ class Traveler_List extends StatelessWidget {
     final travelers = parentState?.travelers ?? [];
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "여행자",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.005),
           SizedBox(
-            height: 90,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  ...travelers.map((traveler) => Padding(
-                    padding: const EdgeInsets.only(right: 16),
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 28,
-                          backgroundImage: NetworkImage(traveler["imageUrl"]!),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
+            // Remove fixed height to let Wrap expand as needed; if you want a max height, use constraints
+            // height: MediaQuery.of(context).size.height * 0.13,
+            child: Wrap(
+              spacing: MediaQuery.of(context).size.width * 0.04,
+              runSpacing: MediaQuery.of(context).size.height * 0.01,
+              children: [
+                ...travelers.map((traveler) => Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: MediaQuery.of(context).size.width * 0.06,
+                      backgroundImage: NetworkImage(traveler["imageUrl"]!),
+                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.002),
+                    SizedBox(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
                           traveler["name"]!,
-                          style: const TextStyle(fontSize: 12),
+                          style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035),
                         ),
-                      ],
+                      ),
                     ),
-                  )),
-                  // ➕ 초대 버튼
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProfileListPage(tour_id: parentState!.widget.tour_id),//누르면 여행자 추가 페이지로 이동
+                  ],
+                )),
+                GestureDetector(
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileListPage(tour_id: parentState!.widget.tour_id),
+                      ),
+                    );
+                    parentState?.setState(() {
+                      parentState.fetchTourName();
+                    });
+                  },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: MediaQuery.of(context).size.width * 0.06,
+                        backgroundColor: Colors.grey.shade200,
+                        child: Icon(Icons.add, color: Colors.grey, size: MediaQuery.of(context).size.width * 0.05),
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.002),
+                      SizedBox(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "초대",
+                            style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035),
+                          ),
                         ),
-                      );
-                    },
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 28,
-                          backgroundColor: Colors.grey.shade200,
-                          child: const Icon(Icons.add, color: Colors.grey),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text("초대", style: TextStyle(fontSize: 12)),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

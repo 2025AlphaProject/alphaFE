@@ -1,7 +1,7 @@
 import 'package:alpha_fe/pages/plan_page/near_event.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:alpha_fe/pages/plan_page/near_event.dart';
+//완
 
 //여행 코스
 class travel_plan extends StatelessWidget {
@@ -15,17 +15,9 @@ class travel_plan extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Text("🧭 예정된 코스"),
-              SizedBox(width: 10),
-              IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: (){},
-              ),
-            ],
-          ),
+          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.0222),
+          child:
+              Text("🧭 예정된 코스",style: TextStyle(fontSize:MediaQuery.of(context).size.width * 0.044 ),),
         ),
         ...courseData.map((day) {
           final date = day['date'] ?? '';
@@ -34,8 +26,8 @@ class travel_plan extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Text("📅 $date", style: TextStyle(fontWeight: FontWeight.bold)),
+                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.022, vertical: MediaQuery.of(context).size.height * 0.011),
+                child: Text("📅 $date", style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width * 0.044)),
               ),
               ...places.map((place) {
                 return place_card(
@@ -78,54 +70,123 @@ class place_card extends StatelessWidget {
     return SizedBox(
       child: Column(
         children: [
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  imageUrl,
-                  width: 130,
-                  height: 110,
-                ),
-              ),
-              Column(
-                children: [
-                  Row( //여행명
-                    children: [
-                      Icon(Icons.pin_drop),
-                      Text(placeName),
-                    ],
+          SizedBox(
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(
+                    imageUrl.isNotEmpty
+                        ? imageUrl
+                        : 'https://cdn.pixabay.com/photo/2016/11/29/02/02/beach-1867285_1280.jpg', // default image
+                    width: MediaQuery.of(context).size.width * 0.333,
+                    height: MediaQuery.of(context).size.height * 0.145,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: MediaQuery.of(context).size.width * 0.333,
+                      height: MediaQuery.of(context).size.height * 0.145,
+                      color: Colors.grey[300],
+                      child: Icon(Icons.image_not_supported, size: MediaQuery.of(context).size.width * 0.055),
+                    ),
                   ),
-                  Row( //주소
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal:  MediaQuery.of(context).size.width * 0.022),
+                  width: MediaQuery.of(context).size.width * 0.611,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.home),
-                      Column(
-                          children: [
-                            Row(
-                              children: [
-                                SizedBox(
-                                  child: Text("도로명"),
+                      Row( //여행명
+                        children: [
+                          Icon(Icons.pin_drop, size: MediaQuery.of(context).size.width * 0.055),
+                          SizedBox(width: MediaQuery.of(context).size.width * 0.011),
+                          Wrap( //장소명
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Container( //장소명
+                                width: MediaQuery.of(context).size.width * 0.416,
+                                child: Text(
+                                  placeName,
+                                  softWrap: true,
+                                  overflow: TextOverflow.visible,
+                                  style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.039, fontWeight: FontWeight.bold),
                                 ),
-                                Text(roadAddress) //여기 바꿔야함
-                              ],
-                            ),
-                            Row( //지번
-                              children: [
-                                SizedBox(
-                                  child: Text("지번"),
-                                ),
-                                Text(numberAddress) //여기 바꿔야함
-                              ],
-                            ),
-                          ]
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.0087),
+                      Row( //주소
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          //Icon(Icons.home, size: MediaQuery.of(context).size.width * 0.055), //없는게 더 이쁜듯
+                          SizedBox(width: MediaQuery.of(context).size.width * 0.011),
+                          Column( //주소
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Wrap( //도로명
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Container( //도로명 설명
+                                    padding: EdgeInsets.symmetric(horizontal:  MediaQuery.of(context).size.width * 0.0083, vertical:  MediaQuery.of(context).size.width * 0.0055),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(color: Colors.grey.shade400),
+                                    ),
+                                    child: Text("도로명", style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.033)),
+                                  ),
+                                  SizedBox(width: 6),
+                                  Container( //도로명 데이터
+                                    width: MediaQuery.of(context).size.width * 0.361,
+                                    child: Text(
+                                      roadAddress,
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                      style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.033),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: MediaQuery.of(context).size.height * 0.0073),
+                              Wrap( //지번
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Container( //지번 설명
+                                    padding: EdgeInsets.symmetric(horizontal:  MediaQuery.of(context).size.width * 0.0083, vertical:  MediaQuery.of(context).size.width * 0.0055),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(color: Colors.grey.shade400),
+                                    ),
+                                    child: Text("지번", style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.033)),
+                                  ),
+                                  SizedBox(width: MediaQuery.of(context).size.width* 0.0416),
+                                  Container( //지번 데이터
+                                    width: MediaQuery.of(context).size.width * 0.361,
+                                    child: Text(
+                                      numberAddress,
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                      style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.033),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.022),
           Events(mapX: mapX, mapY: mapY),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.022)
         ],
       ),
     );
@@ -204,17 +265,18 @@ class _EventsState extends State<Events> {
                 _isExpanded ? Icons.keyboard_arrow_up : Icons
                     .keyboard_arrow_down,
                 color: Colors.grey,
+                size: MediaQuery.of(context).size.width * 0.055,
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.011),
               Text(
                 _isExpanded ? "주변 행사 닫기" : "주변 행사 보기",
-                style: const TextStyle(color: Colors.grey),
+                style: TextStyle(color: Colors.grey, fontSize: MediaQuery.of(context).size.width * 0.039),
               ),
             ],
           ),
         ),
 
-        const SizedBox(height: 12),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.0174),
 
         // 🔳 카드 목록 (보일 때만)
         AnimatedCrossFade(
@@ -225,19 +287,19 @@ class _EventsState extends State<Events> {
           firstChild: events.isEmpty
               ? Row( //주변행사가 없을때
                   children: [
-                    SizedBox(width: 10,),
-                    const Text(
+                    SizedBox(width: MediaQuery.of(context).size.width *0.0166),
+                    Text(
                       "주변 행사가 없습니다.",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: MediaQuery.of(context).size.width * 0.039,
                       ),
                     ),
                   ],
                 )
               : Wrap( //주변행사 있을때
-                  spacing: 12,
-                  runSpacing: 12,
+                  spacing: MediaQuery.of(context).size.width * 0.0667,
+                  runSpacing: MediaQuery.of(context).size.width * 0.0333,
                   children: events.map((event) {
                     return ElevatedButton(
                       onPressed: () {
@@ -253,23 +315,24 @@ class _EventsState extends State<Events> {
                         foregroundColor: Colors.black,
                         side: BorderSide(color: Colors.grey.shade300),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                        padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height *0.0333, horizontal: MediaQuery.of(context).size.width*0.0222),
                       ),
                       child: Column( //경로 페이지에서는 행사유형과 이름만 표시
                         children: [
                           Text(
                             event['category'],
                             textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.039),
                           ),
-                          const SizedBox(height: 5),
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.0087),
                           Text(
                             event['title'] ?? '',
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                              fontSize: MediaQuery.of(context).size.width * 0.039,
                             ),
                           ),
                         ],
