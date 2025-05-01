@@ -6,8 +6,8 @@ import 'pages/plan_page/plan_page.dart';
 import 'components/bottom_navi_bar.dart';
 
 class MainScreen extends StatefulWidget {
-  final String accessToken;
-  const MainScreen({super.key, required this.accessToken});
+  final String? accessToken;
+  const MainScreen({super.key, this.accessToken});
   @override
   _MainScreenState createState() => _MainScreenState();
 }
