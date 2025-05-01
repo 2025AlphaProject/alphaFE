@@ -1,3 +1,4 @@
+import 'package:alpha_fe/mainscreen.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';
@@ -194,7 +195,6 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                         },
                       ),
                     );
-
                     if (response.statusCode == 200) {
                       if (!mounted) return; // 안전 체크 추가
                       Navigator.of(context).pop(); // 다이얼로그 닫기
@@ -264,7 +264,6 @@ class _DeleteTourState extends State<DeleteTour> {
 
                   if (response.statusCode == 204) {
                     if (!mounted) return; // 안전 체크 추가
-
                     Navigator.of(context).pop(); // 다이얼로그 닫기
                   } else { //TODO: 오류뜰때 어케할지 수정해야함
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -329,7 +328,6 @@ class _DeleteCourseState extends State<DeleteCourse> {
                       },
                     ),
                   );
-
                   if (response.statusCode == 204) {
                     if (!mounted) return; // 안전 체크 추가
                     Navigator.of(context).pop(); // 다이얼로그 닫기

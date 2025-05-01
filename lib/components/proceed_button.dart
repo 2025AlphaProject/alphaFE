@@ -27,16 +27,16 @@ class ProceedButton extends StatelessWidget {
       style: ButtonStyle(
 
         // WidgetStateProperty.all -> hover, tap 등 모든 동작 상황에 같은 스타일 적용
-        backgroundColor: WidgetStateProperty.all(const Color(0xFF2C2C2C)),
-        foregroundColor: WidgetStateProperty.all(const Color(0xFFF5F5F5)),
-        padding: WidgetStateProperty.all(padding_),
-        fixedSize: WidgetStateProperty.all(Size(size_w, size_h)),
-        shape: WidgetStateProperty.all(
+        backgroundColor: MaterialStateProperty.all(const Color(0xFF2C2C2C)),
+        foregroundColor: MaterialStateProperty.all(const Color(0xFFF5F5F5)),
+        padding: MaterialStateProperty.all(padding_),
+        fixedSize: MaterialStateProperty.all(Size(size_w, size_h)),
+        shape: MaterialStateProperty.all(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
         ),
-        textStyle: WidgetStateProperty.all(
+        textStyle: MaterialStateProperty.all(
           TextStyle(
             fontSize: fontSize_,
             fontWeight: fontWeight_,

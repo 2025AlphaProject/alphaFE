@@ -58,6 +58,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
 
   // 지도 마커를 업데이트하는 함수
   void _updateMarkers() {
+    final double screenWidth = MediaQuery.of(context).size.width;
     // 기존 마커 삭제
     for (final marker in _markers) {
       _mapController.deleteOverlay(NOverlayInfo(type: NOverlayType.marker, id: marker.info.id));
@@ -86,7 +87,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
             double.parse(_places[0]['y']),
             double.parse(_places[0]['x']),
           ),
-          zoom: 14,
+          zoom: screenWidth > 500 ? 13 : 14,
         ),
       );
     }
@@ -94,12 +95,15 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
 
         // 검색 입력창
         title: TextField(
           controller: _searchController,
+          style: TextStyle(fontSize: screenWidth * 0.04),
           decoration: InputDecoration(
             hintText: '장소를 입력하세요',
             suffixIcon: IconButton(
@@ -114,7 +118,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
 
           // 지도 영역: 네이버 지도 위젯
           SizedBox(
-            height: 300,
+            height: screenHeight * 0.35,
             child: NaverMap(
               onMapReady: (controller) {
                 _mapController = controller; // 지도 컨트롤러 초기화
@@ -127,7 +131,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: screenHeight * 0.015),
 
           // 검색 결과 리스트: 검색된 장소들을 리스트뷰로 표시
           Expanded(
@@ -137,8 +141,14 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                 final place = _places[index];
                 final isSelected = _selectedPlace?['id'] == place['id']; // 선택된 장소인지 여부
                 return ListTile(
-                  title: Text(place['place_name'] ?? ''),
-                  subtitle: Text(place['address_name'] ?? ''),
+                  title: Text(
+                    place['place_name'] ?? '',
+                    style: TextStyle(fontSize: screenWidth * 0.035),
+                  ),
+                  subtitle: Text(
+                    place['address_name'] ?? '',
+                    style: TextStyle(fontSize: screenWidth * 0.03),
+                  ),
                   tileColor: isSelected ? Colors.grey.shade300 : null, // 선택된 항목 배경색 변경
                   onTap: () {
                     setState(() {
@@ -152,7 +162,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                           double.parse(place['y']),
                           double.parse(place['x']),
                         ),
-                        zoom: 15,
+                        zoom: screenWidth > 500 ? 14 : 15,
                       ),
                     );
                   },
@@ -164,7 +174,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
           // "이 장소 추가하기" 버튼: 선택된 장소가 있을 때만 표시
           if (_selectedPlace != null)
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenWidth * 0.04),
               child: ElevatedButton(
                 onPressed: () {
 

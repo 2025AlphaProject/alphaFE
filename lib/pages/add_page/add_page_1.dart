@@ -19,6 +19,7 @@ class AddPage_1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
 
@@ -28,14 +29,14 @@ class AddPage_1 extends StatelessWidget {
       // 스크롤 가능한 콘텐츠 영역
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 26),
+          padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03, horizontal: screenWidth * 0.065),
 
           // 안내 문구와 행정구역 단위별(시, 군, 구) 카드들을 세로로 배치
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
 
-              SizedBox(height: 26),
+              SizedBox(height: screenWidth * 0.1),
 
               // 안내 문구 (가운데 정렬)
               Column(
@@ -43,16 +44,16 @@ class AddPage_1 extends StatelessWidget {
                 children: [
                   Text(
                     "✈️ 어디로 떠나볼까요?",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: screenWidth * 0.06, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     "나머지는 저희에게 맡겨두세요!",
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal, color: Color(0xFF757575)),
+                    style: TextStyle(fontSize: screenWidth * 0.032, fontWeight: FontWeight.normal, color: Color(0xFF757575)),
                   ),
                 ]
               ),
 
-              SizedBox(height: 50),
+              SizedBox(height: screenWidth * 0.15),
 
               // 행정구역 목록에 있는 요소들에 대해 GeneratorItem 생성
               ...districts.map((name) => GeneratorItem(title: name, tourId: tourId)).toList(),

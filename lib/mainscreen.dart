@@ -6,15 +6,8 @@ import 'pages/plan_page/plan_page.dart';
 import 'components/bottom_navi_bar.dart';
 
 class MainScreen extends StatefulWidget {
-  final String? username;
-  final String welcome_message;
-
-  const MainScreen({
-    required this.username,
-    required this.welcome_message,
-    Key? key
-  }) : super(key: key);
-
+  final String? accessToken;
+  const MainScreen({super.key, this.accessToken});
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -27,11 +20,13 @@ class _MainScreenState extends State<MainScreen> {
   // 하단 탭에 연결될 페이지 목록
   List<Widget> get _pages => [
     HomePage(
-        username: widget.username,
-        welcome_message: widget.welcome_message),
+      accessToken: widget.accessToken,
+    ),
     const PlanPage(),
     AddPage_0(),
-    const MyPage(),
+    MyPage(
+      accessToken: widget.accessToken,
+    ),
   ];
 
   @override
@@ -77,7 +72,7 @@ class _MainScreenState extends State<MainScreen> {
 
         // Container로 감싸 네비바에서 색상이 적용되지 않는 부분까지 색을 덧씌움, extendBody 비활성화
         bottomNavigationBar: Container(
-          height: MediaQuery.of(context).size.height*0.12,
+          height: MediaQuery.of(context).size.height*0.085,
           color: Color(0xFFFFFFFF),
           child: CustomBottomNavigationBar(
             currentIndex: _currentIndex,

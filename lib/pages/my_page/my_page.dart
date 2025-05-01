@@ -6,20 +6,22 @@ import 'my_page_Q&A.dart';
 import 'package:dio/dio.dart';
 
 class MyPage extends StatelessWidget {
-  const MyPage({Key? key}) : super(key: key);
+  final String? accessToken;
+  const MyPage({Key? key, required this.accessToken}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "마이 앱바 영역"),
-      body: MyPageBody(),
+      body: MyPageBody(accessToken: accessToken),
     );
   }
 }
 
 class MyPageBody extends StatefulWidget {
-  const MyPageBody({super.key});
+  final String? accessToken;
+  const MyPageBody({super.key, required this.accessToken});
 
   @override
   State<MyPageBody> createState() => _MyPageBodyState();
@@ -31,8 +33,6 @@ class _MyPageBodyState extends State<MyPageBody> {
   bool _isLoading = true;
   int tourCount = 0;
   int missionCount = 0;
-  String accessToken = ""; //TODO: 카카오 액세스 토큰 연결
-
 
   @override
   void initState() {
@@ -49,7 +49,7 @@ class _MyPageBodyState extends State<MyPageBody> {
     final response = await dio.get(
       'http://conever.duckdns.org:8000/user/me/',
       options: Options(headers: {
-        'Authorization': 'Bearer $accessToken',
+        'Authorization': 'Bearer ${widget.accessToken}',
         'Content-Type': 'application/json',
       }),
     );
@@ -70,13 +70,13 @@ class _MyPageBodyState extends State<MyPageBody> {
   Future<void> _fetchTourCount() async {
     final dio = Dio();
     try {
-      final response = await dio.get(
-        'http://conever.duckdns.org:8000/tour/',
-        options: Options(headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        }),
-      );
+    final response = await dio.get(
+      'http://conever.duckdns.org:8000/tour/',
+      options: Options(headers: {
+        'Authorization': 'Bearer ${widget.accessToken}',
+        'Content-Type': 'application/json',
+      }),
+    );
       setState(() {
         tourCount = response.data.length;
       });
@@ -92,7 +92,7 @@ class _MyPageBodyState extends State<MyPageBody> {
       final response = await dio.get(
         'http://conever.duckdns.org:8000/mission/list/',
         options: Options(headers: {
-          'Authorization': 'Bearer $accessToken',
+          'Authorization': 'Bearer ${widget.accessToken}',
           'Content-Type': 'application/json',
         }),
       );
@@ -158,7 +158,9 @@ class _MyPageBodyState extends State<MyPageBody> {
           SizedBox(height: width * 0.12),
           Column( //미션진행도랑 자주묻는 질문
             children: [
-              _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page(), width),
+              _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page(
+                accessToken: widget.accessToken,
+              ), width),
               _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", MyPage_QA(), width),
             ],
           ),
