@@ -7,6 +7,8 @@ class PlaceInfoBlock extends StatelessWidget {
   final String imageUrl; // 장소 이미지 URL
   final String title; // 장소 이름
   final String description; // 장소 설명
+  final width;
+  final height;
 
   // 주변 행사정보를 불러오기 위해 X-경도, Y-위도 좌표 정보 저장(WGS)
   final double mapX;
@@ -19,6 +21,8 @@ class PlaceInfoBlock extends StatelessWidget {
     required this.description,
     required this.mapX,
     required this.mapY,
+    required this.width,
+    required this.height,
   }) : super(key: key);
 
   @override
@@ -26,7 +30,7 @@ class PlaceInfoBlock extends StatelessWidget {
 
     // 장소 정보를 카드 형태로 렌더링
     return Container(
-      width: 260, // 카드 전체 영역의 너비
+      width: width, // 카드 전체 영역의 너비
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -34,23 +38,23 @@ class PlaceInfoBlock extends StatelessWidget {
             borderRadius: BorderRadius.circular(20), // 이미지 모서리 둥글게 처리
             child: Image.network(
               imageUrl,
-              width: 260,
-              height: 180,
+              width: width,
+              height: height,
               fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: width * 0.05 ),
 
           // 장소명 표시
           Row(
             children: [
-              const Icon(Icons.location_on, size: 20, color: Color(0xFF000000)),
-              const SizedBox(width: 3),
+              Icon(Icons.location_on, size: width * 0.1, color: Color(0xFF000000)),
+              SizedBox(width: width * 0.03),
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: TextStyle(
+                    fontSize: width * 0.055,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF000000),
                   ),
@@ -58,13 +62,13 @@ class PlaceInfoBlock extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: width * 0.038),
 
           // 장소 설명 표시
           Text(
             description,
-            style: const TextStyle(
-              fontSize: 10,
+            style: TextStyle(
+              fontSize: width * 0.052,
               color: Color(0xFF7A7A7A),
             ),
           ),
