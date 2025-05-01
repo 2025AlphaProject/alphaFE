@@ -27,7 +27,8 @@
 *   9. gps.dart
 * */
 
-import 'package:alpha_fe/pages/login_page/login.dart';
+import 'package:alpha_fe/pages/loading_page/page_controller.dart';
+import 'package:alpha_fe/components/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'mainscreen.dart';
@@ -72,7 +73,7 @@ Future<void> main() async {
   //await initNaverMapSdk();
 
   runApp(MaterialApp(
-    home: LoginPage(
+    home: LoginPageController(
       kakaoNativeAppKey: kakaoNativeAppKey,
     ),
   ));
