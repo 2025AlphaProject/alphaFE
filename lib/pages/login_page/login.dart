@@ -1,23 +1,35 @@
+import 'package:alpha_fe/mainscreen.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../home_page/home_page.dart';
 
-void main() async {
-  await dotenv.load();
-  KakaoSdk.init(nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY']!);
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class LoginPage extends StatelessWidget {
+  final String? kakaoNativeAppKey;
+  const LoginPage({super.key, this.kakaoNativeAppKey});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: KakaoLoginPage(),
+      home: KakaoLoginPage(
+        kakaoNativeAppKey: kakaoNativeAppKey,
+      ),
     );
   }
 }
 
-class KakaoLoginPage extends StatelessWidget {
+class KakaoLoginPage extends StatefulWidget {
+  final String? kakaoNativeAppKey;
+  const KakaoLoginPage({super.key, this.kakaoNativeAppKey});
+  @override
+  _KakaoLoginPageState createState() => _KakaoLoginPageState();
+}
+
+class _KakaoLoginPageState extends State<KakaoLoginPage> {
+  @override
+  void initState() {
+    super.initState();
+    KakaoSdk.init(nativeAppKey: widget.kakaoNativeAppKey!);
+  }
   Future<void> _loginWithKakao() async {
     try {
       OAuthToken token;
@@ -40,10 +52,7 @@ class KakaoLoginPage extends StatelessWidget {
         token = await UserApi.instance.loginWithKakaoAccount();
         print('✅ 웹 로그인 성공');
       }
-
       print('✅ ID Token: ${token.idToken}');
-      print('✅ Access Token: ${token.accessToken}');
-      print('🔄 Refresh Token: ${token.refreshToken}');
 
       // 사용자 정보 불러오기
       User user = await UserApi.instance.me();
@@ -51,16 +60,8 @@ class KakaoLoginPage extends StatelessWidget {
       // 누락된 동의 항목 확인
       List<String> scopes = [];
 
-      if (user.kakaoAccount?.emailNeedsAgreement == true) {
-        scopes.add('account_email');
-      }
-
       if (user.kakaoAccount?.profileNeedsAgreement == true) {
         scopes.add('profile_nickname');
-      }
-
-      if (user.kakaoAccount?.ageRangeNeedsAgreement == true) {
-        scopes.add('age_range');
       }
 
       // 추가 동의 필요한 항목 요청
@@ -69,11 +70,31 @@ class KakaoLoginPage extends StatelessWidget {
         user = await UserApi.instance.me();
       }
 
-      // 사용자 정보 출력
-      print('✅ 로그인 성공!');
-      print('이메일: ${user.kakaoAccount?.email}');
-      print('닉네임: ${user.kakaoAccount?.profile?.nickname}');
-      print('연령대: ${user.kakaoAccount?.ageRange}');
+      // 유저 등록
+      final dio = Dio();
+      try {
+        final formData = FormData.fromMap({
+          'id_token': token.idToken,
+        });
+
+        await dio.post(
+          'http://conever.duckdns.org:8000/auth/login/',
+          data: formData,
+          options: Options(
+            headers: {
+              'Accept': 'application/json',  // Content-Type은 Dio가 자동 지정
+            },
+          ),
+        );
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MainScreen(
+              accessToken: token.accessToken,
+            )));
+      } catch (e) {
+        print('❗ 사용자 등록 실패: $e');
+      }
     } catch (e) {
       print('❌ 로그인 전체 실패: $e');
     }
