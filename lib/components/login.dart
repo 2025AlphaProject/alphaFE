@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:alpha_fe/mainscreen.dart';
+import 'access_token_controller.dart';
 
 class KakaoLoginService {
   static Future<void> login(BuildContext context, String kakaoNativeAppKey) async {
@@ -45,6 +46,8 @@ class KakaoLoginService {
         data: formData,
         options: Options(headers: {'Accept': 'application/json'}),
       );
+
+      await secureStorage.write(key: 'access_token', value: token.accessToken);
 
       Navigator.push(
         context,
