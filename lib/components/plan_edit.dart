@@ -1,3 +1,4 @@
+import 'package:alpha_fe/mainscreen.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';
@@ -186,7 +187,9 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                   if (!mounted) return; // 안전 체크 추가
                   Navigator.of(context).pop(); // 다이얼로그 닫기
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => MyApp()), //처음으로 되돌아감
+                    MaterialPageRoute(builder: (context) => MainScreen(
+                      accessToken: accessToken,
+                    )), //처음으로 되돌아감
                   );
                 } else { //TODO: 오류뜰때 어케할지 수정해야함
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -252,7 +255,9 @@ class _DeleteTourState extends State<DeleteTour> {
                 Navigator.of(context).pop(); // 다이얼로그 닫기
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => MyApp() //처음으로 되돌아감
+                    builder: (context) => MainScreen(
+                      accessToken: accessToken,
+                    ) //처음으로 되돌아감
                   ),
                 );
               } else { //TODO: 오류뜰때 어케할지 수정해야함
@@ -319,7 +324,9 @@ class _DeleteCourseState extends State<DeleteCourse> {
                 Navigator.of(context).pop(); // 다이얼로그 닫기
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => MyApp() //처음으로 되돌아감
+                    builder: (context) => MainScreen(
+                      accessToken: accessToken,
+                    ) //처음으로 되돌아감
                   ),
                 );
               } else { //TODO: 오류뜰때 어케할지 수정해야함

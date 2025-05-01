@@ -6,6 +6,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:alpha_fe/main.dart';
 
+import '../../mainscreen.dart';
+
 class planEditDate extends StatefulWidget {
   final String startDate;
   final String endDate;
@@ -197,7 +199,9 @@ class _planEditDateState extends State<planEditDate> {
                                       Navigator.of(context).pop(); // 다이얼로그 닫기
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
-                                          builder: (context) => MyApp(), // 처음으로 다시 돌아가기
+                                          builder: (context) => MainScreen(
+                                            accessToken: accessToken,
+                                          ), // 처음으로 다시 돌아가기
                                         ),
                                       );
                                     } else { //TODO: 오류뜰때 어케할지 수정해야함

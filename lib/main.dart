@@ -28,13 +28,13 @@
 * */
 
 import 'package:alpha_fe/pages/loading_page/page_controller.dart';
-import 'package:alpha_fe/components/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'mainscreen.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
@@ -72,22 +72,27 @@ Future<void> main() async {
   // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
   //await initNaverMapSdk();
 
-  runApp(MaterialApp(
-    home: LoginPageController(
-      kakaoNativeAppKey: kakaoNativeAppKey,
-    ),
-  ));
+  final secureStorage = FlutterSecureStorage();
+  final accessToken = await secureStorage.read(key: 'access_token');
 
+  runApp(MaterialApp(
+    home: accessToken != null
+        ? MainScreen(
+      accessToken: accessToken,
+    )
+        : LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey),
+  ));
   // 화면 세로로 고정
 }
 
-class MyApp extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MainScreen(),
-    );
-  }
-}
+// class MyApp extends StatelessWidget {
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: MainScreen(
+//       ),
+//     );
+//   }
+// }
