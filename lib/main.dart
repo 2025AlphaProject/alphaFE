@@ -34,6 +34,8 @@ import 'mainscreen.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // 로거 사용을 위한 전역변수 선언
@@ -85,14 +87,31 @@ Future<void> main() async {
   // 화면 세로로 고정
 }
 
-// class MyApp extends StatelessWidget {
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       home: MainScreen(
-//       ),
-//     );
-//   }
-// }
+class MyApp extends StatelessWidget {
+
+  final String? username;
+  final String welcome_message = '오늘도 좋은 하루에요👋';
+
+  const MyApp({super.key, required this.username});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
+      supportedLocales: const [
+        Locale('ko', 'KR'), // 지원하는 로케일에 한국어 추가
+        Locale('en', 'US')
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,   //  머티리얼 컴포넌트 한글화
+        GlobalWidgetsLocalizations.delegate,    //  일반 위젯 한글화
+        GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
+      ],
+      debugShowCheckedModeBanner: false,
+      home: MainScreen(
+        username: username ?? '알 수 없는 유저',
+        welcome_message: welcome_message,
+      ),
+    );
+  }
+}
