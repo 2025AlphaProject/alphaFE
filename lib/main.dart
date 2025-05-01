@@ -78,6 +78,16 @@ Future<void> main() async {
   final accessToken = await secureStorage.read(key: 'access_token');
 
   runApp(MaterialApp(
+    locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
+    supportedLocales: const [
+      Locale('ko', 'KR'), // 지원하는 로케일에 한국어 추가
+      Locale('en', 'US')
+    ],
+    localizationsDelegates: const [
+      GlobalMaterialLocalizations.delegate,   //  머티리얼 컴포넌트 한글화
+      GlobalWidgetsLocalizations.delegate,    //  일반 위젯 한글화
+      GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
+    ],
     home: accessToken != null
         ? MainScreen(
       accessToken: accessToken,
@@ -97,20 +107,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
-      supportedLocales: const [
-        Locale('ko', 'KR'), // 지원하는 로케일에 한국어 추가
-        Locale('en', 'US')
-      ],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,   //  머티리얼 컴포넌트 한글화
-        GlobalWidgetsLocalizations.delegate,    //  일반 위젯 한글화
-        GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
-      ],
+
       debugShowCheckedModeBanner: false,
       home: MainScreen(
-        username: username ?? '알 수 없는 유저',
-        welcome_message: welcome_message,
+        accessToken: '',
       ),
     );
   }
