@@ -1,3 +1,4 @@
+import 'package:alpha_fe/mainscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -135,7 +136,9 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                         if (response.statusCode == 201) {
                                           Navigator.pop(context); // close the dialog
                                           Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(builder: (context) => MyApp()), //처음으로 되돌아감
+                                            MaterialPageRoute(builder: (context) => MainScreen(
+                                              accessToken: accessToken,
+                                            )), //처음으로 되돌아감
                                           );
                                         }
                                       } catch (e) {
