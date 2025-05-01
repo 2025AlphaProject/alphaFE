@@ -6,15 +6,8 @@ import 'pages/plan_page/plan_page.dart';
 import 'components/bottom_navi_bar.dart';
 
 class MainScreen extends StatefulWidget {
-  final String? username;
-  final String welcome_message;
-
-  const MainScreen({
-    required this.username,
-    required this.welcome_message,
-    Key? key
-  }) : super(key: key);
-
+  final String accessToken;
+  const MainScreen({super.key, required this.accessToken});
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -27,11 +20,13 @@ class _MainScreenState extends State<MainScreen> {
   // 하단 탭에 연결될 페이지 목록
   List<Widget> get _pages => [
     HomePage(
-        username: widget.username,
-        welcome_message: widget.welcome_message),
+      accessToken: widget.accessToken,
+    ),
     const PlanPage(),
     AddPage_0(),
-    const MyPage(),
+    MyPage(
+      accessToken: widget.accessToken,
+    ),
   ];
 
   @override

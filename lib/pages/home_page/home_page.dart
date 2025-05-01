@@ -6,17 +6,10 @@ import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
 import '../../components/plan_card.dart'; // 여행 계획 카드 컴포넌트
 import '../../components/proceed_button.dart'; // 버튼 컴포넌트
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomePage extends StatefulWidget {
-  final String? username;
-  final String welcome_message;
-
-  const HomePage({
-    required this.username,
-    required this.welcome_message,
-    Key? key
-  }) : super(key: key);
+  final String? accessToken;
+  const HomePage({super.key, this.accessToken});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -27,6 +20,7 @@ class _HomePageState extends State<HomePage> {
 
   bool _isLoading = true;
   Map<String, dynamic>? _nearestPlan;
+  String? _currentUsername;
   Map<String, dynamic>? _recommendedPlace;
 
   @override
@@ -55,7 +49,7 @@ class _HomePageState extends State<HomePage> {
         '$baseUrl/user/me/',
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}',
+            'Authorization': 'Bearer ${widget.accessToken}',
             'Accept': 'application/json'
           },
         ),
@@ -63,13 +57,16 @@ class _HomePageState extends State<HomePage> {
 
       // 현재 사용자 이름 추출
       final currentUsername = userResponse.data['username'];
+      setState(() {
+        _currentUsername = currentUsername;
+      });
 
       // /tour/ API 호출하여 전체 여행 목록 가져오기
       final tourResponse = await dio.get(
         '$baseUrl/tour/',
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}',
+            'Authorization': 'Bearer ${widget.accessToken}',
             'Accept': 'application/json'
           },
         ),
@@ -146,8 +143,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
-    print(MediaQuery.of(context).size.height);
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
 
@@ -167,18 +162,18 @@ class _HomePageState extends State<HomePage> {
             children: [
               SizedBox(height: MediaQuery.of(context).size.height * 0.024),
               Text(
-                '${widget.username}님,',
+                _currentUsername ?? '',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: MediaQuery.of(context).size.width * 0.05,
                 ),
               ),
               Text(
-                widget.welcome_message,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: MediaQuery.of(context).size.width * 0.05,
-                ),
+                  "하이요",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: MediaQuery.of(context).size.width * 0.05,
+                  )
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.024),
               Text(
@@ -272,7 +267,7 @@ class _HomePageState extends State<HomePage> {
 
                     // 트렌딩 장소 설명 텍스트
                     Text(
-                      "${_recommendedPlace!['title']}은(는) ${_recommendedPlace!['address'].split(' ')[1]}의 관광지 입니다.\n${widget.username} 님의 마음에 드셨으면 좋겠네요!",
+                      "${_recommendedPlace!['title']}은(는) ${_recommendedPlace!['address'].split(' ')[1]}의 관광지 입니다.\n$_currentUsername 님의 마음에 드셨으면 좋겠네요!",
                       style: TextStyle(
                         fontSize: MediaQuery.of(context).size.width * 0.03,
                         color: Colors.grey[700],
