@@ -267,7 +267,7 @@ class _HomePageState extends State<HomePage> {
 
                     // 트렌딩 장소 설명 텍스트
                     Text(
-                      "${_recommendedPlace!['title']}은(는) ${_recommendedPlace!['address'].split(' ')[1]}의 관광지 입니다.\n${widget.username} 님의 마음에 드셨으면 좋겠네요!",
+                      "${_recommendedPlace!['title']}은(는) ${_recommendedPlace!['address'].split(' ')[1]}의 관광지 입니다.\n$_currentUsername 님의 마음에 드셨으면 좋겠네요!",
                       style: TextStyle(
                         fontSize: MediaQuery.of(context).size.width * 0.03,
                         color: Colors.grey[700],
