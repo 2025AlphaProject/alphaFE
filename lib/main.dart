@@ -96,22 +96,3 @@ Future<void> main() async {
   ));
   // 화면 세로로 고정
 }
-
-class MyApp extends StatelessWidget {
-
-  final String? username;
-  final String welcome_message = '오늘도 좋은 하루에요👋';
-
-  const MyApp({super.key, required this.username});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-
-      debugShowCheckedModeBanner: false,
-      home: MainScreen(
-        accessToken: '',
-      ),
-    );
-  }
-}
