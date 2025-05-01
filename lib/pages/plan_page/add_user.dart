@@ -135,7 +135,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                         if (response.statusCode == 201) {
                                           Navigator.pop(context); // close the dialog
                                           Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(builder: (context) => const MyApp()), //처음으로 되돌아감
+                                            MaterialPageRoute(builder: (context) => MyApp()), //처음으로 되돌아감
                                           );
                                         }
                                       } catch (e) {

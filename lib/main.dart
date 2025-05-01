@@ -27,13 +27,14 @@
 *   9. gps.dart
 * */
 
+import 'package:alpha_fe/pages/loading_page/page_controller.dart';
+import 'package:alpha_fe/components/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'mainscreen.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:dio/dio.dart';
 
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
@@ -54,68 +55,39 @@ Future<void> initNaverMapSdk() async {
   );
 }
 
-// 유저 정보 불러오기 함수
-Future<String?> fetchCurrentUsername() async {
-  final dio = Dio();
-  final baseUrl = 'http://conever.duckdns.org:8000';
-  String? userName;
-
-  try {
-    final response = await dio.get(
-      '$baseUrl/user/me/',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}',
-          'Accept': 'application/json'
-        },
-      ),
-    );
-    userName = response.data['username'];
-  } catch (e) {
-    print('❗️ 사용자 정보 불러오기 실패: $e');
-  }
-
-  return userName;
-}
-
 Future<void> main() async {
   // 비동기 초기화 <- await 관련 코드 오류 방지하기 위해 사용
   WidgetsFlutterBinding.ensureInitialized();
 
   // dotenv 사용을 위한 초기화
   await dotenv.load();
+  final kakaoNativeAppKey = dotenv.env['KAKAO_NATIVE_APP_KEY'];
+  logger.d('🔑 Kakao Native App Key: $kakaoNativeAppKey');
   WidgetsFlutterBinding.ensureInitialized();
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+
   // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
   //await initNaverMapSdk();
 
-  // 유저 이름 받아오기
-  final username = await fetchCurrentUsername();
-
-  // 앱 실행
-  runApp(MyApp(username: username));
+  runApp(MaterialApp(
+    home: LoginPageController(
+      kakaoNativeAppKey: kakaoNativeAppKey,
+    ),
+  ));
 
   // 화면 세로로 고정
 }
 
 class MyApp extends StatelessWidget {
 
-  final String? username;
-  final String welcome_message = '오늘도 좋은 하루에요👋';
-
-  const MyApp({super.key, required this.username});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainScreen(
-        username: username ?? '알 수 없는 유저',
-        welcome_message: welcome_message,
-      ),
+      home: MainScreen(),
     );
   }
 }

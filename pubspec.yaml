@@ -40,6 +40,7 @@ dependencies:
   logger: ^2.0.2
   table_calendar: ^3.0.9
   url_launcher: ^6.2.5
+  smooth_page_indicator: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +88,10 @@ flutter:
      - assets/seoul_image.jpg
      - .env
      - assets/icon.png
+     - assets/loading2_1.png
+     - assets/loading2_2.png
+     - assets/loading2_3.png
+     - assets/kakao_login_button.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

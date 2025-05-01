@@ -2,11 +2,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const LoadingPage1());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class LoadingPage1 extends StatelessWidget {
+  const LoadingPage1({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +27,7 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
   late List<AnimationController> _controllers;
   late List<Animation<double>> _animations;
   List<double> _animationProgress = [0, 0, 0]; // 각 구간의 진행률 저장
+  int _currentTextIndex = 0;
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
     _controllers[index].forward().then((_) {
       setState(() {
         _animationProgress[index] = 1.0; // 현재 구간 애니메이션 완료
+        _currentTextIndex = index + 1;
       });
       _startSequentialAnimation(index + 1); // 다음 구간 애니메이션 실행
     });
@@ -79,13 +81,43 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Expanded(
+          SizedBox(
+            height: MediaQuery.of(context).size.height*0.4,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width*0.0533, MediaQuery.of(context).size.height*0.246, MediaQuery.of(context).size.width*0.0533, 0),
               child: Center(
-                  child: Text(
-                    "어디로 떠날지 고민되시나요?\nAI가 당신을 위한 완벽한 여행지를 추천해요.\n가장 특별한 여행을 시작해보세요!",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ))),
-          Expanded(
+                  child: Column(
+                    children: [
+                      AnimatedOpacity(
+                        opacity: _currentTextIndex >= 0 ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 500),
+                        child: Text(
+                          "어디로 떠날지가 고민이시나요?",
+                          style: TextStyle(fontSize: MediaQuery.of(context).size.width*0.064, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      AnimatedOpacity(
+                        opacity: _currentTextIndex >= 1 ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 500),
+                        child: Text(
+                          "AI가 추천하는 일정을 확인하고,",
+                          style: TextStyle(fontSize: MediaQuery.of(context).size.width*0.064, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      AnimatedOpacity(
+                        opacity: _currentTextIndex >= 2 ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 500),
+                        child: Text(
+                          "가장 특별한 여행을 떠나보세요!",
+                          style: TextStyle(fontSize: MediaQuery.of(context).size.width*0.064, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height*0.4,
             child: Stack(
               children: [
                 Positioned.fill(
