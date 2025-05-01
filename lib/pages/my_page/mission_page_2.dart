@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:alpha_fe/components/camera.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 
@@ -31,11 +34,15 @@ class MissionPage_2_body extends StatefulWidget {
     required this.isCompleted,
   });
 
+
   @override
   State<MissionPage_2_body> createState() => _MissionPage_2_bodyState();
 }
 
 class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
+  final CameraService _cameraService = CameraService();
+  File? _image;
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -79,8 +86,13 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
             // ✅ 촬영 버튼
             if (!widget.isCompleted) //미완료 미션일 경우만 사진 촬영버튼 나타나도록
               ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: 카메라 촬영 기능 연결 예정
+                onPressed: () async {
+                  final File? image = await _cameraService.getImageFromCamera();
+                  if (image != null) {
+                    setState(() {
+                      _image = image;
+                    });
+                  }
                 },
                 icon: Icon(Icons.camera_alt, size: width * 0.06),
                 label: Text(
