@@ -33,15 +33,18 @@ class _nearEventState extends State<nearEvent> {
     final event = widget.eventData;
     return SingleChildScrollView(// 사진 크기 때문에 scrollview로
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.066),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               event['title'],
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.066,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.035),
             if (event['img_url'] != null && event['img_url'].toString().isNotEmpty) //사진 url 있으면 사진 나타내기
               Container(
                 width: double.infinity,
@@ -57,14 +60,19 @@ class _nearEventState extends State<nearEvent> {
                     if (loadingProgress == null) return child;
                     return const Center(child: CircularProgressIndicator());
                   },
-                  errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image, size: 48)),
+                  errorBuilder: (context, error, stackTrace) => Center(
+                    child: Icon(
+                      Icons.broken_image,
+                      size: MediaQuery.of(context).size.width * 0.13,
+                    ),
+                  ),
                 ),
               ),
-            const SizedBox(height: 24),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.035),
             infoRow("유형", event['category'] ?? "-"), //전시유형
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.012),
             infoRow("행사 기간", "${event['start_date'] ?? '-'} ~ ${event['end_date'] ?? '-'}"),  //기간
-            const SizedBox(height: 8),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.012),
             infoRow( //행사별 웹사이트로 이동 가능 링크 연동
               "웹사이트",
               (event['homepage_url'] == null || event['homepage_url'].toString().isEmpty)
@@ -85,7 +93,7 @@ class _nearEventState extends State<nearEvent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 80,
+          width: MediaQuery.of(context).size.width * 0.22,
           child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
         ),
         Expanded(
@@ -102,10 +110,18 @@ class _nearEventState extends State<nearEvent> {
                   },
                   child: Text(
                     value,
-                    style: const TextStyle(color: Colors.grey, decoration: TextDecoration.underline),
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width * 0.035,
+                      color: Colors.grey,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 )
-              : Text(value, style: const TextStyle(color: Colors.grey)),
+              : Text(value, style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.035,
+                color: Colors.grey,
+                decoration: null,
+              )),
         ),
       ],
     );
