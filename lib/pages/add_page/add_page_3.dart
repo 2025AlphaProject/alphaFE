@@ -37,7 +37,15 @@ class _AddPage_3State extends State<AddPage_3> {
     final dio = Dio();
     final url = 'http://conever.duckdns.org:8000/tour/${widget.tour_id}/';
     try {
-      final response = await dio.get(url);
+      final response = await dio.get(
+          url,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${widget.accessToken}'
+          },
+        ),
+      );
       return response.data;
     } catch (e) {
       print("❌ 여행 데이터 불러오기 실패: $e");
