@@ -22,8 +22,12 @@ class _MainScreenState extends State<MainScreen> {
     HomePage(
       accessToken: widget.accessToken,
     ),
-    const PlanPage(),
-    AddPage_0(),
+    PlanPage(
+      accessToken: widget.accessToken,
+    ),
+    AddPage_0(
+      accessToken: widget.accessToken,
+    ),
     MyPage(
       accessToken: widget.accessToken,
     ),

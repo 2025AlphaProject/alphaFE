@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:alpha_fe/components/plan_card.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/components/plan_course_event.dart';
@@ -9,8 +8,9 @@ import 'package:alpha_fe/pages/plan_page/add_user.dart';
 
 class PlanPage2 extends StatefulWidget {
   final int tour_id;
+  final String? accessToken;
 
-  const PlanPage2({Key? key, required this.tour_id}) : super(key: key);
+  const PlanPage2({Key? key, required this.tour_id, required this.accessToken}) : super(key: key);
 
   @override
   State<PlanPage2> createState() => _PlanPage2State();
@@ -22,15 +22,16 @@ class _PlanPage2State extends State<PlanPage2> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "계획보기 앱바 영역"),
-      body: plan_page2_body(tour_id: widget.tour_id),
+      body: plan_page2_body(tour_id: widget.tour_id, accessToken: widget.accessToken),
     );
   }
 }
 
 class plan_page2_body extends StatefulWidget {
   final int tour_id;
+  final String? accessToken;
 
-  const plan_page2_body({Key? key, required this.tour_id}) : super(key: key);
+  const plan_page2_body({Key? key, required this.tour_id, required this.accessToken}) : super(key: key);
 
   @override
   State<plan_page2_body> createState() => _plan_page2_bodyState();
@@ -44,7 +45,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   String userProfileImageUrl = "";
   List<Map<String, String>> travelers = [];
   final TextEditingController _textController = TextEditingController();
-  final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
+  String? get accessToken => widget.accessToken;
   String get dateRange => "$startDate ~ $endDate";
 
   List<Map<String, dynamic>> courseData = [];
@@ -350,7 +351,10 @@ class Traveler_List extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ProfileListPage(tour_id: parentState!.widget.tour_id),//누르면 여행자 추가 페이지로 이동
+                          builder: (context) => ProfileListPage(
+                              tour_id: parentState!.widget.tour_id,
+                              accessToken: parentState!.widget.accessToken,
+                          ),//누르면 여행자 추가 페이지로 이동
                         ),
                       );
                     },
