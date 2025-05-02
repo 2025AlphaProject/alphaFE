@@ -1,26 +1,26 @@
 import 'package:alpha_fe/mainscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:alpha_fe/components/app_bar.dart';
-import 'package:alpha_fe/main.dart';
 
 class ProfileListPage extends StatelessWidget {
   final int tour_id;
-  const ProfileListPage({super.key, required this.tour_id});
+  final String? accessToken;
+  const ProfileListPage({super.key, required this.tour_id, required this.accessToken});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const DefaultAppBar(title: "친구추가"),
-      body: ProfileListBody(tour_id: tour_id),
+      body: ProfileListBody(tour_id: tour_id, accessToken: accessToken),
     );
   }
 }
 
 class ProfileListBody extends StatefulWidget {
   final int tour_id;
-  const ProfileListBody({super.key, required this.tour_id});
+  final String? accessToken;
+  const ProfileListBody({super.key, required this.tour_id, required this.accessToken});
 
   @override
   State<ProfileListBody> createState() => _ProfileListBodyState();
@@ -31,7 +31,6 @@ class _ProfileListBodyState extends State<ProfileListBody> {
   List<Map<String, dynamic>> _profiles = [];
 
   late final int tour_id;
-  final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
 
   // 유저 검색 api
   Future<void> fetchAddUsers() async {
@@ -143,7 +142,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                           'http://conever.duckdns.org:8000/tour/add_traveler/',
                                           options: Options(
                                             headers: {
-                                              'Authorization': 'Bearer $accessToken',
+                                              'Authorization': 'Bearer ${widget.accessToken}',
                                               'Content-Type': 'application/json',
                                             },
                                           ),
@@ -154,6 +153,11 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                         );
                                         if (response.statusCode == 201) {
                                           Navigator.pop(context); // close the dialog
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(builder: (context) => MainScreen(
+                                              accessToken: widget.accessToken,
+                                            )), //처음으로 되돌아감
+                                          );
                                         }
                                       } catch (e) {
                                         print('Error adding user: $e');

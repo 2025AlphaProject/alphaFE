@@ -4,19 +4,20 @@ import 'package:dio/dio.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 import '../../mainscreen.dart';
 
 class planEditDate extends StatefulWidget {
   final String startDate;
   final String endDate;
   final int tour_id;
+  final String? accessToken;
 
   const planEditDate({
     super.key,
     required this.startDate,
     required this.endDate,
     required this.tour_id,
+    required this.accessToken,
   });
 
   @override

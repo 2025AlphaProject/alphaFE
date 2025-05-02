@@ -2,7 +2,6 @@ import 'package:alpha_fe/pages/add_page/add_page_1.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../components/proceed_button.dart';
 import '../../components/app_bar.dart';
 
@@ -11,6 +10,9 @@ import '../../components/app_bar.dart';
 
 // 추가 탭 0번째 페이지: 여행 이름과 날짜 입력
 class AddPage_0 extends StatefulWidget {
+  final String? accessToken;
+
+  const AddPage_0({Key? key, required this.accessToken}) : super(key: key);
 
   @override
   _AddPage_0State createState() => _AddPage_0State();
@@ -87,7 +89,7 @@ class _AddPage_0State extends State<AddPage_0> {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}'
+            'Authorization': 'Bearer ${widget.accessToken}'
           }
         ),
         data: {
