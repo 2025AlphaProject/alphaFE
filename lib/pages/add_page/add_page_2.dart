@@ -179,7 +179,7 @@ class _AddPage_2State extends State<AddPage_2> {
           context,
           CupertinoPageRoute(
             builder: (_) => AddPage_3(
-              message: "여행 저장 성공, tourId = ${widget.tourId}",
+              tour_id: widget.tourId,
             ),
           ),
         );

@@ -24,7 +24,7 @@ class AddPage_1 extends StatelessWidget {
       backgroundColor: Color(0xFFFFFFFF),
 
       // 상단 앱바 설정
-      appBar: const DefaultAppBar(title: "새 여행지 추가"),
+      appBar: const DefaultAppBar(title: "추천경로 생성하기"),
 
       // 스크롤 가능한 콘텐츠 영역
       body: SingleChildScrollView(
