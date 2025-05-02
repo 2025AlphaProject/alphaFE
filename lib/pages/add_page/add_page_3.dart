@@ -9,8 +9,10 @@ import 'package:alpha_fe/components/auth_token_handler.dart';
 
 class AddPage_3 extends StatefulWidget {
   final int tour_id; // 정상 등록 여부 확인 텍스트
+  final String? accessToken;
   const AddPage_3({
     required this.tour_id,
+    required this.accessToken,
     Key? key
   }) : super(key: key);
 

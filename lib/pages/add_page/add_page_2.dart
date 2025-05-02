@@ -180,6 +180,7 @@ class _AddPage_2State extends State<AddPage_2> {
           CupertinoPageRoute(
             builder: (_) => AddPage_3(
               tour_id: widget.tourId,
+              accessToken: widget.accessToken,
             ),
           ),
         );
