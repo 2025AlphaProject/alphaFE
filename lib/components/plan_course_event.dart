@@ -42,6 +42,18 @@ class travel_plan extends StatelessWidget {
             ],
           );
         }).toList(),
+        if (courseData.isEmpty)
+          Padding(
+            padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.044),
+            child: Text(
+              "등록된 경로가 없습니다.",
+              style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.039,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -240,7 +252,7 @@ class _EventsState extends State<Events> {
           events = List<Map<String, dynamic>>.from(data);
         });
       }
-    } catch (e) {  //TODO: 오류뜰때 어케할지 수정해야함
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('오류 발생: $e')),
       );

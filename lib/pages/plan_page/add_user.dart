@@ -60,19 +60,23 @@ class _ProfileListBodyState extends State<ProfileListBody> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(screenWidth * 0.02),
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration( //원하는 유저 검색가능
               hintText: '검색...',
-              prefixIcon: const Icon(Icons.search),
+              hintStyle: TextStyle(fontSize: screenWidth * 0.04),
+              prefixIcon: Icon(Icons.search, size: screenWidth * 0.06),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
+            style: TextStyle(fontSize: screenWidth * 0.04),
             onSubmitted: (value) {
               setState(() {}); // 엔터 누르면 화면 리빌드
             },
@@ -87,7 +91,9 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                   .toString()
                   .contains(_searchController.text)) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.02,
+                      vertical: screenHeight * 0.005),
                   child: Row(
                     children: [
                       Expanded(
@@ -97,10 +103,13 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                 ? NetworkImage(profile['profile_image_url'])
                                 : null,
                             child: profile['profile_image_url'] == null || profile['profile_image_url'] == ""
-                                ? const Icon(Icons.person)
+                                ? Icon(Icons.person, size: screenWidth * 0.06)
                                 : null,
                           ),
-                          title: Text(profile['username']),
+                          title: Text(
+                            profile['username'],
+                            style: TextStyle(fontSize: screenWidth * 0.045),
+                          ),
                         ),
                       ),
                       IconButton( //해당유저 추가 버튼
@@ -108,13 +117,23 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                           showDialog(
                             context: context,
                             builder: (context) {
+                              final dWidth = MediaQuery.of(context).size.width;
                               return AlertDialog(
-                                title: const Text('추가 확인'),
-                                content: Text('이 유저를 추가하시겠습니까?'),
+                                title: Text(
+                                  '추가 확인',
+                                  style: TextStyle(fontSize: dWidth * 0.045),
+                                ),
+                                content: Text(
+                                  '이 유저를 추가하시겠습니까?',
+                                  style: TextStyle(fontSize: dWidth * 0.04),
+                                ),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
-                                    child: const Text('취소'),
+                                    child: Text(
+                                      '취소',
+                                      style: TextStyle(fontSize: dWidth * 0.04),
+                                    ),
                                   ),
                                   ElevatedButton(
                                     onPressed: () async {
@@ -140,20 +159,23 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                         print('Error adding user: $e');
                                       }
                                     },
-                                    child: const Text('확인'),
+                                    child: Text(
+                                      '확인',
+                                      style: TextStyle(fontSize: dWidth * 0.04),
+                                    ),
                                   ),
                                 ],
                               );
                             },
                           );
                         },
-                        icon: const Icon(Icons.add),
+                        icon: Icon(Icons.add, size: screenWidth * 0.06),
                       ),
                     ],
                   ),
                 );
               } else {
-                return const SizedBox.shrink();
+                return SizedBox.shrink();
               }
             },
           ),

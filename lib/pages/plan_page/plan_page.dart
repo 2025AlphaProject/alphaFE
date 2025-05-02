@@ -43,6 +43,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     _fetchTourData();
     _fetchUserME();
   }
+
   Future<void> _fetchUserME() async {
     try{
       final response = await dio.get(
@@ -109,28 +110,20 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           return users.any((u) => u['username'] == currentUsername);
         }).toList();
 
-        if (userPlans.isNotEmpty) {
-          final parsedData = userPlans.map<Map<String, dynamic>>((item) =>
-          {
-            'tour_id': item['id'],
-            'title': item['tour_name'],
-            'startDate': item['start_date'],
-            'endDate': item['end_date'],
-          }).toList();
+        final parsedData = userPlans.map<Map<String, dynamic>>((item) => {
+          'tour_id': item['id'],
+          'title': item['tour_name'],
+          'startDate': item['start_date'],
+          'endDate': item['end_date'],
+        }).toList();
 
-          setState(() {
-            _cardData = parsedData;
-            _isLoading = false;
-            if (_cardData.isNotEmpty) {
-              _initController();
-            }
-          });
-        } else {
-          setState(() {
-            _cardData = [];
-            _isLoading = false;
-          });
-        }
+        setState(() {
+          _cardData = parsedData;
+          _isLoading = false;
+          if (_cardData.isNotEmpty) {
+            _initController();
+          }
+        });
       } else {
         setState(() {
           _isLoading = false;
@@ -194,10 +187,24 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     final screenHeight = MediaQuery.of(context).size.height;
     final cards = sortedCardData;
 
-    return _isLoading //페이지 불러올때까지 로딩 띄우기 일단 이건 다른페이지에도 넣을 예정
+    return _isLoading 
         ? const Center(child: CircularProgressIndicator())
         : _cardData.isEmpty
-            ? const Center(child: Text('등록된 여행이 없습니다.'))
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('등록된 여행이 없습니다.',
+                        style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.width * 0.045)),
+                    Text('여행을 추가해주세요!',
+                        style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.width * 0.06,
+                          fontWeight: FontWeight.bold
+                        ),
+                    ),
+                  ],
+                ))
             : Column(
       children: [
         SizedBox(height: screenHeight * 0.12),
