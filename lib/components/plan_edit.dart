@@ -453,7 +453,7 @@ class EditTourDateDialog extends StatefulWidget {
 class _EditTourDateDialogState extends State<EditTourDateDialog> {
   late TextEditingController _startDateController;
   late TextEditingController _endDateController;
-  final accessToken = getAccessTokenFromRefreshToken();
+  late final String accessToken;
   bool _isLoading = false;
 
   @override
@@ -461,6 +461,11 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
     super.initState();
     _startDateController = TextEditingController(text: widget.startDate);
     _endDateController = TextEditingController(text: widget.endDate);
+    _initToken();
+  }
+
+  Future<void> _initToken() async {
+    accessToken = (await getAccessTokenFromRefreshToken()) ?? '';
   }
 
   @override
@@ -561,7 +566,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                     },
                     options: Options(
                       headers: {
-                        'Authorization': 'Bearer $accessToken',
+                        'Authorization': 'Bearer ${accessToken}',
                         'Content-Type': 'application/json',
                       },
                     ),
