@@ -42,13 +42,15 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     _fetchTourData();
     _fetchUserME();
   }
+
   Future<void> _fetchUserME() async {
+    final dio = Dio();
     try{
       final response = await dio.get(
         'http://conever.duckdns.org:8000/user/me',
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}',
+            'Authorization': 'Bearer ${widget.accessToken}',
             'Accept': 'application/json'
           },
         ),
@@ -66,6 +68,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
   //내 여행 가져오기(리스트)
   Future<void> _fetchTourData() async {
+    final dio = Dio();
     try {
       final response = await dio.get(
         'http://conever.duckdns.org:8000/tour/',
@@ -84,7 +87,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           'http://conever.duckdns.org:8000/user/me',
           options: Options(
             headers: {
-              'Authorization': 'Bearer $accessToken',
+              'Authorization': 'Bearer ${widget.accessToken}',
               'Accept': 'application/json'
             },
           ),
@@ -196,8 +199,8 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     return _isLoading //페이지 불러올때까지 로딩 띄우기 일단 이건 다른페이지에도 넣을 예정
         ? const Center(child: CircularProgressIndicator())
         : _cardData.isEmpty
-            ? const Center(child: Text('등록된 여행이 없습니다.'))
-            : Column(
+        ? const Center(child: Text('등록된 여행이 없습니다.'))
+        : Column(
       children: [
         SizedBox(height: screenHeight * 0.12),
 

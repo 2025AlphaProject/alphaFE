@@ -358,7 +358,10 @@ class Traveler_List extends StatelessWidget {
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ProfileListPage(tour_id: parentState!.widget.tour_id),
+                        builder: (context) => ProfileListPage(
+                          tour_id: parentState!.widget.tour_id,
+                          accessToken: parentState.widget.accessToken,
+                        ),
                       ),
                     );
                     parentState?.setState(() {
@@ -443,3 +446,4 @@ class DashedLine extends StatelessWidget {
     );
   }
 }
+
