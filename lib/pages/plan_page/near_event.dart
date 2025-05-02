@@ -113,7 +113,6 @@ class _nearEventState extends State<nearEvent> {
                     style: TextStyle(
                       fontSize: MediaQuery.of(context).size.width * 0.035,
                       color: Colors.grey,
-                      decoration: TextDecoration.underline,
                     ),
                   ),
                 )

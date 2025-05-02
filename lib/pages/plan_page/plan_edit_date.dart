@@ -1,8 +1,8 @@
-import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../mainscreen.dart';
 
@@ -33,6 +33,7 @@ class _planEditDateState extends State<planEditDate> {
   late DateTime _initialStartDate;
   late DateTime _initialEndDate;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
 
   @override
   void initState() {
@@ -41,7 +42,7 @@ class _planEditDateState extends State<planEditDate> {
     _initialEndDate = DateTime.parse(widget.endDate); // 원래 날짜
     _rangeStart = _initialStartDate; //바뀔날짜
     _rangeEnd = _initialEndDate; //바뀔날짜
-    _focusedDay = _rangeStart!;
+    _focusedDay = DateTime.now();
     _selectedDay = null;
     _isSelectionCompleted = false;
   }
@@ -59,9 +60,13 @@ class _planEditDateState extends State<planEditDate> {
               firstDay: DateTime.utc(2020, 1, 1),
               lastDay: DateTime.utc(2030, 12, 31),
               focusedDay: _focusedDay,
+              //
+              calendarFormat: _calendarFormat,
+              availableGestures: AvailableGestures.all,
               availableCalendarFormats: const {
                 CalendarFormat.month : 'Month',
               },
+              //
               selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
               rangeStartDay: _rangeStart,
               rangeEndDay: _rangeEnd,
@@ -175,44 +180,12 @@ class _planEditDateState extends State<planEditDate> {
                                 child: Text('취소'),
                               ),
                               ElevatedButton(
-                                onPressed: () async { //날짜 수정 api
-                                  try {
-                                    final dio = Dio();
-                                    final response = await dio.put(
-                                      'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
-                                      data: {
-                                        'start_date': _rangeStart!.toIso8601String().split('T').first,
-                                        'end_date': _rangeEnd!.toIso8601String().split('T').first,
-                                      },
-                                      options: Options(
-                                        headers: {
-                                          'Authorization': 'Bearer ${widget.accessToken}',
-                                          'Content-Type': 'application/json',
-                                        },
-                                      ),
-                                    );
-
-                                    if (response.statusCode == 200) {
-                                      if (!mounted) return; // 안전 체크 추가
-
-                                      Navigator.of(context).pop(); // 다이얼로그 닫기
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) => MainScreen(
-                                            accessToken: widget.accessToken,
-                                          ), // 처음으로 다시 돌아가기
-                                        ),
-                                      );
-                                    } else { //TODO: 오류뜰때 어케할지 수정해야함
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('수정 실패: ${response.statusCode}')),
-                                      );
-                                    }
-                                  } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('오류 발생: $e')),
-                                    );
-                                  }
+                                onPressed: () {
+                                  Navigator.pop(context); // Close confirmation dialog
+                                  Navigator.pop(context, {
+                                    'start_date': _rangeStart!.toIso8601String().split('T').first,
+                                    'end_date': _rangeEnd!.toIso8601String().split('T').first,
+                                  });
                                 },
                                 child: Text('확인'),
                               ),

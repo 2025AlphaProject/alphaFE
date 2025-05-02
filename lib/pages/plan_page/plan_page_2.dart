@@ -39,6 +39,7 @@ class plan_page2_body extends StatefulWidget {
 }
 
 class _plan_page2_bodyState extends State<plan_page2_body> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
   String tourName = "";
   String startDate = "";
   String endDate = "";
@@ -50,6 +51,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   String get dateRange => "$startDate ~ $endDate";
 
   List<Map<String, dynamic>> courseData = [];
+  bool _isLoading = true;
 
   //여행 경로 가져오기 api
   Future<void> fetchTourCourse() async {
@@ -87,7 +89,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
           }).toList();
         });
       }
-    } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
+    } catch (e) {
       print("코스 불러오기 실패: $e");
     }
   }
@@ -121,7 +123,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
           }
         });
       }
-    } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
+    } catch (e) {
       print("여행 불러오기 실패: $e");
     }
   }
@@ -130,117 +132,88 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   @override
   void initState() {
     super.initState();
-    fetchTourCourse();
-    fetchTourName();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Future.microtask(() {
-      fetchTourCourse();
-      fetchTourName();
+    Future.wait([
+      fetchTourCourse(),
+      fetchTourName(),
+    ]).then((_) {
+      setState(() {
+        _isLoading = false;
+      });
     });
-
-    return Padding(
-      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                //Memo(controller: _textController),
-                Plan_Name(),
-                SizedBox(width: MediaQuery.of(context).size.width * 0.15,),
-                IconButton(  //편집 아이콘
-                  icon: Icon(Icons.edit, size: MediaQuery.of(context).size.width * 0.06,),
-                  onPressed: () async {
-                    await showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        contentPadding: EdgeInsets.zero,
-                        content: TravelEditMenu(
-                            startDate: startDate,
-                            endDate: endDate,
-                            tour_id: widget.tour_id,
-                            tourName: tourName
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            Traveler_List(),
-            DashedLine(),
-            travel_plan(courseData: courseData),
-          ],
-        ),
-      ),
-    );
   }
-}
-
-
-//메모 관련 코드 아직 수정이 필요함 - 안쓸거명 여행정보 부분 빼고 없애기
-class Memo extends StatefulWidget {
-  final TextEditingController controller;
-
-  const Memo({Key? key, required this.controller}) : super(key: key);
 
   @override
-  State<Memo> createState() => _MemoState();
-}
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshData();
+    });
+  }
 
-class _MemoState extends State<Memo> {
-  bool _showInput = false; // 입력창 표시 여부
+  Future<void> _refreshData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await Future.wait([
+      fetchTourCourse(),
+      fetchTourName(),
+    ]);
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 버튼
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _showInput = !_showInput; // 입력창 표시 상태 토글
-            });
-          },
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Icon(Icons.settings, size: MediaQuery.of(context).size.width * 0.025,color: Color(0xFFB5B5B5),),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.0125,),
-              Text(_showInput ? "메모 수정완료" : "메모",
-                style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.025,color: Color(0xFFB5B5B5)),
-              ),
-            ],
-          ),
-        ),
-        //Plan_Name(),//이게 여행정보
-        SizedBox(height: MediaQuery.of(context).size.height * 0.015),
-
-        // 입력창
-        if (_showInput)
-          Padding(
-            padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.025, 0, 0, 0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.035,
-              child: TextField(
-                controller: widget.controller,
-                decoration: InputDecoration(
-                  labelText: "메모를 입력하세요",
-                  border: OutlineInputBorder(),
-                  labelStyle: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.03, color: Color(0xFFB5B5B5)),
-
+    return WillPopScope(
+      onWillPop: () async => true,
+      child: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
+              child: RefreshIndicator(
+                key: _refreshIndicatorKey,
+                onRefresh: _refreshData,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(child: Plan_Name()),
+                          IconButton(
+                            icon: Icon(Icons.edit, size: MediaQuery.of(context).size.width * 0.07),
+                            onPressed: () async {
+                              final result = await showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  contentPadding: EdgeInsets.zero,
+                                  content: TravelEditMenu(
+                                    startDate: startDate,
+                                    endDate: endDate,
+                                    tour_id: widget.tour_id,
+                                    tourName: tourName,
+                                  ),
+                                ),
+                              );
+                              // ✅ 수정 완료 후 반드시 데이터 새로고침
+                              if (result == true) {
+                                await fetchTourName(); // 날짜 반영
+                                setState(() {}); // UI 갱신
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      Traveler_List(),
+                      DashedLine(),
+                      travel_plan(courseData: courseData),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-      ],
     );
   }
 }
@@ -318,18 +291,17 @@ class Traveler_List extends StatelessWidget {
     final travelers = parentState?.travelers ?? [];
 
     return Padding(
-      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
+      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.025),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.01),
           Text(
             "여행자",
             style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: MediaQuery.of(context).size.height * 0.005),
           SizedBox(
-            // Remove fixed height to let Wrap expand as needed; if you want a max height, use constraints
-            // height: MediaQuery.of(context).size.height * 0.13,
             child: Wrap(
               spacing: MediaQuery.of(context).size.width * 0.04,
               runSpacing: MediaQuery.of(context).size.height * 0.01,
@@ -363,9 +335,8 @@ class Traveler_List extends StatelessWidget {
                           accessToken: parentState.widget.accessToken,
                         ),
                       ),
-                    );
-                    parentState?.setState(() {
-                      parentState.fetchTourName();
+                    ).then((_) {
+                      parentState?._refreshData();
                     });
                   },
                   child: Column(
