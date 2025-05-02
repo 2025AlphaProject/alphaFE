@@ -50,7 +50,7 @@ class travel_plan extends StatelessWidget {
                               builder: (context) => Center(child: DeleteCourse(tour_id: tour_id, target_date: date)),
                             );
                             if (result == true && onRefresh != null) {
-                              onRefresh!();
+                              onRefresh!(); // 콜백 호출
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -64,7 +64,7 @@ class travel_plan extends StatelessWidget {
                             backgroundColor: Colors.orangeAccent,
                             foregroundColor: Colors.white,
                           ),
-                          child: Text("추가"),
+                          child: Text("삭제",style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),),
                         ),
                       ),
                   ],

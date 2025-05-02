@@ -13,6 +13,7 @@ class TravelEditMenu extends StatelessWidget {
   final String endDate;
   final int tour_id;
   final String tourName;
+  final VoidCallback? onRefresh;
 
   const TravelEditMenu({
     super.key,
@@ -20,6 +21,7 @@ class TravelEditMenu extends StatelessWidget {
     required this.endDate,
     required this.tour_id,
     required this.tourName,
+    required this.onRefresh,
   });
 
   @override
@@ -41,6 +43,9 @@ class TravelEditMenu extends StatelessWidget {
               onTap: () {
                 EditState.showEditButton = true;
                 print(EditState.showEditButton);
+                if ( onRefresh != null) {
+                  onRefresh!(); // 콜백 호출
+                }
                 Navigator.pop(context,true);
               },
             ),
@@ -411,7 +416,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
                     if (!mounted) return; // 안전 체크 추가
                     EditState.showEditButton = false;
 
-                    Navigator.pop(context); // 다이얼로그 닫기
+                    Navigator.pop(context,true); // 다이얼로그 닫기
                   } else { //TODO: 오류뜰때 어케할지 수정해야함
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

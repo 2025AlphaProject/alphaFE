@@ -217,6 +217,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                                     endDate: endDate,
                                     tour_id: widget.tour_id,
                                     tourName: tourName,
+                                    onRefresh: _refreshData,
                                   ),
                                 ),
                               );
@@ -229,7 +230,11 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                       ),
                       Traveler_List(),
                       DashedLine(),
-                      travel_plan(tour_id:widget.tour_id, courseData: courseData),
+                      travel_plan(
+                        tour_id: widget.tour_id,
+                        courseData: courseData,
+                        onRefresh: _refreshData,
+                      ),
                     ],
                   ),
                 ),
