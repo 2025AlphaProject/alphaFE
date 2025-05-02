@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
 
+
+// 전역 상태 관리 클래스
+class EditState {
+  static bool showEditButton = false;
+}
+
 class PlanPage extends StatelessWidget {
   final String? accessToken;
   const PlanPage({Key? key, required this.accessToken}) : super(key: key);
