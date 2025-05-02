@@ -18,12 +18,22 @@ class PlanPage2 extends StatefulWidget {
 }
 
 class _PlanPage2State extends State<PlanPage2> {
+  void _onDataRefreshed() {
+    // your callback logic
+    // For demonstration, you can print or perform any action here.
+    print('Data refreshed in PlanPage2');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "계획보기 앱바 영역"),
-      body: plan_page2_body(tour_id: widget.tour_id, accessToken: widget.accessToken),
+      body: plan_page2_body(
+        tour_id: widget.tour_id,
+        accessToken: widget.accessToken,
+        onDataRefreshed: _onDataRefreshed,
+      ),
     );
   }
 }
@@ -31,14 +41,24 @@ class _PlanPage2State extends State<PlanPage2> {
 class plan_page2_body extends StatefulWidget {
   final int tour_id;
   final String? accessToken;
+  final VoidCallback? onDataRefreshed;
+  // Since widget.showaddbutton is a final variable, update logic should be managed with a separate state variable.
+  // Add a state variable:
+  // bool showAddButton = false; // This will be in State, not Widget.
 
-  const plan_page2_body({Key? key, required this.tour_id, required this.accessToken}) : super(key: key);
+  const plan_page2_body({
+    Key? key,
+    required this.tour_id,
+    required this.accessToken,
+    this.onDataRefreshed,
+  }) : super(key: key);
 
   @override
   State<plan_page2_body> createState() => _plan_page2_bodyState();
 }
 
 class _plan_page2_bodyState extends State<plan_page2_body> {
+  bool showEditButton = false;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
   String tourName = "";
   String startDate = "";
@@ -161,6 +181,9 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
     setState(() {
       _isLoading = false;
     });
+    if (widget.onDataRefreshed != null) {
+      widget.onDataRefreshed!();
+    }
   }
 
   @override
@@ -197,10 +220,8 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                                   ),
                                 ),
                               );
-                              // ✅ 수정 완료 후 반드시 데이터 새로고침
                               if (result == true) {
-                                await fetchTourName(); // 날짜 반영
-                                setState(() {}); // UI 갱신
+                                await _refreshData(); // Refresh data after dialog is popped with result true
                               }
                             },
                           ),
@@ -208,7 +229,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                       ),
                       Traveler_List(),
                       DashedLine(),
-                      travel_plan(courseData: courseData),
+                      travel_plan(tour_id:widget.tour_id, courseData: courseData),
                     ],
                   ),
                 ),

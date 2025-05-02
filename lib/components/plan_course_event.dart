@@ -1,13 +1,17 @@
 import 'package:alpha_fe/pages/plan_page/near_event.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-//완
-
+import 'package:alpha_fe/components/plan_edit.dart';
+import 'package:alpha_fe/pages/plan_page/plan_page.dart';
+import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
 //여행 코스
+
 class travel_plan extends StatelessWidget {
   final List<Map<String, dynamic>> courseData;
+  final int tour_id;
+  final VoidCallback? onRefresh;
 
-  const travel_plan({super.key, required this.courseData});
+  const travel_plan({super.key, required this.courseData, required this.tour_id, this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,44 @@ class travel_plan extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.022, vertical: MediaQuery.of(context).size.height * 0.011),
-                child: Text("📅 $date", style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width * 0.044)),
+                child: Row(
+                  children: [
+                    Text(
+                      "📅 $date",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: MediaQuery.of(context).size.width * 0.044,
+                      ),
+                    ),
+                    if (EditState.showEditButton)
+                      Padding(
+                        padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.022),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final result = await showDialog(
+                              context: context,
+                              builder: (context) => Center(child: DeleteCourse(tour_id: tour_id, target_date: date)),
+                            );
+                            if (result == true && onRefresh != null) {
+                              onRefresh!();
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: MediaQuery.of(context).size.width * 0.033,
+                              vertical: MediaQuery.of(context).size.height * 0.011,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            backgroundColor: Colors.orangeAccent,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: Text("추가"),
+                        ),
+                      ),
+                  ],
+                ),
               ),
               ...places.map((place) {
                 return place_card(
