@@ -1,3 +1,4 @@
+import 'package:alpha_fe/components/auth_token_handler.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -49,10 +50,12 @@ class KakaoLoginService {
 
       saveRefreshToken(token.refreshToken);
 
+      final accessToken = await getAccessTokenFromRefreshToken();
+
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MainScreen(accessToken: token.refreshToken),
+          builder: (context) => MainScreen(accessToken: accessToken),
         ),
       );
     } catch (e) {

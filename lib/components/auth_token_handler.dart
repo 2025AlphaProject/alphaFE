@@ -5,7 +5,7 @@ import 'package:logger/logger.dart';
 final logger = Logger();
 
 Future<String?> getAccessTokenFromRefreshToken() async {
-  final refreshToken = getRefreshToken();
+  final refreshToken = await getRefreshToken();
 
   if (refreshToken == null) return null;
 
