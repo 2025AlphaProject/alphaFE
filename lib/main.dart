@@ -27,6 +27,7 @@
 *   9. gps.dart
 * */
 
+import 'package:alpha_fe/components/refresh_token_controller.dart';
 import 'package:alpha_fe/pages/loading_page/page_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,7 +37,7 @@ import 'package:logger/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:alpha_fe/components/auth_token_handler.dart';
 
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
@@ -74,8 +75,7 @@ Future<void> main() async {
   // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
   //await initNaverMapSdk();
 
-  final secureStorage = FlutterSecureStorage();
-  final accessToken = await secureStorage.read(key: 'access_token');
+  final accessToken = await getAccessTokenFromRefreshToken();
 
   runApp(MaterialApp(
     locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
@@ -88,7 +88,7 @@ Future<void> main() async {
       GlobalWidgetsLocalizations.delegate,    //  일반 위젯 한글화
       GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
     ],
-    home: accessToken != null
+    home: (accessToken?.isNotEmpty == true)
         ? MainScreen(
       accessToken: accessToken,
     )

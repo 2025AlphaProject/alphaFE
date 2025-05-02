@@ -1,4 +1,5 @@
 import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
+import 'package:alpha_fe/components/auth_token_handler.dart';
 import 'package:flutter/material.dart';
 
 // 종료일까지 남은 일 수 계산
@@ -46,13 +47,19 @@ class PlanCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => PlanPage2(tour_id: tour_id,),
-              ),
-            );
+          onTap: () async {
+            final accessToken = await getAccessTokenFromRefreshToken();
+            if (accessToken != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PlanPage2(
+                    tour_id: tour_id,
+                    accessToken: accessToken,
+                  ),
+                ),
+              );
+            }
           },
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),

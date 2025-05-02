@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:alpha_fe/main.dart';
 
 import '../../mainscreen.dart';
 
@@ -12,12 +10,14 @@ class planEditDate extends StatefulWidget {
   final String startDate;
   final String endDate;
   final int tour_id;
+  final String? accessToken;
 
   const planEditDate({
     super.key,
     required this.startDate,
     required this.endDate,
     required this.tour_id,
+    required this.accessToken,
   });
 
   @override
@@ -33,7 +33,6 @@ class _planEditDateState extends State<planEditDate> {
   late DateTime _initialStartDate;
   late DateTime _initialEndDate;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
-  final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
 
   @override
   void initState() {
@@ -187,7 +186,7 @@ class _planEditDateState extends State<planEditDate> {
                                       },
                                       options: Options(
                                         headers: {
-                                          'Authorization': 'Bearer $accessToken',
+                                          'Authorization': 'Bearer ${widget.accessToken}',
                                           'Content-Type': 'application/json',
                                         },
                                       ),
@@ -196,7 +195,14 @@ class _planEditDateState extends State<planEditDate> {
                                     if (response.statusCode == 200) {
                                       if (!mounted) return; // 안전 체크 추가
 
-                                      Navigator.pop(context, 'updated');
+                                      Navigator.of(context).pop(); // 다이얼로그 닫기
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (context) => MainScreen(
+                                            accessToken: widget.accessToken,
+                                          ), // 처음으로 다시 돌아가기
+                                        ),
+                                      );
                                     } else { //TODO: 오류뜰때 어케할지 수정해야함
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text('수정 실패: ${response.statusCode}')),

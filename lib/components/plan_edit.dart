@@ -1,8 +1,8 @@
+import 'package:alpha_fe/components/auth_token_handler.dart';
 import 'package:alpha_fe/mainscreen.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:dio/dio.dart';
 import 'package:alpha_fe/main.dart';
 
@@ -53,23 +53,27 @@ class TravelEditMenu extends StatelessWidget {
                 );
               },
             ),
-            _EditMenu( //여행날짜 수정
+            _EditMenu(
               text: "여행날짜 수정",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => planEditDate(
-                      startDate: startDate,
-                      endDate: endDate,
-                      tour_id: tour_id,
+              onTap: () async {
+                final accessToken = await getAccessTokenFromRefreshToken();
+                if (accessToken != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => planEditDate(
+                        startDate: startDate,
+                        endDate: endDate,
+                        tour_id: tour_id,
+                        accessToken: accessToken,
+                      ),
                     ),
-                  ),
-                ).then((result) {
-                  if (result == 'updated') {
-                    Navigator.pop(context, 'updated');
-                  }
-                });
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("로그인이 만료되었습니다. 다시 로그인해주세요.")),
+                  );
+                }
               },
             ),
             _EditMenu(  //여행 자체를 삭제
@@ -144,13 +148,19 @@ class EditTourNameDialog extends StatefulWidget {
 
 class _EditTourNameDialogState extends State<EditTourNameDialog> {
   late TextEditingController _nameController;
-  final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
+  late final String accessToken;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.tourName);
+    _initToken();
   }
+
+  Future<void> _initToken() async {
+    accessToken = (await getAccessTokenFromRefreshToken()) ?? '';
+  }
+
 
   @override
   void dispose() {
@@ -232,7 +242,17 @@ class DeleteTour extends StatefulWidget {
 }
 
 class _DeleteTourState extends State<DeleteTour> {
-  final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
+  late final String accessToken;
+
+  @override
+  void initState() {
+    super.initState();
+    _initToken();
+  }
+
+  Future<void> _initToken() async {
+    accessToken = (await getAccessTokenFromRefreshToken()) ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -299,7 +319,17 @@ class DeleteCourse extends StatefulWidget {
 }
 
 class _DeleteCourseState extends State<DeleteCourse> {
-  final String accessToken =  dotenv.env['KAKAO_ACCESS_TOKEN']!;
+  late final String accessToken;
+
+  @override
+  void initState() {
+    super.initState();
+    _initToken();
+  }
+
+  Future<void> _initToken() async {
+    accessToken = (await getAccessTokenFromRefreshToken()) ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
