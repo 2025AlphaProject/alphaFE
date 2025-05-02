@@ -145,6 +145,7 @@ class EditTourNameDialog extends StatefulWidget {
 class _EditTourNameDialogState extends State<EditTourNameDialog> {
   late TextEditingController _nameController;
   late final String accessToken;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -452,7 +453,7 @@ class EditTourDateDialog extends StatefulWidget {
 class _EditTourDateDialogState extends State<EditTourDateDialog> {
   late TextEditingController _startDateController;
   late TextEditingController _endDateController;
-  final String accessToken = dotenv.env['KAKAO_ACCESS_TOKEN']!;
+  final accessToken = getAccessTokenFromRefreshToken();
   bool _isLoading = false;
 
   @override
@@ -499,7 +500,8 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
-                  onPressed: () {
+                  onPressed: () async {
+                    final resolvedToken = await accessToken;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -507,6 +509,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                           startDate: _startDateController.text,
                           endDate: _endDateController.text,
                           tour_id: widget.tour_id,
+                          accessToken: resolvedToken,
                         ),
                       ),
                     ).then((result) {
