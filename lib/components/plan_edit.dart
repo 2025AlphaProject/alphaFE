@@ -70,11 +70,15 @@ class TravelEditMenu extends StatelessWidget {
                       startDate: startDate,
                       endDate: endDate,
                       tour_id: tour_id,
+                      onRefresh: onRefresh,
                     ),
                   ),
                 );
 
                 if (result == true) {
+                  if ( onRefresh != null) {
+                    onRefresh!(); // 콜백 호출
+                  }
                   Navigator.pop(context); // Close the TravelEditMenu if date was updated
                 }
               },
@@ -323,6 +327,11 @@ class _DeleteTourState extends State<DeleteTour> {
                   if (response.statusCode == 204) {
                     if (!mounted) return; // 안전 체크 추가
                     Navigator.of(context).pop(); // 다이얼로그 닫기
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => MainScreen(
+                        accessToken: accessToken,
+                      )), //처음으로 되돌아감
+                    );
                   } else { //TODO: 오류뜰때 어케할지 수정해야함
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -354,14 +363,16 @@ class _DeleteTourState extends State<DeleteTour> {
 }
 
 
-// 여행 경로 삭제
+// 여행 경로 삭제(건들ㄴㄴ)
 class DeleteCourse extends StatefulWidget {
   final int tour_id;
   final String target_date;
+  final VoidCallback? onRefresh;
 
   const DeleteCourse({Key? key,
     required this.tour_id,
-    required this.target_date
+    required this.target_date,
+    this.onRefresh
   }) : super(key: key);
 
   @override
@@ -415,7 +426,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
                   if (response.statusCode == 204) {
                     if (!mounted) return; // 안전 체크 추가
                     EditState.showEditButton = false;
-
+                    widget.onRefresh?.call();
                     Navigator.pop(context,true); // 다이얼로그 닫기
                   } else { //TODO: 오류뜰때 어케할지 수정해야함
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -453,12 +464,14 @@ class EditTourDateDialog extends StatefulWidget {
   final String startDate;
   final String endDate;
   final int tour_id;
+  final VoidCallback? onRefresh;
 
   const EditTourDateDialog({
     Key? key,
     required this.startDate,
     required this.endDate,
     required this.tour_id,
+    this.onRefresh,
   }) : super(key: key);
 
   @override
@@ -470,6 +483,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
   late TextEditingController _endDateController;
   late final String accessToken;
   bool _isLoading = false;
+
 
   @override
   void initState() {
@@ -593,6 +607,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
 
                   if (response.statusCode == 200) {
                     Navigator.pop(context, true);
+                    widget.onRefresh?.call();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

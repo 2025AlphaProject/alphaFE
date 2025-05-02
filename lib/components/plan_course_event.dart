@@ -43,28 +43,48 @@ class travel_plan extends StatelessWidget {
                     if (EditState.showEditButton)
                       Padding(
                         padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.022),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            final result = await showDialog(
-                              context: context,
-                              builder: (context) => Center(child: DeleteCourse(tour_id: tour_id, target_date: date)),
-                            );
-                            if (result == true && onRefresh != null) {
-                              onRefresh!(); // 콜백 호출
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: MediaQuery.of(context).size.width * 0.033,
-                              vertical: MediaQuery.of(context).size.height * 0.011,
+                        child: Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                final result = await showDialog(
+                                  context: context,
+                                  builder: (context) => Center(child: DeleteCourse(tour_id: tour_id, target_date: date,onRefresh: onRefresh,)),
+                                );
+                                // if (result == true && onRefresh != null) {
+                                //   onRefresh!(); // 콜백 호출
+                                // }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: MediaQuery.of(context).size.width * 0.033,
+                                  vertical: MediaQuery.of(context).size.height * 0.011,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                backgroundColor: Colors.orangeAccent,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: Text("삭제",style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            backgroundColor: Colors.orangeAccent,
-                            foregroundColor: Colors.white,
-                          ),
-                          child: Text("삭제",style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),),
+                            ElevatedButton(onPressed: (){
+                              EditState.showEditButton = false;
+                              onRefresh?.call();
+                            },
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: MediaQuery.of(context).size.width * 0.033,
+                                  vertical: MediaQuery.of(context).size.height * 0.011,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                backgroundColor: Colors.orangeAccent,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: Text("취소",style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),),)
+                          ],
                         ),
                       ),
                   ],
