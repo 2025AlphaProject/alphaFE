@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -15,10 +14,12 @@ import '../../components/placeinput_card.dart';
 class AddPage_2 extends StatefulWidget {
   final String title;
   final int tourId;
+  final String? accessToken;
 
   const AddPage_2({
     required this.title,
     required this.tourId,
+    required this.accessToken,
     Key? key
   }) : super(key: key);
 
@@ -137,9 +138,9 @@ class _AddPage_2State extends State<AddPage_2> {
       final startDateResponse = await dio.get(
           '$baseUrl/tour/${widget.tourId}/',
           options: Options(
-            headers: {
-              'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}'
-            }
+              headers: {
+                'Authorization': 'Bearer ${widget.accessToken}'
+              }
           )
 
       );
@@ -162,10 +163,10 @@ class _AddPage_2State extends State<AddPage_2> {
           'date': startDate,
           'places': courseData
         },
-      options: Options(
-      headers: {
+        options: Options(
+          headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${dotenv.env['KAKAO_ACCESS_TOKEN']}'
+            'Authorization': 'Bearer ${widget.accessToken}'
           },
         ),
       );
@@ -178,7 +179,7 @@ class _AddPage_2State extends State<AddPage_2> {
           context,
           CupertinoPageRoute(
             builder: (_) => AddPage_3(
-              message: "여행 저장 성공, tourId = ${widget.tourId}",
+              tour_id: widget.tourId,
             ),
           ),
         );
@@ -263,13 +264,13 @@ class _AddPage_2State extends State<AddPage_2> {
                       // 장소 추가 입력폼 또는 '+ 장소 추가' 버튼 표시
                       _isAddingPlace
 
-                          // '+ 장소 추가' 버튼 클릭 시 입력폼으로 전환
+                      // '+ 장소 추가' 버튼 클릭 시 입력폼으로 전환
                           ? PlaceInputCard(
                         onComplete: addNewPlace,
                         onCancel: () => setState(() => _isAddingPlace = false),
                       )
 
-                          // 기본 상태, '+ 장소 추가' 버튼 표시
+                      // 기본 상태, '+ 장소 추가' 버튼 표시
                           : GestureDetector(
                         onTap: () => setState(() => _isAddingPlace = true),
                         child: Container(
