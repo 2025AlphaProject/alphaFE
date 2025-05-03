@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dio/dio.dart';
 import '../../components/token_controller.dart';
@@ -51,22 +52,45 @@ class _AddPage_2State extends State<AddPage_2> {
 
   // 웹소켓 연결 후 요청된 행정구역에 대한 코스 데이터를 받아 UI에 반영
   void connectWebSocket() async {
-    final channel = WebSocketChannel.connect(
-      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=111&areaCode=1&sigunguName=${widget.title}'),
+    final accessToken = await getAccessToken();
+    final dio = Dio();
+    final baseUrl = 'http://conever.duckdns.org:8000';
+
+    // 사용자 ID 불러오기
+    final userResponse = await dio.get(
+      '$baseUrl/user/me/',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Accept': 'application/json',
+        },
+      ),
     );
 
-    channel.stream.listen((message) async {
+    final userId = userResponse.data['sub'];
+    final uniqueCode = Random().nextInt(1 << 31); // 랜덤 정수 생성
+
+    final channel = WebSocketChannel.connect(
+      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=${widget.title}&unique_code=$uniqueCode'),
+    );
+
+    late StreamSubscription subscription;
+
+    subscription = channel.stream.listen((message) async {
       final data = jsonDecode(message);
 
-      // 이미 수신한 적 있으면 무시
-      if (_receivedDataOnce) return;
+      if (_receivedDataOnce || data["result"] == null || data["result"].isEmpty) return;
 
       if (data["status"] == "SUCCESS" && data["result"] != null) {
-        final List<dynamic> firstCourse = data["result"][0];
-
         final context_ = context;
 
-        final newWidgets = firstCourse.take(5).map((place) {
+        final List<dynamic> filteredCourse = (data["result"][0] as List).where((place) {
+          return place['address']?.toString().contains(widget.title) ?? false;
+        }).toList();
+
+        if (filteredCourse.isEmpty) return;
+
+        final newWidgets = filteredCourse.take(5).map((place) {
           final imageUrl = (place['image1'] != null && place['image1'].toString().isNotEmpty)
               ? place['image1']
               : '';
@@ -82,17 +106,24 @@ class _AddPage_2State extends State<AddPage_2> {
           );
         }).toList();
 
-        await Future.wait(newWidgets.map((place) async {
-          if (place.imageUrl.isNotEmpty) {
-            await precacheImage(NetworkImage(place.imageUrl), context_);
-          }
-        }));
+        try {
+          await Future.wait(newWidgets.map((place) async {
+            if (place.imageUrl.isNotEmpty) {
+              await precacheImage(NetworkImage(place.imageUrl), context_);
+            }
+          }));
+        } catch (e) {
+          print("이미지 프리캐싱 실패: $e");
+        }
+
+        _receivedDataOnce = true;
+        await subscription.cancel();
+        channel.sink.close();
 
         if (mounted) {
           setState(() {
             _placeWidgets = newWidgets;
             _isLoading = false;
-            _receivedDataOnce = true;
           });
         }
       }
@@ -169,13 +200,13 @@ class _AddPage_2State extends State<AddPage_2> {
       );
       final startDate = startDateResponse.data['start_date'];
 
-      // 등록할 JSON 데이터의 places 인자에 들어갈 데이터 생성
+      // 서버에 전송할 장소 이름과 주소에서 불필요한 <> 기호 제거
       final List<Map<String, dynamic>> courseData = usePlaces.map((place) => {
-        'name': '<${place.title}>',
+        'name': place.title,
         'mapX': place.mapX,
         'mapY': place.mapY,
         'image_url': place.imageUrl,
-        'road_address': '<${place.description}>'
+        'road_address': place.description
       }).toList();
 
       // 내 여행 경로 저장

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +89,6 @@ class _HomePageState extends State<HomePage> {
 
       // 여행 계획이 존재하는지 확인
       if (userPlans.isNotEmpty) {
-
         // 현재 시각을 기준으로 가장 가까운 여행 계획을 찾기 위해 현재 시각 저장
         DateTime now = DateTime.now();
 
@@ -102,13 +102,19 @@ class _HomePageState extends State<HomePage> {
         });
 
         // 가장 가까운 여행 계획을 상태에 저장하고 로딩 상태를 false로 변경하여 UI 갱신
+        final nearest = userPlans.first;
+
         setState(() {
-          _nearestPlan = userPlans.first;
+          _nearestPlan = {
+            'id': nearest['id'],
+            'title': nearest['tour_name'] ?? '제목 없음',
+            'start_date': nearest['start_date'] ?? '',
+            'end_date': nearest['end_date'] ?? '',
+          };
           _isLoading = false;
         });
       } else {
-
-        // 여행 계획이 없을 경우, null로 설정하고 로딩 상태를 false로 변경
+        // 여행 계획이 없을 경우, userPlans가 비어있지 않으면 null로 설정
         setState(() {
           _nearestPlan = null;
           _isLoading = false;
@@ -125,28 +131,71 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchRecommendedPlace() async {
-    final channel = WebSocketChannel.connect(
-      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=111&areaCode=1'),
+    final accessToken = await getAccessToken();
+    final dio = Dio();
+    final baseUrl = 'http://conever.duckdns.org:8000';
+
+    // 사용자 ID 불러오기
+    final userResponse = await dio.get(
+      '$baseUrl/user/me/',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Accept': 'application/json',
+        },
+      ),
     );
 
-    channel.stream.listen((message) {
+    final userId = userResponse.data['sub'];
+    final uniqueCode = Random().nextInt(1 << 31); // 랜덤 정수 생성
+
+    final channel = WebSocketChannel.connect(
+      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode'),
+    );
+
+    late StreamSubscription subscription;
+
+    subscription = channel.stream.listen((message) async {
       final data = jsonDecode(message);
-      if (data["status"] == "SUCCESS" && data["result"] != null) {
-        final List<dynamic> courses = data["result"];
-        final List<dynamic> flatPlaces = courses.expand((course) => course).toList();
-        final filteredPlaces = flatPlaces.where((place) => (place['image1'] ?? '').isNotEmpty).toList();
+      dynamic result = data["result"];
 
-        if (filteredPlaces.isNotEmpty) {
-          final random = Random();
-          final selectedPlace = filteredPlaces[random.nextInt(filteredPlaces.length)];
-
-          if (mounted && (_recommendedPlace == null || _recommendedPlace!['title'] != selectedPlace['title'])) {
-            setState(() {
-              _recommendedPlace = selectedPlace;
-            });
-          }
+      // 응답 형식이 문자열이면 JSON 파싱 시도
+      if (result is String) {
+        try {
+          result = jsonDecode(result);
+        } catch (e) {
+          return; // 파싱 실패 시 무시
         }
       }
+
+      if (data["status"] != "SUCCESS" || result == null || result.isEmpty) return;
+
+      // 이미지 있는 장소만 필터링
+      final List<dynamic> flatPlaces = result.expand((course) {
+        if (course is List) return course;
+        return [];
+      }).toList();
+      final filteredPlaces = flatPlaces.where((place) => (place['image1'] ?? '').isNotEmpty).toList();
+
+      if (filteredPlaces.isEmpty) return;
+
+      final random = Random();
+      final selectedPlace = filteredPlaces[random.nextInt(filteredPlaces.length)];
+
+      try {
+        await precacheImage(NetworkImage(selectedPlace['image1']), context);
+      } catch (e) {
+        print("이미지 프리캐싱 실패: $e");
+      }
+
+      if (mounted) {
+        setState(() {
+          _recommendedPlace = selectedPlace;
+        });
+      }
+
+      await subscription.cancel();
+      channel.sink.close();
     });
   }
 
@@ -246,16 +295,29 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             SizedBox(height: MediaQuery.of(context).size.height * 0.012),
-                            // ⬇️ PlanCard 위젯: 여행 카드의 크기를 반응형으로 지정
+                            // ⬇️ PlanCard 위젯: 여행 카드의 크기를 반응형으로 지정, _nearestPlan에서 동적 데이터 사용
                             Center(
-                              child: PlanCard(
-                                tour_id: 1,
-                                title: "성북구 산책",
-                                startDate: "2025.03.18",
-                                endDate: "2025.03.25",
-                                size_h: MediaQuery.of(context).size.height * 0.394,
-                                size_w: MediaQuery.of(context).size.width * 0.8,
-                              ),
+                              child: _isLoading
+                                  ? Container(
+                                      width: MediaQuery.of(context).size.width * 0.8,
+                                      height: MediaQuery.of(context).size.height * 0.394,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[300],
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    )
+                                  : (
+                                      _nearestPlan != null
+                                          ? PlanCard(
+                                              tour_id: _nearestPlan!['id'],
+                                              title: _nearestPlan!['title'] ?? '제목 없음',
+                                              startDate: _nearestPlan!['start_date'] ?? '',
+                                              endDate: _nearestPlan!['end_date'] ?? '',
+                                              size_h: MediaQuery.of(context).size.height * 0.394,
+                                              size_w: MediaQuery.of(context).size.width * 0.8,
+                                            )
+                                          : SizedBox.shrink()
+                                    ),
                             ),
                             SizedBox(height: MediaQuery.of(context).size.height * 0.06),
                             Center(
