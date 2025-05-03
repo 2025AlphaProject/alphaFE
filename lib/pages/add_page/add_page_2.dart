@@ -39,12 +39,14 @@ class _AddPage_2State extends State<AddPage_2> {
   bool _isLoading = true;
   bool _receivedDataOnce = false; // 최초 데이터 수신 여부를 기록하는 플래그
 
-  // 장소 데이터 목록 (API에서 받아온 데이터와 사용자가 추가한 입력 모두 포함)
-  // 날짜별 장소 그룹화를 위해 구조 변경
+  // 편집 모드 토글 상태를 저장 (true: 삭제 버튼 표시)
+  bool _isEditMode = false; // 편집 모드 여부
+
+  // 날짜별로 그룹화된 장소 데이터 목록 (날짜: 장소 리스트 쌍)
   List<MapEntry<String, List<PlaceInfoBlock>>> _placeWidgets = [];
 
-  // 현재 장소 추가 입력폼이 열려있는지 여부
-  bool _isAddingPlace = false;
+  // 날짜별로 장소 추가 입력폼이 열려있는지 여부를 관리하는 맵
+  Map<String, bool> _isAddingPlaceMap = {};
 
   @override
   void initState() {
@@ -73,7 +75,7 @@ class _AddPage_2State extends State<AddPage_2> {
     final userId = userResponse.data['sub'];
     final uniqueCode = Random().nextInt(1 << 31); // 랜덤 정수 생성
 
-    // 여행 시작일과 종료일을 불러온 후, days 파라미터를 결정
+    // 여행 기간(days)을 계산하여 웹소켓 요청에 파라미터로 전달
     String wsUri;
     if (widget.isSingleDayMode) {
       wsUri = 'ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=${widget.title}&unique_code=$uniqueCode&days=1';
@@ -109,6 +111,7 @@ class _AddPage_2State extends State<AddPage_2> {
         final context_ = context;
 
         if (widget.isSingleDayMode) {
+          // 싱글 모드: 첫 번째 날짜 결과만 사용
           // 단일 날짜 모드일 경우, 첫 번째 결과 리스트에서 필터링하여 장소 표시
           final List<dynamic> filteredCourse = (data["result"][0] as List).where((place) {
             return place['address']?.toString().contains(widget.title) ?? false;
@@ -150,10 +153,13 @@ class _AddPage_2State extends State<AddPage_2> {
             setState(() {
               // 단일 날짜 그룹으로 묶고 날짜 레이블은 widget.title 활용
               _placeWidgets = [MapEntry(widget.title, newWidgets)];
+              // 각 날짜에 대한 _isAddingPlaceMap 초기화
+              _isAddingPlaceMap = {for (var e in _placeWidgets) e.key: false};
               _isLoading = false;
             });
           }
         } else {
+          // 멀티 모드: 날짜별로 그룹화된 장소 목록 구성
           // 멀티 날짜 모드일 경우, 날짜별로 결과 데이터를 나누어 표시
           try {
             // tour_id값을 이용해 여행 시작 날짜와 종료 날짜 불러옴
@@ -182,6 +188,7 @@ class _AddPage_2State extends State<AddPage_2> {
             List<MapEntry<String, List<PlaceInfoBlock>>> groupedWidgets = [];
 
             for (int i = 0; i < dateRange.length; i++) {
+              // 날짜별로 최대 5개의 장소를 필터링 및 PlaceInfoBlock으로 변환
               final date = dateRange[i];
               if (i >= data["result"].length) break; // 데이터가 날짜 수보다 적을 수 있음
 
@@ -229,6 +236,8 @@ class _AddPage_2State extends State<AddPage_2> {
             if (mounted) {
               setState(() {
                 _placeWidgets = groupedWidgets;
+                // 각 날짜에 대한 _isAddingPlaceMap 초기화
+                _isAddingPlaceMap = {for (var e in _placeWidgets) e.key: false};
                 _isLoading = false;
               });
             }
@@ -272,8 +281,8 @@ class _AddPage_2State extends State<AddPage_2> {
     }
   }
 
-  // 사용자가 새 장소를 추가 완료하면 PlaceInfoBlock 리스트에 추가하고 입력폼 닫기
-  void addNewPlace(String imageUrl, String title, String description, double mapX, double mapY) {
+  // 사용자가 새 장소를 추가 완료하면 해당 날짜 그룹에 PlaceInfoBlock을 추가하고 입력폼 닫기
+  void addNewPlace(String date, String imageUrl, String title, String description, double mapX, double mapY) {
     setState(() {
       final width = MediaQuery.of(context).size.width;
       final newPlace = PlaceInfoBlock(
@@ -285,21 +294,13 @@ class _AddPage_2State extends State<AddPage_2> {
         width: width * 0.58,
         height: width * 0.58 * 0.69,
       );
-      if (widget.isSingleDayMode) {
-        if (_placeWidgets.isEmpty) {
-          _placeWidgets = [MapEntry(widget.title, [newPlace])];
-        } else {
-          _placeWidgets[0].value.add(newPlace);
-        }
+      final entryIndex = _placeWidgets.indexWhere((entry) => entry.key == date);
+      if (entryIndex != -1) {
+        _placeWidgets[entryIndex].value.add(newPlace);
       } else {
-        //  마지막 날짜 그룹에 추가하거나 그룹이 없으면 새로 생성
-        if (_placeWidgets.isEmpty) {
-          _placeWidgets = [MapEntry(widget.title, [newPlace])];
-        } else {
-          _placeWidgets[_placeWidgets.length - 1].value.add(newPlace);
-        }
+        _placeWidgets.add(MapEntry(date, [newPlace]));
       }
-      _isAddingPlace = false;
+      _isAddingPlaceMap[date] = false;
     });
   }
 
@@ -321,7 +322,7 @@ class _AddPage_2State extends State<AddPage_2> {
           )
       );
 
-      // 날짜별로 장소 데이터를 나누어 각각 저장 요청
+      // 날짜별로 장소 데이터를 묶어 개별 POST 요청 수행
       for (var entry in _placeWidgets) {
         final date = entry.key;
         final places = entry.value;
@@ -387,6 +388,7 @@ class _AddPage_2State extends State<AddPage_2> {
           children: [
             Text('최근 업데이트', style: TextStyle(fontSize: width * 0.027, fontWeight: FontWeight.bold, color: const Color(0xFF7F7F7F))),
             SizedBox(height: width * 0.018),
+            // 오늘 날짜를 yyyy-MM-dd 형식으로 표시
             Text('${DateTime.now().toLocal().toString().substring(0, 10)}', style: TextStyle(fontSize: width * 0.027, color: const Color(0xFF7F7F7F))),
           ],
         ),
@@ -452,42 +454,87 @@ class _AddPage_2State extends State<AddPage_2> {
                       SizedBox(height: width * 0.058),
 
                       // 장소 목록 표시 - 그룹화된 날짜별 렌더링
+                      if (_placeWidgets.isNotEmpty && _placeWidgets[0].value.isNotEmpty)
+                        // 편집모드 토글 버튼
+                        // 연필 아이콘: 편집 모드로 진입하여 각 장소에 삭제(X) 버튼 노출
+                        // 저장 아이콘: 편집 모드 종료 및 삭제 버튼 숨김
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: Icon(
+                              _isEditMode ? Icons.save : Icons.edit,
+                              color: Colors.black87,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isEditMode = !_isEditMode;
+                              });
+                            },
+                          ),
+                        ),
                       for (var entry in _placeWidgets) ...[
                         _buildDateLabel(entry.key),
                         for (var place in entry.value) ...[
-                          place,
+                          // 편집 모드일 경우, 각 장소 좌측 상단에 삭제(X) 버튼 표시
+                          // 사용자가 해당 버튼을 누르면 해당 장소가 리스트에서 제거됨
+                          Stack(
+                            children: [
+                              place,
+                              if (_isEditMode)
+                                Positioned(
+                                  top: 0,
+                                  left: 0,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        entry.value.remove(place);
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withOpacity(0.8),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      padding: EdgeInsets.all(4),
+                                      child: Icon(Icons.close, size: width * 0.045, color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                           SizedBox(height: width * 0.058),
-                        ]
+                        ],
+                        // 날짜별로 추가된 코스 아래에 위치하는 '+ 장소 추가' 버튼
+                        // 버튼을 누르면 해당 날짜에 새로운 장소 입력폼(PlaceInputCard) 표시됨
+                        // 사용자가 입력을 완료하면 해당 날짜 섹션에만 장소가 추가됨
+                        _isAddingPlaceMap[entry.key] == true
+                            ?
+                            // 사용자가 장소를 직접 입력하는 카드
+                            // onComplete 콜백을 통해 입력한 장소 정보를 해당 날짜 그룹에 추가
+                            PlaceInputCard(
+                                onComplete: (imageUrl, title, description, mapX, mapY) =>
+                                    addNewPlace(entry.key, imageUrl, title, description, mapX, mapY),
+                                onCancel: () => setState(() => _isAddingPlaceMap[entry.key] = false),
+                              )
+                            : GestureDetector(
+                                onTap: () => setState(() => _isAddingPlaceMap[entry.key] = true),
+                                child: Container(
+                                  width: width * 0.63,
+                                  height: width * 0.63 * 0.69,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey.shade400),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '+ 장소 추가',
+                                      style: TextStyle(fontSize: width * 0.04),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        SizedBox(height: width * 0.04),
                       ],
-
-                      // 장소 추가 입력폼 또는 '+ 장소 추가' 버튼 표시
-                      _isAddingPlace
-
-                      // '+ 장소 추가' 버튼 클릭 시 입력폼으로 전환
-                          ? PlaceInputCard(
-                        onComplete: addNewPlace,
-                        onCancel: () => setState(() => _isAddingPlace = false),
-                      )
-
-                      // 기본 상태, '+ 장소 추가' 버튼 표시
-                          : GestureDetector(
-                        onTap: () => setState(() => _isAddingPlace = true),
-                        child: Container(
-                          width: width * 0.63,
-                          height: width * 0.63 * 0.69,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade400),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '+ 장소 추가',
-                              style: TextStyle(fontSize: width * 0.04),
-                            ),
-                          ),
-                        ),
-                      ),
-
                       SizedBox(height: width * 0.2835),
                     ],
                   ),
