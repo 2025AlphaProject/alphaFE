@@ -3,16 +3,15 @@ import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
 import '../../components/plan_card.dart';
 import '../../components/proceed_button.dart';
+import '../../components/token_controller.dart';
 import '../plan_page/plan_page.dart';
 import 'package:alpha_fe/components/auth_token_handler.dart';
 
 
 class AddPage_3 extends StatefulWidget {
   final int tour_id; // 정상 등록 여부 확인 텍스트
-  final String? accessToken;
   const AddPage_3({
     required this.tour_id,
-    required this.accessToken,
     Key? key
   }) : super(key: key);
 
@@ -34,6 +33,7 @@ class _AddPage_3State extends State<AddPage_3> {
   }
 
   Future<Map<String, dynamic>> fetchTourData() async {
+    final accessToken = getAccessToken();
     final dio = Dio();
     final url = 'http://conever.duckdns.org:8000/tour/${widget.tour_id}/';
     try {
@@ -42,7 +42,7 @@ class _AddPage_3State extends State<AddPage_3> {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${widget.accessToken}'
+            'Authorization': 'Bearer $accessToken'
           },
         ),
       );
@@ -61,7 +61,7 @@ class _AddPage_3State extends State<AddPage_3> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
+      backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "추가하기 완료"),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -86,7 +86,7 @@ class _AddPage_3State extends State<AddPage_3> {
 
           // PlanCard로 구성된 회색 박스
           _tourData == null
-            ? Center(child: const CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Center(
                 child: PlanCard(
                   title: _tourData!['tour_name'] ?? '',
@@ -116,9 +116,7 @@ class _AddPage_3State extends State<AddPage_3> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => PlanPage(
-                              accessToken: accessToken
-                          ),
+                          builder: (context) => const PlanPage(),
                       ),
                   );
                 }

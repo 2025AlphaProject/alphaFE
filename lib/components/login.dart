@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:alpha_fe/mainscreen.dart';
-import 'refresh_token_controller.dart';
+import 'token_controller.dart';
 
 class KakaoLoginService {
   static Future<void> login(BuildContext context, String kakaoNativeAppKey) async {
@@ -49,13 +49,12 @@ class KakaoLoginService {
       );
 
       saveRefreshToken(token.refreshToken);
-
-      final accessToken = await getAccessTokenFromRefreshToken();
+      saveAccessToken(token.accessToken);
 
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MainScreen(accessToken: accessToken),
+          builder: (context) => const MainScreen(),
         ),
       );
     } catch (e) {

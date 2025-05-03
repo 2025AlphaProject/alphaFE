@@ -1,4 +1,5 @@
 import 'package:alpha_fe/components/plan_card.dart';
+import 'package:alpha_fe/components/token_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
@@ -10,22 +11,20 @@ class EditState {
 }
 
 class PlanPage extends StatelessWidget {
-  final String? accessToken;
-  const PlanPage({Key? key, required this.accessToken}) : super(key: key);
+  const PlanPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "계획 앱바 영역"),
-      body: PlanPage_Body(accessToken: accessToken),
+      body: PlanPage_Body(),
     );
   }
 }
 
 class PlanPage_Body extends StatefulWidget {
-  final String? accessToken;
-  const PlanPage_Body({Key? key, required this.accessToken}) : super(key: key);
+  const PlanPage_Body({Key? key}) : super(key: key);
 
   @override
   State<PlanPage_Body> createState() => _PlanPage_BodyState();
@@ -46,41 +45,18 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
   void initState() {
     super.initState();
     _fetchTourData();
-    _fetchUserME();
-  }
-
-  Future<void> _fetchUserME() async {
-    final dio = Dio();
-    try{
-      final response = await dio.get(
-        'http://conever.duckdns.org:8000/user/me',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer ${widget.accessToken}',
-            'Accept': 'application/json'
-          },
-        ),
-      );
-      if (response.statusCode == 200) {
-        final currentUsername = response.data['username'];
-      }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      print('Fetch error: $e');
-    }
   }
 
   //내 여행 가져오기(리스트)
   Future<void> _fetchTourData() async {
+    final accessToken = getAccessToken();
     final dio = Dio();
     try {
       final response = await dio.get(
         'http://conever.duckdns.org:8000/tour/',
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${widget.accessToken}',
+            'Authorization': 'Bearer $accessToken',
             'Content-Type': 'application/json',
           },
         ),
@@ -93,7 +69,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           'http://conever.duckdns.org:8000/user/me',
           options: Options(
             headers: {
-              'Authorization': 'Bearer ${widget.accessToken}',
+              'Authorization': 'Bearer $accessToken',
               'Accept': 'application/json'
             },
           ),

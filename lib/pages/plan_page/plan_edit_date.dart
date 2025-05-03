@@ -10,14 +10,12 @@ class planEditDate extends StatefulWidget {
   final String startDate;
   final String endDate;
   final int tour_id;
-  final String? accessToken;
 
   const planEditDate({
     super.key,
     required this.startDate,
     required this.endDate,
     required this.tour_id,
-    required this.accessToken,
   });
 
   @override

@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:flutter/cupertino.dart';
+import '../../components/token_controller.dart';
 import 'mission_page.dart';
 import 'my_page_Q&A.dart';
 import 'package:dio/dio.dart';
 
 class MyPage extends StatelessWidget {
-  final String? accessToken;
-  const MyPage({Key? key, required this.accessToken}) : super(key: key);
+  const MyPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "마이 앱바 영역"),
-      body: MyPageBody(accessToken: accessToken),
+      body: MyPageBody(),
     );
   }
 }
 
 class MyPageBody extends StatefulWidget {
-  final String? accessToken;
-  const MyPageBody({super.key, required this.accessToken});
+  const MyPageBody({super.key});
 
   @override
   State<MyPageBody> createState() => _MyPageBodyState();
@@ -44,12 +43,13 @@ class _MyPageBodyState extends State<MyPageBody> {
 
   //프로필 사진 및 이름 - [GET] 유저 정보 가져오기
   Future<void> _fetchUserInfo() async {
+    final accessToken = getAccessToken();
     final dio = Dio();
 
     final response = await dio.get(
       'http://conever.duckdns.org:8000/user/me/',
       options: Options(headers: {
-        'Authorization': 'Bearer ${widget.accessToken}',
+        'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
       }),
     );
@@ -68,12 +68,13 @@ class _MyPageBodyState extends State<MyPageBody> {
 
   //여행 수 표시 - [GET] 내 여행 가져오기(리스트)
   Future<void> _fetchTourCount() async {
+    final accessToken = getAccessToken();
     final dio = Dio();
     try {
     final response = await dio.get(
       'http://conever.duckdns.org:8000/tour/',
       options: Options(headers: {
-        'Authorization': 'Bearer ${widget.accessToken}',
+        'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
       }),
     );
@@ -87,12 +88,13 @@ class _MyPageBodyState extends State<MyPageBody> {
 
   //미션 수 표시 - [GET] 미션 리스트 가져오기
   Future<void> _fetchMissionCount() async {
+    final accessToken = getAccessToken();
     final dio = Dio();
     try {
       final response = await dio.get(
         'http://conever.duckdns.org:8000/mission/list/',
         options: Options(headers: {
-          'Authorization': 'Bearer ${widget.accessToken}',
+          'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
         }),
       );
@@ -158,10 +160,8 @@ class _MyPageBodyState extends State<MyPageBody> {
           SizedBox(height: width * 0.12),
           Column( //미션진행도랑 자주묻는 질문
             children: [
-              _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page(
-                accessToken: widget.accessToken,
-              ), width),
-              _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", MyPage_QA(), width),
+              _menuItem(context, Icons.trending_up, "미션 진행도", const Mission_Page(), width),
+              _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width),
             ],
           ),
         ],

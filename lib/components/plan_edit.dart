@@ -1,4 +1,5 @@
 import 'package:alpha_fe/components/auth_token_handler.dart';
+import 'package:alpha_fe/components/token_controller.dart';
 import 'package:alpha_fe/mainscreen.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
@@ -463,7 +464,6 @@ class EditTourDateDialog extends StatefulWidget {
 class _EditTourDateDialogState extends State<EditTourDateDialog> {
   late TextEditingController _startDateController;
   late TextEditingController _endDateController;
-  late final String accessToken;
   bool _isLoading = false;
 
   @override
@@ -471,11 +471,6 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
     super.initState();
     _startDateController = TextEditingController(text: widget.startDate);
     _endDateController = TextEditingController(text: widget.endDate);
-    _initToken();
-  }
-
-  Future<void> _initToken() async {
-    accessToken = (await getAccessTokenFromRefreshToken()) ?? '';
   }
 
   @override
@@ -516,7 +511,6 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: () async {
-                    final resolvedToken = await accessToken;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -524,7 +518,6 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                           startDate: _startDateController.text,
                           endDate: _endDateController.text,
                           tour_id: widget.tour_id,
-                          accessToken: resolvedToken,
                         ),
                       ),
                     ).then((result) {
@@ -562,6 +555,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
             ),
             ElevatedButton(
               onPressed: () async {
+                final accessToken = getAccessToken();
                 setState(() {
                   _isLoading = true;
                 });
@@ -576,7 +570,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                     },
                     options: Options(
                       headers: {
-                        'Authorization': 'Bearer ${accessToken}',
+                        'Authorization': 'Bearer $accessToken',
                         'Content-Type': 'application/json',
                       },
                     ),

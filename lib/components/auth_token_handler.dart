@@ -1,4 +1,4 @@
-import 'package:alpha_fe/components/refresh_token_controller.dart';
+import 'package:alpha_fe/components/token_controller.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
@@ -17,9 +17,12 @@ Future<String?> getAccessTokenFromRefreshToken() async {
       data: formData,
       options: Options(headers: {'Accept': 'application/json'}),
     );
-    return response.data['access_token'];
+    final accessToken = response.data['access_token'];
+    saveAccessToken(accessToken);
   } catch (e) {
     logger.e('🔁 accessToken 발급 실패: $e');
     return null;
   }
+  logger.e('🔁 accessToken 발급 성공!');
+  return null;
 }
