@@ -23,7 +23,7 @@ class _Mission_PageState extends State<Mission_Page> {
 
   //미션 진행도 - [GET] 미션 리스트 가져오기
   Future<void> _fetchMissions() async {
-    final accessToken =getAccessToken();
+    final accessToken = await getAccessToken();
     final dio = Dio();
     try {
       final response = await dio.get(

@@ -135,7 +135,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () async {
-                                      final accessToken = getAccessToken();
+                                      final accessToken = await getAccessToken();
                                       try { //유저추가 api
                                         final dio = Dio();
                                         final response = await dio.post(

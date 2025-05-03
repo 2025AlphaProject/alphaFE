@@ -43,7 +43,7 @@ class _MyPageBodyState extends State<MyPageBody> {
 
   //프로필 사진 및 이름 - [GET] 유저 정보 가져오기
   Future<void> _fetchUserInfo() async {
-    final accessToken = getAccessToken();
+    final accessToken = await getAccessToken();
     final dio = Dio();
 
     final response = await dio.get(
@@ -68,7 +68,7 @@ class _MyPageBodyState extends State<MyPageBody> {
 
   //여행 수 표시 - [GET] 내 여행 가져오기(리스트)
   Future<void> _fetchTourCount() async {
-    final accessToken = getAccessToken();
+    final accessToken = await getAccessToken();
     final dio = Dio();
     try {
     final response = await dio.get(
@@ -88,7 +88,7 @@ class _MyPageBodyState extends State<MyPageBody> {
 
   //미션 수 표시 - [GET] 미션 리스트 가져오기
   Future<void> _fetchMissionCount() async {
-    final accessToken = getAccessToken();
+    final accessToken = await getAccessToken();
     final dio = Dio();
     try {
       final response = await dio.get(

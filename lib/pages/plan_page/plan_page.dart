@@ -49,7 +49,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
   //내 여행 가져오기(리스트)
   Future<void> _fetchTourData() async {
-    final accessToken = getAccessToken();
+    final accessToken = await getAccessToken();
     final dio = Dio();
     try {
       final response = await dio.get(

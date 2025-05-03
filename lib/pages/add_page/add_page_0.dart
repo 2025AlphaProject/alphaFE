@@ -69,7 +69,7 @@ class _AddPage_0State extends State<AddPage_0> {
 
   // 입력한 여행 정보로 서버에 여행 등록 요청
   Future<void> _registerTour() async {
-    final accessToken = getAccessToken();
+    final accessToken = await getAccessToken();
     if (_titleController.text.isEmpty ||
         _titleController.text.length > 10 ||
         _selectedDateRange == null) {

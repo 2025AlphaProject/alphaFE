@@ -129,7 +129,7 @@ class _AddPage_2State extends State<AddPage_2> {
 
   //
   Future<void> saveTourCourse() async {
-    final accessToken = getAccessToken();
+    final accessToken = await getAccessToken();
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
 

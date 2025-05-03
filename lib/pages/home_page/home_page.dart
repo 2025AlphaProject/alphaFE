@@ -39,7 +39,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchPlans() async {
-    final accessToken = getAccessToken();
+    final accessToken = await getAccessToken();
+    print(accessToken);
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
 

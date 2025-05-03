@@ -555,7 +555,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
             ),
             ElevatedButton(
               onPressed: () async {
-                final accessToken = getAccessToken();
+                final accessToken = await getAccessToken();
                 setState(() {
                   _isLoading = true;
                 });
