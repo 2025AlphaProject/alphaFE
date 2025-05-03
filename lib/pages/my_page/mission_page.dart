@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart'; //
 import '../../components/app_bar.dart';
 import 'package:alpha_fe/pages/my_page/mission_page_2.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Mission_Page extends StatefulWidget {
   const Mission_Page({super.key});
@@ -14,11 +15,40 @@ class Mission_Page extends StatefulWidget {
 class _Mission_PageState extends State<Mission_Page> {
   List<Map<String, dynamic>> _missions = [];
   bool _isLoading = true;
+  bool _hasShownDialogToday = false;
 
   @override
   void initState() {
     super.initState();
     _fetchMissions();
+    _checkAndShowDialog();
+  }
+
+  Future<void> _checkAndShowDialog() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String today = DateTime.now().toIso8601String().substring(0, 10);
+    final String? lastShownDate = prefs.getString('lastMissionDialogDate');
+
+    if (lastShownDate != today) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('오늘의 미션 설명'),
+            content: const Text('오늘의 미션 내용을 확인해보세요!'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  prefs.setString('lastMissionDialogDate', today);
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          ),
+        );
+      });
+    }
   }
 
   //미션 진행도 - [GET] 미션 리스트 가져오기
