@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dio/dio.dart';
+import '../../components/token_controller.dart';
 import 'add_page_3.dart';
 import '../../components/app_bar.dart';
 import '../../components/proceed_button.dart';
@@ -14,13 +15,11 @@ import '../../components/placeinput_card.dart';
 class AddPage_2 extends StatefulWidget {
   final String title;
   final int tourId;
-  final String? accessToken;
   final Function(List<PlaceInfoBlock>)? onSaveCourseCallback;
 
   const AddPage_2({
     required this.title,
     required this.tourId,
-    required this.accessToken,
     this.onSaveCourseCallback,
     Key? key
   }) : super(key: key);
@@ -127,8 +126,8 @@ class _AddPage_2State extends State<AddPage_2> {
     });
   }
 
-  // AddPage_2에서 단독 호출되거나 HomePage에서 콜백으로 연결된 AddPage_0 → AddPage_2 흐름에서 호출됨
   Future<void> saveTourCourse([int? tourId, List<PlaceInfoBlock>? places]) async {
+    final accessToken = await getAccessToken();
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
     final int useTourId = tourId ?? widget.tourId;
@@ -140,7 +139,7 @@ class _AddPage_2State extends State<AddPage_2> {
           '$baseUrl/tour/$useTourId/',
           options: Options(
               headers: {
-                'Authorization': 'Bearer ${widget.accessToken}'
+                'Authorization': 'Bearer $accessToken'
               }
           )
 
@@ -167,7 +166,7 @@ class _AddPage_2State extends State<AddPage_2> {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${widget.accessToken}'
+            'Authorization': 'Bearer $accessToken'
           },
         ),
       );
@@ -180,8 +179,7 @@ class _AddPage_2State extends State<AddPage_2> {
           context,
           CupertinoPageRoute(
             builder: (_) => AddPage_3(
-              tour_id: useTourId,
-              accessToken: widget.accessToken,
+              tour_id: widget.tourId,
             ),
           ),
         );

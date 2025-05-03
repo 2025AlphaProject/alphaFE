@@ -27,22 +27,13 @@ class GeneratorItem extends StatelessWidget {
         //color: const Color(0xFFF5F5F5),
       ),
       child: ElevatedButton(
-          onPressed: () async {
-            final accessToken = await getAccessTokenFromRefreshToken();
-            if (accessToken == null || accessToken.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("로그인이 만료되었습니다. 다시 로그인해주세요.")),
-              );
-              return;
-            }
-
+          onPressed: () {
             Navigator.push(
               context,
               CupertinoPageRoute(
                 builder: (context) => AddPage_2(
                   title: title,
                   tourId: tourId,
-                  accessToken: accessToken,
                 ),
               ),
             );

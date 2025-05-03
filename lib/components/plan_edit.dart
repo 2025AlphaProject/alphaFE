@@ -1,6 +1,8 @@
 import 'package:alpha_fe/components/auth_token_handler.dart';
+import 'package:alpha_fe/components/token_controller.dart';
 import 'package:alpha_fe/mainscreen.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page.dart';
+import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';
 import 'package:dio/dio.dart';
@@ -38,15 +40,15 @@ class TravelEditMenu extends StatelessWidget {
             _EditMenu( //여행경로 삭제(코스 다 삭제 하기)
               text: "여행경로 삭제",
               onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => Center(child: DeleteCourse(tour_id: tour_id)),
-                );
+                EditState.showEditButton = true;
+                print(EditState.showEditButton);
+                Navigator.pop(context,true);
               },
             ),
             _EditMenu( //여행 제목 수정
               text: "여행제목 수정",
               onTap: () {
+                Navigator.pop(context);
                 showDialog(
                   context: context,
                   builder: (context) => Center(child: EditTourNameDialog(tourName: tourName, tour_id: tour_id,)),
@@ -56,6 +58,7 @@ class TravelEditMenu extends StatelessWidget {
             _EditMenu(
               text: "여행날짜 수정",
               onTap: () async {
+                Navigator.pop(context);
                 final result = await showDialog(
                   context: context,
                   builder: (context) => Center(
@@ -76,6 +79,7 @@ class TravelEditMenu extends StatelessWidget {
               text: "여행 삭제",
               isDestructive: true,
               onTap: () {
+                Navigator.pop(context);
                 showDialog(
                   context: context,
                   builder: (context) => Center(child: DeleteTour(tour_id: tour_id))
@@ -107,7 +111,6 @@ class _EditMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.pop(context);
         onTap();
       },
         child: Container(
@@ -350,9 +353,11 @@ class _DeleteTourState extends State<DeleteTour> {
 // 여행 경로 삭제
 class DeleteCourse extends StatefulWidget {
   final int tour_id;
+  final String target_date;
 
   const DeleteCourse({Key? key,
     required this.tour_id,
+    required this.target_date
   }) : super(key: key);
 
   @override
@@ -361,6 +366,7 @@ class DeleteCourse extends StatefulWidget {
 
 class _DeleteCourseState extends State<DeleteCourse> {
   late final String accessToken;
+
 
   @override
   void initState() {
@@ -379,8 +385,8 @@ class _DeleteCourseState extends State<DeleteCourse> {
       context: context,
       child: SingleChildScrollView(
         child: AlertDialog(
-          title: Text('여행 계획 초기화', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
-          content: Text('이 여행 경로를 초기화하시겠습니까?', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+          title: Text('여행 경로 삭제', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+          content: Text('"${widget.target_date}"의 경로를 삭제하시겠습니까?', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -392,6 +398,9 @@ class _DeleteCourseState extends State<DeleteCourse> {
                   final dio = Dio();
                   final response = await dio.delete(
                     'http://conever.duckdns.org:8000/tour/course/${widget.tour_id}/',
+                    data: {
+                      "target_date": widget.target_date
+                    },
                     options: Options(
                       headers: {
                         'Authorization': 'Bearer $accessToken',
@@ -401,7 +410,9 @@ class _DeleteCourseState extends State<DeleteCourse> {
                   );
                   if (response.statusCode == 204) {
                     if (!mounted) return; // 안전 체크 추가
-                    Navigator.of(context).pop(); // 다이얼로그 닫기
+                    EditState.showEditButton = false;
+
+                    Navigator.pop(context); // 다이얼로그 닫기
                   } else { //TODO: 오류뜰때 어케할지 수정해야함
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -423,7 +434,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
                   );
                 }
               },
-              child: Text('초기화',style: TextStyle(color: Colors.red, fontSize: MediaQuery.of(context).size.width * 0.04)),
+              child: Text('삭제',style: TextStyle(color: Colors.red, fontSize: MediaQuery.of(context).size.width * 0.04)),
             ),
           ],
         ),
@@ -453,7 +464,6 @@ class EditTourDateDialog extends StatefulWidget {
 class _EditTourDateDialogState extends State<EditTourDateDialog> {
   late TextEditingController _startDateController;
   late TextEditingController _endDateController;
-  late final String accessToken;
   bool _isLoading = false;
 
   @override
@@ -461,11 +471,6 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
     super.initState();
     _startDateController = TextEditingController(text: widget.startDate);
     _endDateController = TextEditingController(text: widget.endDate);
-    _initToken();
-  }
-
-  Future<void> _initToken() async {
-    accessToken = (await getAccessTokenFromRefreshToken()) ?? '';
   }
 
   @override
@@ -506,7 +511,6 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: () async {
-                    final resolvedToken = await accessToken;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -514,7 +518,6 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                           startDate: _startDateController.text,
                           endDate: _endDateController.text,
                           tour_id: widget.tour_id,
-                          accessToken: resolvedToken,
                         ),
                       ),
                     ).then((result) {
@@ -552,6 +555,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
             ),
             ElevatedButton(
               onPressed: () async {
+                final accessToken = await getAccessToken();
                 setState(() {
                   _isLoading = true;
                 });
@@ -566,7 +570,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                     },
                     options: Options(
                       headers: {
-                        'Authorization': 'Bearer ${accessToken}',
+                        'Authorization': 'Bearer $accessToken',
                         'Content-Type': 'application/json',
                       },
                     ),
