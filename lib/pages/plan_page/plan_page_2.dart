@@ -61,8 +61,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   String userProfileImageUrl = "";
   List<Map<String, String>> travelers = [];
   final TextEditingController _textController = TextEditingController();
-  Future<String?> get accessToken async => await getAccessToken();
-  String get dateRange => "$startDate ~ $endDate";
+
 
   List<Map<String, dynamic>> courseData = [];
   bool _isLoading = true;
@@ -70,6 +69,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   //여행 경로 가져오기 api
   Future<void> fetchTourCourse() async {
     final dio = Dio();
+    final accessToken = await getAccessToken();
     try {
       final response = await dio.get(
         'http://conever.duckdns.org:8000/tour/course/${widget.tour_id}/',
@@ -111,6 +111,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   //내 여행 가져오기(하나만) - 제목,날짜,동행자 정보 가져오기
   Future<void> fetchTourName() async {
     final dio = Dio();
+    final accessToken = await getAccessToken();
     try {
       final response = await dio.get(
         'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
@@ -198,7 +199,8 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                     children: [
                       Row(
                         children: [
-                          Expanded(child: Plan_Name()),
+                          Expanded(child: Plan_Name(startDate: startDate,
+                            endDate: endDate,tourName: tourName,)),
                           IconButton(
                             icon: Icon(Icons.edit, size: MediaQuery.of(context).size.width * 0.07),
                             onPressed: () async {
@@ -241,14 +243,23 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
 
 //여행 디데이 및 여행명
 class Plan_Name extends StatelessWidget {
-  const Plan_Name({super.key});
+  final String startDate;
+  final String endDate;
+  final String tourName;
+  const Plan_Name({super.key, required this.startDate, required this.endDate, required this.tourName});
 
 
   @override
   Widget build(BuildContext context) {
-    final remainingDays = calculateRemainingDays(
-      context.findAncestorStateOfType<_plan_page2_bodyState>()?.endDate ?? "",
-    );
+    int calculateRemainingDays(String endDate) {
+      final today = DateTime.now();
+      final endDateObj = DateTime.parse(endDate);
+      final difference = endDateObj.difference(today);
+      return difference.inDays;
+    }
+
+    final remainingDays = calculateRemainingDays(endDate);
+
     return Padding(
       padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.025,0,0,0),
       child: Column(
@@ -275,7 +286,7 @@ class Plan_Name extends StatelessWidget {
           Padding(
             padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.0075, 0, 0, 0),
             child: Text(
-              context.findAncestorStateOfType<_plan_page2_bodyState>()?.tourName ?? "",
+              tourName,
               style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.07, fontWeight: FontWeight.bold),
             ),
           ),
@@ -288,7 +299,7 @@ class Plan_Name extends StatelessWidget {
                 Icon(Icons.calendar_today, size: MediaQuery.of(context).size.width * 0.035, color: Colors.grey),
                 SizedBox(width: MediaQuery.of(context).size.width * 0.0125),
                 Text(
-                  context.findAncestorStateOfType<_plan_page2_bodyState>()?.dateRange ?? "",
+                  "$startDate ~ $endDate",
                   style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.032, color: Colors.grey),
                 ),
               ],
