@@ -64,6 +64,7 @@ class _HomePageState extends State<HomePage> {
 
       // 현재 사용자 이름 추출
       final currentUsername = userResponse.data['username'];
+      if (!mounted) return;
       setState(() {
         _currentUsername = currentUsername;
       });

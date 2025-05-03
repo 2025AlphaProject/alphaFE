@@ -8,6 +8,8 @@ import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';
 import 'package:dio/dio.dart';
 import 'package:alpha_fe/main.dart';
 
+import 'logout_by_expiration.dart';
+
 // 전체적인 편집관련
 class TravelEditMenu extends StatelessWidget {
   final String startDate;
@@ -233,7 +235,13 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
 
                   if (response.statusCode == 200) {
                     Navigator.of(context).pop();
-                  } else {
+                  }
+
+                  else if (response.statusCode == 401) {
+                    LogoutByExpiration(context);
+                  }
+
+                  else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -324,7 +332,13 @@ class _DeleteTourState extends State<DeleteTour> {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => MainScreen()), //처음으로 되돌아감
                     );
-                  } else {
+                  }
+
+                  else if (response.statusCode == 401) {
+                    LogoutByExpiration(context);
+                  }
+
+                  else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -415,7 +429,13 @@ class _DeleteCourseState extends State<DeleteCourse> {
                     EditState.showEditButton = false;
                     widget.onRefresh?.call();
                     Navigator.pop(context,true); // 다이얼로그 닫기
-                  } else {
+                  }
+
+                  else if (response.statusCode == 401) {
+                    LogoutByExpiration(context);
+                  }
+
+                  else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -588,7 +608,13 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                   if (response.statusCode == 200) {
                     Navigator.pop(context, true);
                     widget.onRefresh?.call();
-                  } else {
+                  }
+
+                  else if (response.statusCode == 401) {
+                    LogoutByExpiration(context);
+                  }
+
+                  else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(

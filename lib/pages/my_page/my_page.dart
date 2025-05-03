@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:flutter/cupertino.dart';
-import '../../components/logout.dart';
+import '../../components/logout_by_user.dart';
 import '../../components/token_controller.dart';
 import 'mission_page.dart';
 import 'my_page_Q&A.dart';
@@ -163,7 +163,7 @@ class _MyPageBodyState extends State<MyPageBody> {
             children: [
               _menuItem(context, Icons.trending_up, "미션 진행도", const Mission_Page(), width),
               _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width),
-              _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, onTap: () {Logout(context);}),
+              _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, onTap: () {LogoutByUser(context);}),
             ],
           ),
         ],
