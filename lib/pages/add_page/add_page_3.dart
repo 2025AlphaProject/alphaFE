@@ -33,7 +33,7 @@ class _AddPage_3State extends State<AddPage_3> {
   }
 
   Future<Map<String, dynamic>> fetchTourData() async {
-    final accessToken = getAccessToken();
+    final accessToken = await getAccessToken();
     final dio = Dio();
     final url = 'http://conever.duckdns.org:8000/tour/${widget.tour_id}/';
     try {

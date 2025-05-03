@@ -75,7 +75,7 @@ Future<void> main() async {
   // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
   //await initNaverMapSdk();
 
-  final accessToken = await getAccessTokenFromRefreshToken();
+  final accessToken = await getAccessToken();
 
   runApp(MaterialApp(
     locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정

@@ -61,7 +61,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   String userProfileImageUrl = "";
   List<Map<String, String>> travelers = [];
   final TextEditingController _textController = TextEditingController();
-  Future<String?> get accessToken => getAccessToken();
+  Future<String?> get accessToken async => await getAccessToken();
   String get dateRange => "$startDate ~ $endDate";
 
   List<Map<String, dynamic>> courseData = [];
