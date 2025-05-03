@@ -3,28 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-Future<void> Logout(BuildContext context) async {
-  final shouldLogout = await showDialog<bool>(
+Future<void> LogoutByExpiration(BuildContext context) async {
+  showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('로그아웃'),
-        content: const Text('정말 로그아웃하시겠습니까?'),
-        actions: [
+        title: const Text('자동 로그아웃'),
+        content: const Text('오랜 시간 사용하지 않아 자동으로 로그아웃되었습니다.'),
+        actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('취소'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('로그아웃'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('확인'),
           ),
         ],
       );
     },
   );
 
-  if (shouldLogout == true) {
     const secureStorage = FlutterSecureStorage();
 
     await secureStorage.delete(key: 'access_token');
@@ -36,7 +33,6 @@ Future<void> Logout(BuildContext context) async {
 
     Phoenix.rebirth(context);
   }
-}
 
 void buildApp({required Widget home}) {
   runApp(
