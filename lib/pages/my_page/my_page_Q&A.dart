@@ -6,14 +6,16 @@ class MyPage_QA extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "자주 묻는 질문"),
       body: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: EdgeInsets.symmetric(horizontal: width * 0.021, vertical: height * 0.009),
         child: ListView(
             children: [  //자주 묻는 질문 질문과 내용들 //여기는 하드코딩으로 그냥 값 안바꿀듯
-              SizedBox(height: 5,),
+              SizedBox(height: height * 0.006,),
               _QAItem(
                   "여행지 검색이 안돼요",
                   "저희 서비스는 개별 여행지 검색 기능을 제공하지 않습니다."

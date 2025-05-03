@@ -77,14 +77,16 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height*0.4,
+            height: height*0.4,
             child: Padding(
-              padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width*0.0533, MediaQuery.of(context).size.height*0.246, MediaQuery.of(context).size.width*0.0533, 0),
+              padding: EdgeInsets.fromLTRB(width*0.0533, height*0.246, width*0.0533, 0),
               child: Center(
                   child: Column(
                     children: [
@@ -93,7 +95,7 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
                         duration: const Duration(milliseconds: 500),
                         child: Text(
                           "어디로 떠날지가 고민이시나요?",
-                          style: TextStyle(fontSize: MediaQuery.of(context).size.width*0.064, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: width*0.064, fontWeight: FontWeight.bold),
                         ),
                       ),
                       AnimatedOpacity(
@@ -101,7 +103,7 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
                         duration: const Duration(milliseconds: 500),
                         child: Text(
                           "AI가 추천하는 일정을 확인하고,",
-                          style: TextStyle(fontSize: MediaQuery.of(context).size.width*0.064, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: width*0.064, fontWeight: FontWeight.bold),
                         ),
                       ),
                       AnimatedOpacity(
@@ -109,7 +111,7 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
                         duration: const Duration(milliseconds: 500),
                         child: Text(
                           "가장 특별한 여행을 떠나보세요!",
-                          style: TextStyle(fontSize: MediaQuery.of(context).size.width*0.064, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: width*0.064, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -117,7 +119,7 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
             ),
           ),
           SizedBox(
-            height: MediaQuery.of(context).size.height*0.4,
+            height: height*0.4,
             child: Stack(
               children: [
                 Positioned.fill(

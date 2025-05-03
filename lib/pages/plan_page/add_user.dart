@@ -63,7 +63,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.all(width * 0.02),
+          padding: EdgeInsets.symmetric(horizontal: width * 0.02, vertical: height * 0.009),
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration( //원하는 유저 검색가능
@@ -115,22 +115,21 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                           showDialog(
                             context: context,
                             builder: (context) {
-                              final dWidth = MediaQuery.of(context).size.width;
                               return AlertDialog(
                                 title: Text(
                                   '추가 확인',
-                                  style: TextStyle(fontSize: dWidth * 0.045),
+                                  style: TextStyle(fontSize: width * 0.045),
                                 ),
                                 content: Text(
                                   '이 유저를 추가하시겠습니까?',
-                                  style: TextStyle(fontSize: dWidth * 0.04),
+                                  style: TextStyle(fontSize: width * 0.04),
                                 ),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
                                     child: Text(
                                       '취소',
-                                      style: TextStyle(fontSize: dWidth * 0.04),
+                                      style: TextStyle(fontSize: width * 0.04),
                                     ),
                                   ),
                                   ElevatedButton(
@@ -163,7 +162,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                     },
                                     child: Text(
                                       '확인',
-                                      style: TextStyle(fontSize: dWidth * 0.04),
+                                      style: TextStyle(fontSize: width * 0.04),
                                     ),
                                   ),
                                 ],

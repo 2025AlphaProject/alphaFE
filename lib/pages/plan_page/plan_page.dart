@@ -179,10 +179,10 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
                   children: [
                     Text('등록된 여행이 없습니다.',
                         style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.045)),
+                            fontSize: width * 0.045)),
                     Text('여행을 추가해주세요!',
                         style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.06,
+                            fontSize: width * 0.06,
                           fontWeight: FontWeight.bold
                         ),
                     ),

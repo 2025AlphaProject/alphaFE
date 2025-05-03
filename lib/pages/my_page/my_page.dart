@@ -225,6 +225,7 @@ class _MyPageBodyState extends State<MyPageBody> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator()); //연결 안되면 로딩뜨는거
@@ -233,16 +234,16 @@ class _MyPageBodyState extends State<MyPageBody> {
     final safeUrl = profileImageUrl?.replaceFirst('http://', 'https://') ?? '';
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: width * 0.02, horizontal: width * 0.06),
+      padding: EdgeInsets.symmetric(vertical: width * 0.09, horizontal: width * 0.06),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Column( //이게 프로필 사진, 이름
             children: [
-              SizedBox(height: width * 0.05),
+              SizedBox(height: width * 0.023),
               Container(
                 width: width * 0.25,
-                height: width * 0.25,
+                height: width * 0.115,
                 alignment: Alignment.center,
                 child: CircleAvatar(
                   radius: width * 0.125,
@@ -250,7 +251,7 @@ class _MyPageBodyState extends State<MyPageBody> {
                   backgroundColor: Colors.transparent,
                 ),
               ),
-              SizedBox(height: width * 0.01),
+              SizedBox(height: height * 0.0046),
               Text(
                 username ?? '',
                 style: TextStyle(
@@ -264,21 +265,21 @@ class _MyPageBodyState extends State<MyPageBody> {
               ),
             ],
           ),
-          SizedBox(height: width * 0.05),
+          SizedBox(height: height * 0.023),
           Row( //여행이랑 미션 수
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _StateItem(tourCount.toString(), "여행", width),
+              _StateItem(tourCount.toString(), "여행", width, height),
               SizedBox(width: width * 0.08),
-              _StateItem(missionCount.toString(), "미션", width),
+              _StateItem(missionCount.toString(), "미션", width, height),
             ],
           ),
-          SizedBox(height: width * 0.12),
+          SizedBox(height: height * 0.055),
           Column( //미션진행도랑 자주묻는 질문
             children: [
-              _menuItem(context, Icons.trending_up, "미션 진행도", const Mission_Page(), width),
-              _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width),
-              _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, onTap: () {LogoutByUser(context);}),
+              _menuItem(context, Icons.trending_up, "미션 진행도", const Mission_Page(), width, height),
+              _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width, height),
+              _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, height, onTap: () {LogoutByUser(context);}),
             ],
           ),
         ],
@@ -288,7 +289,7 @@ class _MyPageBodyState extends State<MyPageBody> {
 }
 
 //여행수랑 미션수 나타내는 위젯
-Widget _StateItem(String value, String label, double width) {
+Widget _StateItem(String value, String label, double width, double height) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
@@ -300,7 +301,7 @@ Widget _StateItem(String value, String label, double width) {
           fontWeight: FontWeight.bold,
         ),
       ),
-      SizedBox(height: width * 0.02),
+      SizedBox(height: height * 0.092),
       Text(
         label,
         style: TextStyle(
@@ -313,9 +314,9 @@ Widget _StateItem(String value, String label, double width) {
 }
 
 //미션 진행도랑 자주묻는 질문 나타내는 위젯
-Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, double width, {VoidCallback? onTap}) {
+Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, double width, double height, {VoidCallback? onTap}) {
   return Padding(
-    padding: EdgeInsets.symmetric(vertical: width * 0.01),
+    padding: EdgeInsets.symmetric(vertical: height * 0.0046),
     child: SizedBox(
       width: width * 0.75,
       child: TextButton(
