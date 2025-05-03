@@ -5,6 +5,8 @@ class AILoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -14,13 +16,13 @@ class AILoadingView extends StatelessWidget {
             Text(
               "AI 가 경로를\n생성중 입니다!\n잠시만 기다려주세요",
               style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.064,
+                fontSize: width * 0.064,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.024),
+            SizedBox(height: height * 0.024),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.133),
+              padding: EdgeInsets.symmetric(horizontal: width * 0.133),
               child: const LinearProgressIndicator(
                 color: Colors.black,
                 backgroundColor: Colors.grey,

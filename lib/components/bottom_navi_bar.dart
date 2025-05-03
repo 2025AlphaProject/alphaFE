@@ -29,7 +29,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             )
           ],
         ),
-        height: 60,
+        height: MediaQuery.of(context).size.height * 0.073,
       
         // 둥근 모서리에 맞춰 BottomNavigationBar도 잘리도록 설정
         child: ClipRRect(

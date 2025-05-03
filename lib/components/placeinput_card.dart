@@ -30,9 +30,11 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
   // 검색 버튼, 텍스트 필드, 취소/완료 버튼
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Container(
-      width: MediaQuery.of(context).size.width * 0.63,
-      padding: const EdgeInsets.all(16),
+      width: width * 0.63,
+      padding: const EdgeInsets.symmetric(horizontal: 0.016, vertical: 0.042),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(20),
@@ -78,7 +80,7 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
               ],
             ),
           ),
-          SizedBox(height: MediaQuery.of(context).size.width * 0.63 * 0.045),
+          SizedBox(height: height * 0.012),
 
           // 장소 정보를 입력하는 필드들, 검색을 통해 장소를 선택하면 자동으로 채워짐
           // 이미지 URL, 장소명, 설명, 위도(mapX), 경도(mapY)
@@ -102,7 +104,7 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
             controller: _mapYController,
             decoration: const InputDecoration(labelText: 'mapY'),
           ),
-          SizedBox(height: MediaQuery.of(context).size.width * 0.63 * 0.045),
+          SizedBox(height: height * 0.012),
 
           // 완료, 취소 버튼
           Row(

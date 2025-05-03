@@ -18,12 +18,13 @@ class GeneratorItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Container(
-      margin: EdgeInsets.symmetric(vertical: screenWidth * 0.02),
+      margin: EdgeInsets.symmetric(vertical: height * 0.09),
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xFFD9D9D9), width: screenWidth * 0.0035),
-        borderRadius: BorderRadius.circular(screenWidth * 0.03),
+        border: Border.all(color: const Color(0xFFD9D9D9), width: width * 0.0035),
+        borderRadius: BorderRadius.circular(width * 11.25),
         //color: const Color(0xFFF5F5F5),
       ),
       child: ElevatedButton(
@@ -39,15 +40,15 @@ class GeneratorItem extends StatelessWidget {
             );
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFFF5F5F5),
+            backgroundColor: const Color(0xFFF5F5F5),
             elevation: 0,
             shadowColor: Colors.transparent,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(screenWidth * 0.03),
+              borderRadius: BorderRadius.circular(11.25),
             ),
             padding: EdgeInsets.symmetric(
-                vertical: screenWidth * 0.05,
-                horizontal: screenWidth * 0.04
+                vertical: width * 0.023,
+                horizontal: width * 0.04
             ),
           ),
           child: Row(
@@ -57,14 +58,14 @@ class GeneratorItem extends StatelessWidget {
                 title,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: screenWidth * 0.04,
-                    color: Color(0xFF000000)
+                    fontSize: width * 0.04,
+                    color: const Color(0xFF000000)
                 ),
               ),
               Icon(
                 Icons.arrow_forward,
-                color: Color(0xFF000000),
-                size: screenWidth * 0.04,
+                color: const Color(0xFF000000),
+                size: width * 0.04,
               )
             ],
           )
