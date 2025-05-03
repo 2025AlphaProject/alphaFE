@@ -344,10 +344,6 @@ class _AddPage_2State extends State<AddPage_2> {
                         text: "이 코스로 할게요!",
                         fontSize_: MediaQuery.of(context).size.width * 0.037,
                         fontWeight_: FontWeight.bold,
-                        padding_: EdgeInsets.symmetric(
-                          vertical: MediaQuery.of(context).size.width * 0.03,
-                          horizontal: MediaQuery.of(context).size.width * 0.03,
-                        ),
                         onTap: () {
 
                           // 저장 흐름 분기 처리:

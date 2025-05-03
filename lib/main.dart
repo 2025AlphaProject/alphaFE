@@ -79,6 +79,7 @@ Future<void> main() async {
   runApp(
     Phoenix(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
         supportedLocales: const [
           Locale('ko', 'KR'), // 지원하는 로케일에 한국어 추가

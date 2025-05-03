@@ -109,7 +109,6 @@ class _AddPage_3State extends State<AddPage_3> {
               text: '나의 계획에서 보기',
               fontSize_: MediaQuery.of(context).size.width * 0.04,
               fontWeight_: FontWeight.bold,
-              padding_: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
               onTap: () {
                   Navigator.push(
                       context,

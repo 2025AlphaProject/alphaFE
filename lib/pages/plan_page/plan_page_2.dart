@@ -1,9 +1,7 @@
 import 'package:alpha_fe/components/token_controller.dart';
-import 'package:alpha_fe/main.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:dio/dio.dart';
-import 'package:alpha_fe/components/plan_card.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/components/plan_course_event.dart';
 import 'package:alpha_fe/pages/plan_page/add_user.dart';
@@ -26,7 +24,7 @@ class _PlanPage2State extends State<PlanPage2> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const DefaultAppBar(title: "계획보기 앱바 영역"),
+      appBar: const DefaultAppBar(title: "나의 계획"),
       body: plan_page2_body(
         tour_id: widget.tour_id,
         onDataRefreshed: _onDataRefreshed,

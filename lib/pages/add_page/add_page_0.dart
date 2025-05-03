@@ -282,10 +282,6 @@ class _AddPage_0State extends State<AddPage_0> {
                   text: "새 여행 만들기",
                   fontSize_: screenWidth * 0.045,
                   fontWeight_: FontWeight.bold,
-                  padding_: EdgeInsets.symmetric(
-                    vertical: MediaQuery.of(context).size.height * 0.012,
-                    horizontal: MediaQuery.of(context).size.width * 0.03,
-                  ),
                   onTap: _registerTour,
                 ),
               ),

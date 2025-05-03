@@ -15,9 +15,9 @@ class PlanPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const DefaultAppBar(title: "계획 앱바 영역"),
+    return const Scaffold(
+      backgroundColor: Color(0xFFFFFFFF),
+      appBar: DefaultAppBar(title: "나의 계획"),
       body: PlanPage_Body(),
     );
   }
@@ -198,7 +198,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           width: screenWidth * 0.35,
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
           decoration: BoxDecoration(
-            color: Color(0xFFFFFFFF),
+            color: const Color(0xFFFFFFFF),
             borderRadius: BorderRadius.circular(screenWidth * 0.03),
             border: Border.all(color: Colors.grey.shade300),
           ),
@@ -206,7 +206,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
             value: _sortType,
             isExpanded: true,
             underline: const SizedBox(),
-            icon: Icon(Icons.keyboard_arrow_down, color: Color(0xFF000000),
+            icon: Icon(Icons.keyboard_arrow_down, color: const Color(0xFF000000),
                 size: screenWidth * 0.05),
             dropdownColor: Colors.white,
             onChanged: (value) {
