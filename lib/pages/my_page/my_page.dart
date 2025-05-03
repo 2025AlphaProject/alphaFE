@@ -3,6 +3,7 @@ import '../../components/app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import '../../components/logout_by_user.dart';
 import '../../components/token_controller.dart';
+import '../../components/mission_manager.dart';
 import 'mission_page.dart';
 import 'my_page_Q&A.dart';
 import 'package:dio/dio.dart';
@@ -33,13 +34,16 @@ class _MyPageBodyState extends State<MyPageBody> {
   bool _isLoading = true;
   int tourCount = 0;
   int missionCount = 0;
+  List<Map<String, dynamic>> _cardData = [];
+  List<Map<String, dynamic>> todayPlaces = [];
+  Map<String, dynamic> formattedTodayPlaces = {};
 
   @override
   void initState() {
     super.initState();
     _fetchUserInfo();
     _fetchTourCount();
-    _fetchMissionCount();
+    // _fetchMissionCount();
   }
 
   //프로필 사진 및 이름 - [GET] 유저 정보 가져오기
@@ -62,6 +66,7 @@ class _MyPageBodyState extends State<MyPageBody> {
         profileImageUrl = data['profile_image_url'];
         _isLoading = false;
       });
+      await todayTours(username!).then((_) => this.loadTodayPlaces());
     } else {
       print('⚠️ 예상한 JSON 형식이 아닙니다: $data');
     }
@@ -72,38 +77,148 @@ class _MyPageBodyState extends State<MyPageBody> {
     final accessToken = await getAccessToken();
     final dio = Dio();
     try {
-    final response = await dio.get(
-      'http://conever.duckdns.org:8000/tour/',
-      options: Options(headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      }),
-    );
-      setState(() {
-        tourCount = response.data.length;
-      });
-    } catch (e) {
-      print('여행 리스트 불러오기 실패: $e');
-    }
-  }
-
-  //미션 수 표시 - [GET] 미션 리스트 가져오기
-  Future<void> _fetchMissionCount() async {
-    final accessToken = await getAccessToken();
-    final dio = Dio();
-    try {
       final response = await dio.get(
-        'http://conever.duckdns.org:8000/mission/list/',
+        'http://conever.duckdns.org:8000/tour/',
         options: Options(headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
         }),
       );
+
+      if (response.statusCode == 200 && username != null) {
+        final List<dynamic> allTours = response.data;
+        final userTours = allTours.where((tour) {
+          final List<dynamic> users = tour['user'] ?? [];
+          return users.any((u) => u['username'] == username);
+        }).toList();
+
+        setState(() {
+          tourCount = userTours.length;
+        });
+      }
+    } catch (e) {
+      print('여행 리스트 불러오기 실패: $e');
+    }
+  }
+
+  Future<void> todayTours(String username) async {
+    final accessToken = await getAccessToken();
+    final dio = Dio();
+    try {
+      final response = await dio.get(
+        'http://conever.duckdns.org:8000/tour/',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> allPlans = response.data;
+        final List<dynamic> userPlans = allPlans.where((plan) {
+          final List<dynamic> users = plan['user'] ?? [];
+          return users.any((u) => u['username'] == username);
+        }).toList();
+
+        final today = DateTime.now();
+        final filteredPlans = userPlans.where((plan) {
+          final startDate = DateTime.tryParse(plan['start_date']);
+          final endDate = DateTime.tryParse(plan['end_date']);
+          return startDate != null &&
+              endDate != null &&
+              today.isAfter(startDate.subtract(const Duration(days: 1))) &&
+              today.isBefore(endDate.add(const Duration(days: 1)));
+        }).toList();
+
+        setState(() {
+          _cardData = filteredPlans
+              .map<Map<String, dynamic>>((plan) => {
+                'title': plan['tour_name'],
+                'tour_id': plan['id'],
+              })
+              .toList()
+              .cast<Map<String, dynamic>>();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
       setState(() {
-        missionCount = response.data.length;
+        _isLoading = false;
+      });
+      print('Fetch tour error: $e');
+    }
+  }
+
+  Future<void> loadTodayPlaces() async {
+    final accessToken = await getAccessToken();
+    final dio = Dio();
+
+    final todayDateString = DateTime.now().toIso8601String().substring(0, 10);
+
+    try {
+      List<Map<String, dynamic>> results = [];
+
+      for (var tour in _cardData) {
+        final tourId = tour['tour_id'];
+        final response = await dio.get(
+          'http://conever.duckdns.org:8000/tour/course/$tourId/',
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $accessToken',
+              'Content-Type': 'application/json',
+            },
+          ),
+        );
+
+        if (response.statusCode == 200) {
+          final data = response.data;
+          List<dynamic> courseData;
+
+          if (data is List) {
+            courseData = data;
+          } else if (data is Map<String, dynamic>) {
+            courseData = [data]; // wrap into list
+          } else {
+            throw Exception('Unexpected data format: ${data.runtimeType}');
+          }
+
+          final todayCourse = courseData.firstWhere(
+                (day) => day['date'] == todayDateString,
+                orElse: () => null,
+          );
+
+          if (todayCourse != null) {
+            final List<dynamic> places = todayCourse['places'];
+            for (var place in places) {
+              final placeId = place['place_id'];
+              if (!results.any((existing) => existing['place_id'] == placeId)) {
+                results.add({
+                  'place_id': placeId,
+                  'image_url': place['image_url'] ?? '',
+                  'date': todayDateString,
+                  'name': place['name']
+                });
+              }
+            }
+          }
+        }
+      }
+      setState(() {
+        todayPlaces = results;
+        formattedTodayPlaces = {
+          "places": results.map((e) => {
+            "place_id": e["place_id"],
+            "image_url": e["image_url"],
+            "date": e["date"]
+          }).toList(),
+        };
+        print(formattedTodayPlaces);
+        missionCount = results.map((e) => e['place_id']).toSet().length;
       });
     } catch (e) {
-      print('미션 리스트 불러오기 실패: $e');
+      print('Fetch today places error: $e');
     }
   }
 

@@ -81,10 +81,21 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
               ),
             ),
 
-            SizedBox(height: width * 0.1),
+            SizedBox(height: width * 0.05),
 
-            // ✅ 촬영 버튼
-            if (!widget.isCompleted) //미완료 미션일 경우만 사진 촬영버튼 나타나도록
+            // ✅ 사진 미리보기
+            if (_image != null)
+              Container(
+                height: width * 0.7,
+                width: width * 0.7,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: Image.file(_image!, fit: BoxFit.cover),
+              ),
+
+            if (_image == null) ...[
+              SizedBox(height: width * 0.1),
               ElevatedButton.icon(
                 onPressed: () async {
                   final File? image = await _cameraService.getImageFromCamera();
@@ -113,6 +124,54 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                   elevation: 2,
                 ),
               ),
+            ] else ...[
+              SizedBox(height: width * 0.08),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      final File? image = await _cameraService.getImageFromCamera();
+                      if (image != null) {
+                        setState(() {
+                          _image = image;
+                        });
+                      }
+                    },
+                    child: Text("재촬영", style: TextStyle(fontSize: width * 0.04)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[200],
+                      foregroundColor: Colors.black,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: width * 0.07,
+                        vertical: width * 0.03,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(width * 0.025),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: width * 0.08),
+                  ElevatedButton(
+                    onPressed: () {
+                      // TODO: 미션 성공 여부 처리
+                    },
+                    child: Text("미션 시행", style: TextStyle(fontSize: width * 0.04)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[100],
+                      foregroundColor: Colors.black,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: width * 0.07,
+                        vertical: width * 0.03,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(width * 0.025),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ]
           ],
         ),
       ),
