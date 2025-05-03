@@ -58,13 +58,10 @@ class _AddPage_2State extends State<AddPage_2> {
 
         setState(() {
           _placeWidgets = firstCourse.take(5).map((place) {
-            final rawUrl = place['image1'] ?? '';
-            final proxyUrl = rawUrl.startsWith('http://')
-                ? 'https://images.weserv.nl/?url=${Uri.encodeComponent(rawUrl.replaceFirst('http://', ''))}'
-                : rawUrl;
+            final imageUrl = place['image1'] ?? '';
 
             return PlaceInfoBlock(
-              imageUrl: proxyUrl,
+              imageUrl: imageUrl,
               title: place['title'] ?? '제목 없음',
               description: place['address'] ?? '주소 정보 없음',
               mapX: double.tryParse(place['mapX'] ?? '0') ?? 0.0,
