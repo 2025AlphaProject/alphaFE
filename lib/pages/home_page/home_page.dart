@@ -3,9 +3,14 @@ import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import '../../components/app_bar.dart';
 import '../../components/plan_card.dart'; // 여행 계획 카드 컴포넌트
+import '../../components/placeinfo_card.dart';
 import '../../components/proceed_button.dart'; // 버튼 컴포넌트
+import '../add_page/add_page_0.dart';
+import '../add_page/add_page_2.dart';
+import '../add_page/add_page_3.dart';
 
 class HomePage extends StatefulWidget {
   final String? accessToken;
@@ -141,6 +146,55 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // AddPage_0에서 여행 생성 완료 후 전달된 tourId와 AddPage_2에서 선택한 장소 정보들을 함께 받아 서버에 POST 요청
+  Future<void> saveTourCourse(int tourId, List<PlaceInfoBlock> places) async {
+    final dio = Dio();
+    final baseUrl = 'http://conever.duckdns.org:8000';
+
+    try {
+      // 여행 시작일을 불러오기 위한 GET 요청
+      final startDateResponse = await dio.get(
+        '$baseUrl/tour/$tourId/',
+        options: Options(headers: {
+          'Authorization': 'Bearer ${widget.accessToken}',
+        }),
+      );
+      final startDate = startDateResponse.data['start_date'];
+
+      // 장소 정보를 서버에 맞는 포맷으로 변환 (name, mapX, mapY, image, address)
+      final List<Map<String, dynamic>> courseData = places.map((place) => {
+        'name': '<${place.title}>',
+        'mapX': place.mapX,
+        'mapY': place.mapY,
+        'image': place.imageUrl,
+        'road_address': '<${place.description}>'
+      }).toList();
+
+      // 최종 코스 정보를 서버에 저장 요청
+      final response = await dio.post(
+        '$baseUrl/tour/course/',
+        data: {
+          'tour_id': '$tourId',
+          'date': startDate,
+          'places': courseData,
+        },
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.accessToken}',
+        }),
+      );
+
+      // 저장 성공 시 콘솔에 출력
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('경로 저장 완료');
+      } else {
+        print('저장 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('예외 발생: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -233,28 +287,22 @@ class _HomePageState extends State<HomePage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //SizedBox(height: MediaQuery.of(context).size.height * 0.024),
-
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: Image.network(
-                        _recommendedPlace!['image1'],
+                        _recommendedPlace?['image1'] ?? '',
                         width: MediaQuery.of(context).size.width * 0.87,
                         height: MediaQuery.of(context).size.width * 0.55,
                         fit: BoxFit.cover,
                       ),
                     ),
-
                     SizedBox(height: MediaQuery.of(context).size.height * 0.015),
-
-
                     Row(
                       children: [
                         Icon(Icons.location_on, size: MediaQuery.of(context).size.width * 0.045, color: Colors.black),
                         SizedBox(width: MediaQuery.of(context).size.width * 0.013),
-                        // 트렌딩 장소명
                         Text(
-                          _recommendedPlace!['title'] ?? '',
+                          _recommendedPlace?['title'] ?? '',
                           style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.037,
                             fontWeight: FontWeight.bold,
@@ -262,26 +310,24 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-
                     SizedBox(height: MediaQuery.of(context).size.height * 0.007),
-
-                    // 트렌딩 장소 설명 텍스트
                     Text(
-                      "${_recommendedPlace!['title']}은(는) ${_recommendedPlace!['address'].split(' ')[1]}의 관광지 입니다.\n$_currentUsername 님의 마음에 드셨으면 좋겠네요!",
+                      (_recommendedPlace?['title'] != null && _recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
+                          ? "${_recommendedPlace?['title']}은(는) ${(_recommendedPlace?['address'] as String).split(' ')[1]}의 관광지 입니다.\n${_currentUsername ?? ''} 님의 마음에 드셨으면 좋겠네요!"
+                          : '',
                       style: TextStyle(
                         fontSize: MediaQuery.of(context).size.width * 0.03,
                         color: Colors.grey[700],
                       ),
                     ),
-
                     SizedBox(height: MediaQuery.of(context).size.height * 0.017),
-
-                    // ⬇️ 추천 장소 하단 버튼: 반응형 패딩 및 폰트 크기 설정
                     Center(
                       child: ProceedButton(
                         size_w: MediaQuery.of(context).size.width * 0.5,
                         size_h: MediaQuery.of(context).size.height * 0.05,
-                        text: "${_recommendedPlace!['address'].split(' ')[1]} 코스 생성하기",
+                        text: (_recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
+                            ? "${(_recommendedPlace?['address'] as String).split(' ')[1]} 코스 생성하기"
+                            : "코스 생성하기",
                         fontSize_: MediaQuery.of(context).size.width * 0.032,
                         fontWeight_: FontWeight.bold,
                         padding_: EdgeInsets.symmetric(
@@ -289,7 +335,47 @@ class _HomePageState extends State<HomePage> {
                           horizontal: MediaQuery.of(context).size.width * 0.04,
                         ),
                         onTap: () {
-                          // TODO: 코스 생성 로직 추가
+
+                          // AddPage_2 → AddPage_0 → AddPage_3로 이동하는 코스 생성 플로우
+                          //  선택한 지역(sigun)을 기준으로 AddPage_2에 전달
+                          //  '이 코스로 할게요!' 누르면 콜백을 통해 AddPage_0로 이동
+                          //  여행 제목 및 날짜 입력 후 '새 여행 만들기' 누르면 최종적으로 saveTourCourse 실행 및 완료 페이지로 이동
+                          final String sigun = (_recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
+                              ? (_recommendedPlace?['address'] as String).split(' ')[1]
+                              : '';
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (_) => AddPage_2(
+                                title: sigun,
+                                tourId: 0, // Placeholder, will be replaced after AddPage_0
+                                accessToken: widget.accessToken,
+                                onSaveCourseCallback: (places) {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                      builder: (_) => AddPage_0(
+                                        accessToken: widget.accessToken,
+                                        onFinishCreation: (int tourId) {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (_) => AddPage_3(
+                                                tour_id: tourId,
+                                                accessToken: widget.accessToken,
+                                              ),
+                                            ),
+                                          );
+                                          // Save course with the tourId
+                                          saveTourCourse(tourId, places);
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -353,3 +439,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+

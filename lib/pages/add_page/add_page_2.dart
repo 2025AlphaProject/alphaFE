@@ -15,11 +15,13 @@ class AddPage_2 extends StatefulWidget {
   final String title;
   final int tourId;
   final String? accessToken;
+  final Function(List<PlaceInfoBlock>)? onSaveCourseCallback;
 
   const AddPage_2({
     required this.title,
     required this.tourId,
     required this.accessToken,
+    this.onSaveCourseCallback,
     Key? key
   }) : super(key: key);
 
@@ -125,15 +127,17 @@ class _AddPage_2State extends State<AddPage_2> {
     });
   }
 
-  //
-  Future<void> saveTourCourse() async {
+  // AddPage_2에서 단독 호출되거나 HomePage에서 콜백으로 연결된 AddPage_0 → AddPage_2 흐름에서 호출됨
+  Future<void> saveTourCourse([int? tourId, List<PlaceInfoBlock>? places]) async {
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
+    final int useTourId = tourId ?? widget.tourId;
+    final List<PlaceInfoBlock> usePlaces = places ?? _placeWidgets;
 
     try {
       // tour_id값을 이용해 여행 시작 날짜 불러옴
       final startDateResponse = await dio.get(
-          '$baseUrl/tour/${widget.tourId}/',
+          '$baseUrl/tour/$useTourId/',
           options: Options(
               headers: {
                 'Authorization': 'Bearer ${widget.accessToken}'
@@ -144,7 +148,7 @@ class _AddPage_2State extends State<AddPage_2> {
       final startDate = startDateResponse.data['start_date'];
 
       // 등록할 JSON 데이터의 places 인자에 들어갈 데이터 생성
-      final List<Map<String, dynamic>> courseData = _placeWidgets.map((place) => {
+      final List<Map<String, dynamic>> courseData = usePlaces.map((place) => {
         'name': '<${place.title}>',
         'mapX': place.mapX,
         'mapY': place.mapY,
@@ -156,7 +160,7 @@ class _AddPage_2State extends State<AddPage_2> {
       final response = await dio.post(
         '$baseUrl/tour/course/',
         data: {
-          'tour_id': '${widget.tourId}',
+          'tour_id': '$useTourId',
           'date': startDate,
           'places': courseData
         },
@@ -176,7 +180,7 @@ class _AddPage_2State extends State<AddPage_2> {
           context,
           CupertinoPageRoute(
             builder: (_) => AddPage_3(
-              tour_id: widget.tourId,
+              tour_id: useTourId,
               accessToken: widget.accessToken,
             ),
           ),
@@ -323,8 +327,15 @@ class _AddPage_2State extends State<AddPage_2> {
                           horizontal: MediaQuery.of(context).size.width * 0.03,
                         ),
                         onTap: () {
-                          // 최종 경로 확정
-                          saveTourCourse();
+
+                          // 저장 흐름 분기 처리:
+                          // 콜백이 존재하면 AddPage_0으로 이동
+                          // 아니면 현재 페이지에서 saveTourCourse 직접 호출
+                          if (widget.onSaveCourseCallback != null) {
+                            widget.onSaveCourseCallback!(_placeWidgets);
+                          } else {
+                            saveTourCourse();
+                          }
                         },
                       ),
                     ),
