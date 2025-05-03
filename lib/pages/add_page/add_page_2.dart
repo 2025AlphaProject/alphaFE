@@ -18,11 +18,13 @@ class AddPage_2 extends StatefulWidget {
   final String title;
   final int tourId;
   final Function(List<PlaceInfoBlock>)? onSaveCourseCallback;
+  final bool isSingleDayMode; // New flag to control single day mode
 
   const AddPage_2({
     required this.title,
     required this.tourId,
     this.onSaveCourseCallback,
+    this.isSingleDayMode = false, // default to false for multi-day mode
     Key? key
   }) : super(key: key);
 
@@ -38,7 +40,8 @@ class _AddPage_2State extends State<AddPage_2> {
   bool _receivedDataOnce = false; // 최초 데이터 수신 여부를 기록하는 플래그
 
   // 장소 데이터 목록 (API에서 받아온 데이터와 사용자가 추가한 입력 모두 포함)
-  List<PlaceInfoBlock> _placeWidgets = [];
+  // 날짜별 장소 그룹화를 위해 구조 변경
+  List<MapEntry<String, List<PlaceInfoBlock>>> _placeWidgets = [];
 
   // 현재 장소 추가 입력폼이 열려있는지 여부
   bool _isAddingPlace = false;
@@ -70,8 +73,29 @@ class _AddPage_2State extends State<AddPage_2> {
     final userId = userResponse.data['sub'];
     final uniqueCode = Random().nextInt(1 << 31); // 랜덤 정수 생성
 
+    // 여행 시작일과 종료일을 불러온 후, days 파라미터를 결정
+    String wsUri;
+    if (widget.isSingleDayMode) {
+      wsUri = 'ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=${widget.title}&unique_code=$uniqueCode&days=1';
+    } else {
+      // 멀티데이: tour 정보에서 날짜 차이 계산
+      final tourResponse = await dio.get(
+          '$baseUrl/tour/${widget.tourId}/',
+          options: Options(
+              headers: {
+                'Authorization': 'Bearer $accessToken'
+              }
+          )
+      );
+      final startDateStr = tourResponse.data['start_date'];
+      final endDateStr = tourResponse.data['end_date'];
+      DateTime startDate = DateTime.parse(startDateStr);
+      DateTime endDate = DateTime.parse(endDateStr);
+      int numberOfDays = endDate.difference(startDate).inDays + 1;
+      wsUri = 'ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=${widget.title}&unique_code=$uniqueCode&days=$numberOfDays';
+    }
     final channel = WebSocketChannel.connect(
-      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=${widget.title}&unique_code=$uniqueCode'),
+      Uri.parse(wsUri),
     );
 
     late StreamSubscription subscription;
@@ -84,47 +108,133 @@ class _AddPage_2State extends State<AddPage_2> {
       if (data["status"] == "SUCCESS" && data["result"] != null) {
         final context_ = context;
 
-        final List<dynamic> filteredCourse = (data["result"][0] as List).where((place) {
-          return place['address']?.toString().contains(widget.title) ?? false;
-        }).toList();
+        if (widget.isSingleDayMode) {
+          // 단일 날짜 모드일 경우, 첫 번째 결과 리스트에서 필터링하여 장소 표시
+          final List<dynamic> filteredCourse = (data["result"][0] as List).where((place) {
+            return place['address']?.toString().contains(widget.title) ?? false;
+          }).toList();
 
-        if (filteredCourse.isEmpty) return;
+          if (filteredCourse.isEmpty) return;
 
-        final newWidgets = filteredCourse.take(5).map((place) {
-          final imageUrl = (place['image1'] != null && place['image1'].toString().isNotEmpty)
-              ? place['image1']
-              : '';
+          final newWidgets = filteredCourse.take(5).map((place) {
+            final imageUrl = (place['image1'] != null && place['image1'].toString().isNotEmpty)
+                ? place['image1']
+                : '';
 
-          return PlaceInfoBlock(
-            imageUrl: imageUrl,
-            title: place['title'] ?? '제목 없음',
-            description: place['address'] ?? '주소 정보 없음',
-            mapX: double.tryParse(place['mapX'] ?? '0') ?? 0.0,
-            mapY: double.tryParse(place['mapY'] ?? '0') ?? 0.0,
-            width: MediaQuery.of(context_).size.width * 0.63,
-            height: MediaQuery.of(context_).size.width * 0.63 * 0.69,
-          );
-        }).toList();
+            return PlaceInfoBlock(
+              imageUrl: imageUrl,
+              title: place['title'] ?? '제목 없음',
+              description: place['address'] ?? '주소 정보 없음',
+              mapX: double.tryParse(place['mapX'] ?? '0') ?? 0.0,
+              mapY: double.tryParse(place['mapY'] ?? '0') ?? 0.0,
+              width: MediaQuery.of(context_).size.width * 0.63,
+              height: MediaQuery.of(context_).size.width * 0.63 * 0.69,
+            );
+          }).toList();
 
-        try {
-          await Future.wait(newWidgets.map((place) async {
-            if (place.imageUrl.isNotEmpty) {
-              await precacheImage(NetworkImage(place.imageUrl), context_);
+          try {
+            await Future.wait(newWidgets.map((place) async {
+              if (place.imageUrl.isNotEmpty) {
+                await precacheImage(NetworkImage(place.imageUrl), context_);
+              }
+            }));
+          } catch (e) {
+            print("이미지 프리캐싱 실패: $e");
+          }
+
+          _receivedDataOnce = true;
+          await subscription.cancel();
+          channel.sink.close();
+
+          if (mounted) {
+            setState(() {
+              // 단일 날짜 그룹으로 묶고 날짜 레이블은 widget.title 활용
+              _placeWidgets = [MapEntry(widget.title, newWidgets)];
+              _isLoading = false;
+            });
+          }
+        } else {
+          // 멀티 날짜 모드일 경우, 날짜별로 결과 데이터를 나누어 표시
+          try {
+            // tour_id값을 이용해 여행 시작 날짜와 종료 날짜 불러옴
+            final tourResponse = await dio.get(
+                '$baseUrl/tour/${widget.tourId}/',
+                options: Options(
+                    headers: {
+                      'Authorization': 'Bearer $accessToken'
+                    }
+                )
+            );
+            final startDateStr = tourResponse.data['start_date'];
+            final endDateStr = tourResponse.data['end_date'];
+
+            DateTime startDate = DateTime.parse(startDateStr);
+            DateTime endDate = DateTime.parse(endDateStr);
+
+            // 시작일과 종료일 기준으로 날짜 리스트 생성
+            List<String> dateRange = [];
+            for (DateTime date = startDate;
+                !date.isAfter(endDate);
+                date = date.add(const Duration(days: 1))) {
+              dateRange.add(date.toIso8601String().substring(0, 10)); // yyyy-MM-dd 형식
             }
-          }));
-        } catch (e) {
-          print("이미지 프리캐싱 실패: $e");
-        }
 
-        _receivedDataOnce = true;
-        await subscription.cancel();
-        channel.sink.close();
+            List<MapEntry<String, List<PlaceInfoBlock>>> groupedWidgets = [];
 
-        if (mounted) {
-          setState(() {
-            _placeWidgets = newWidgets;
-            _isLoading = false;
-          });
+            for (int i = 0; i < dateRange.length; i++) {
+              final date = dateRange[i];
+              if (i >= data["result"].length) break; // 데이터가 날짜 수보다 적을 수 있음
+
+              final List<dynamic> placesForDate = data["result"][i] as List<dynamic>;
+
+              final filteredCourse = placesForDate.where((place) {
+                return place['address']?.toString().contains(widget.title) ?? false;
+              }).toList();
+
+              if (filteredCourse.isEmpty) continue;
+
+              final placeInfoBlocks = filteredCourse.take(5).map((place) {
+                final imageUrl = (place['image1'] != null && place['image1'].toString().isNotEmpty)
+                    ? place['image1']
+                    : '';
+
+                return PlaceInfoBlock(
+                  imageUrl: imageUrl,
+                  title: place['title'] ?? '제목 없음',
+                  description: place['address'] ?? '주소 정보 없음',
+                  mapX: double.tryParse(place['mapX'] ?? '0') ?? 0.0,
+                  mapY: double.tryParse(place['mapY'] ?? '0') ?? 0.0,
+                  width: MediaQuery.of(context_).size.width * 0.63,
+                  height: MediaQuery.of(context_).size.width * 0.63 * 0.69,
+                );
+              }).toList();
+
+              groupedWidgets.add(MapEntry(date, placeInfoBlocks));
+            }
+
+            try {
+              await Future.wait(groupedWidgets.expand((entry) => entry.value).map((place) async {
+                if (place.imageUrl.isNotEmpty) {
+                  await precacheImage(NetworkImage(place.imageUrl), context_);
+                }
+              }));
+            } catch (e) {
+              print("이미지 프리캐싱 실패: $e");
+            }
+
+            _receivedDataOnce = true;
+            await subscription.cancel();
+            channel.sink.close();
+
+            if (mounted) {
+              setState(() {
+                _placeWidgets = groupedWidgets;
+                _isLoading = false;
+              });
+            }
+          } catch (e) {
+            print('날짜별 장소 데이터 처리 중 오류: $e');
+          }
         }
       }
     });
@@ -166,17 +276,29 @@ class _AddPage_2State extends State<AddPage_2> {
   void addNewPlace(String imageUrl, String title, String description, double mapX, double mapY) {
     setState(() {
       final width = MediaQuery.of(context).size.width;
-      _placeWidgets.add(
-        PlaceInfoBlock(
-          imageUrl: imageUrl,
-          title: title,
-          description: description,
-          mapX: mapX,
-          mapY: mapY,
-          width: width * 0.58,
-          height: width * 0.58 * 0.69,
-        ),
+      final newPlace = PlaceInfoBlock(
+        imageUrl: imageUrl,
+        title: title,
+        description: description,
+        mapX: mapX,
+        mapY: mapY,
+        width: width * 0.58,
+        height: width * 0.58 * 0.69,
       );
+      if (widget.isSingleDayMode) {
+        if (_placeWidgets.isEmpty) {
+          _placeWidgets = [MapEntry(widget.title, [newPlace])];
+        } else {
+          _placeWidgets[0].value.add(newPlace);
+        }
+      } else {
+        //  마지막 날짜 그룹에 추가하거나 그룹이 없으면 새로 생성
+        if (_placeWidgets.isEmpty) {
+          _placeWidgets = [MapEntry(widget.title, [newPlace])];
+        } else {
+          _placeWidgets[_placeWidgets.length - 1].value.add(newPlace);
+        }
+      }
       _isAddingPlace = false;
     });
   }
@@ -186,7 +308,7 @@ class _AddPage_2State extends State<AddPage_2> {
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
     final int useTourId = tourId ?? widget.tourId;
-    final List<PlaceInfoBlock> usePlaces = places ?? _placeWidgets;
+    // final List<PlaceInfoBlock> usePlaces = places ?? _placeWidgets.expand((entry) => entry.value).toList();
 
     try {
       // tour_id값을 이용해 여행 시작 날짜 불러옴
@@ -197,48 +319,51 @@ class _AddPage_2State extends State<AddPage_2> {
                 'Authorization': 'Bearer $accessToken'
               }
           )
-
       );
-      final startDate = startDateResponse.data['start_date'];
 
-      // 서버에 전송할 장소 이름과 주소에서 불필요한 <> 기호 제거
-      final List<Map<String, dynamic>> courseData = usePlaces.map((place) => {
-        'name': place.title,
-        'mapX': place.mapX,
-        'mapY': place.mapY,
-        'image_url': place.imageUrl,
-        'road_address': place.description
-      }).toList();
+      // 날짜별로 장소 데이터를 나누어 각각 저장 요청
+      for (var entry in _placeWidgets) {
+        final date = entry.key;
+        final places = entry.value;
 
-      // 내 여행 경로 저장
-      final response = await dio.post(
-        '$baseUrl/tour/course/',
-        data: {
-          'tour_id': '$useTourId',
-          'date': startDate,
-          'places': courseData
-        },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken'
+        final List<Map<String, dynamic>> courseData = places.map((place) => {
+          'name': place.title,
+          'mapX': place.mapX,
+          'mapY': place.mapY,
+          'image_url': place.imageUrl,
+          'road_address': place.description
+        }).toList();
+
+        final response = await dio.post(
+          '$baseUrl/tour/course/',
+          data: {
+            'tour_id': '$useTourId',
+            'date': date,
+            'places': courseData
           },
-        ),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // 성공 시 다음 페이지로 이동
-        Navigator.push(
-          context,
-          CupertinoPageRoute(
-            builder: (_) => AddPage_3(
-              tour_id: widget.tourId,
-            ),
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $accessToken'
+            },
           ),
         );
-      } else {
-        print('등록 실패');
+
+        if (response.statusCode != 200 && response.statusCode != 201) {
+          print('날짜 $date 저장 실패');
+        }
       }
+
+      if (!mounted) return;
+
+      Navigator.push(
+        context,
+        CupertinoPageRoute(
+          builder: (_) => AddPage_3(
+            tour_id: widget.tourId,
+          ),
+        ),
+      );
     } catch (e) {
       print(e);
     }
@@ -262,12 +387,26 @@ class _AddPage_2State extends State<AddPage_2> {
           children: [
             Text('최근 업데이트', style: TextStyle(fontSize: width * 0.027, fontWeight: FontWeight.bold, color: const Color(0xFF7F7F7F))),
             SizedBox(height: width * 0.018),
-
-            // TODO: 최근 업데이트 날짜 구현 필요
-            Text('2025.00.00', style: TextStyle(fontSize: width * 0.027, color: const Color(0xFF7F7F7F))),
+            Text('${DateTime.now().toLocal().toString().substring(0, 10)}', style: TextStyle(fontSize: width * 0.027, color: const Color(0xFF7F7F7F))),
           ],
         ),
       ],
+    );
+  }
+
+  // 날짜별 섹션 제목을 그리는 위젯
+  Widget _buildDateLabel(String date) {
+    final width = MediaQuery.of(context).size.width;
+    return Padding(
+      padding: EdgeInsets.only(bottom: width * 0.03, top: width * 0.05),
+      child: Row(
+        children: [
+          Text(
+            date,
+            style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold, color: Colors.black87),
+          ),
+        ],
+      ),
     );
   }
 
@@ -312,13 +451,14 @@ class _AddPage_2State extends State<AddPage_2> {
                       _buildTitleBlock(),
                       SizedBox(height: width * 0.058),
 
-                      // 장소 목록 표시
-                      ..._placeWidgets.map((place) => Column(
-                        children: [
+                      // 장소 목록 표시 - 그룹화된 날짜별 렌더링
+                      for (var entry in _placeWidgets) ...[
+                        _buildDateLabel(entry.key),
+                        for (var place in entry.value) ...[
                           place,
                           SizedBox(height: width * 0.058),
-                        ],
-                      )),
+                        ]
+                      ],
 
                       // 장소 추가 입력폼 또는 '+ 장소 추가' 버튼 표시
                       _isAddingPlace
@@ -385,7 +525,9 @@ class _AddPage_2State extends State<AddPage_2> {
                           // 콜백이 존재하면 AddPage_0으로 이동
                           // 아니면 현재 페이지에서 saveTourCourse 직접 호출
                           if (widget.onSaveCourseCallback != null) {
-                            widget.onSaveCourseCallback!(_placeWidgets);
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              widget.onSaveCourseCallback!(_placeWidgets.expand((entry) => entry.value).toList());
+                            });
                           } else {
                             saveTourCourse();
                           }

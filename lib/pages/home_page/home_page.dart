@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchPlans() async {
     final accessToken = await getAccessToken();
-    print(accessToken);
+    print('accessToken:$accessToken');
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
 
@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage> {
     final uniqueCode = Random().nextInt(1 << 31); // 랜덤 정수 생성
 
     final channel = WebSocketChannel.connect(
-      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode'),
+      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode&days=1'),
     );
 
     late StreamSubscription subscription;
@@ -411,20 +411,18 @@ class _HomePageState extends State<HomePage> {
                                             ? (_recommendedPlace?['address'] as String).split(' ')[1]
                                             : '';
                                         final accessToken = await getAccessToken();
-                                        Navigator.push(
-                                          context,
+                                        Navigator.of(context).push(
                                           CupertinoPageRoute(
                                             builder: (_) => AddPage_2(
                                               title: sigun,
                                               tourId: 0,
+                                              isSingleDayMode: true, // 싱글모드 명시 -> 트렌딩, 검색창일 경우 true
                                               onSaveCourseCallback: (places) {
-                                                Navigator.push(
-                                                  context,
+                                                Navigator.of(context).push(
                                                   CupertinoPageRoute(
                                                     builder: (_) => AddPage_0(
                                                       onFinishCreation: (int tourId) {
-                                                        Navigator.push(
-                                                          context,
+                                                        Navigator.of(context).push(
                                                           CupertinoPageRoute(
                                                             builder: (_) => AddPage_3(
                                                               tour_id: tourId,

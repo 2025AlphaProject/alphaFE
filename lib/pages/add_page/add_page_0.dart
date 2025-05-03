@@ -20,6 +20,9 @@ class AddPage_0 extends StatefulWidget {
 
 class _AddPage_0State extends State<AddPage_0> {
 
+  // 싱글모드 여부 확인: 콜백이 존재한다면 싱글모드로 간주
+  late bool _isSingleMode;
+
   // 여행 이름 입력을 위한 컨트롤러
   final TextEditingController _titleController = TextEditingController();
 
@@ -29,13 +32,26 @@ class _AddPage_0State extends State<AddPage_0> {
   // 발급받은 여행 ID를 저장할 변수
   late int _tourId;
 
+  bool _tourRegistered = false; // 여행 생성 상태 여부 확인
+
+  @override
+  void initState() {
+    super.initState();
+    _isSingleMode = widget.onFinishCreation != null;
+    _tourId = 0;
+  }
+
   // 여행 날짜 선택 다이얼로그 호출
   Future<void> _selectDateRange() async {
+    final DateTime now = DateTime.now();
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
       locale: const Locale('ko', 'KR'),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365*5)),
+
+      // 날짜 범위 제한
+      firstDate: DateTime.now().subtract(Duration(days: 365 * 100)),
+      lastDate: DateTime.now().add(Duration(days: 365 * 100)),
+
       builder: (context, child) {
         return Theme(
           data: ThemeData.light().copyWith(
@@ -62,6 +78,21 @@ class _AddPage_0State extends State<AddPage_0> {
     );
 
     if (picked != null) {
+      // _isSingleMode일 때 1일 이상 선택 불가
+      if (_isSingleMode && picked.duration.inDays > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('지금은 1일만 선택할 수 있습니다.')),
+        );
+        return;
+      }
+      // _isSingleMode가 아닐 때 15일 이상 선택 불가
+      if (!_isSingleMode && picked.duration.inDays > 14) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('최대 15일까지 선택할 수 있습니다.')),
+        );
+        return;
+      }
+
       setState(() {
         _selectedDateRange = picked;
       });
@@ -105,6 +136,7 @@ class _AddPage_0State extends State<AddPage_0> {
         setState(() {
           _tourId = response.data['id'];
         });
+        _tourRegistered = true; // 여행이 생성되었음을 표시
 
         print(_tourId);
 
@@ -119,15 +151,51 @@ class _AddPage_0State extends State<AddPage_0> {
         }
       } else {
         // 등록 실패 시
+        _tourRegistered = false;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('여행 등록에 실패했습니다')),
         );
       }
     } catch (e) {
       // 요청 에러 발생 시
+      _tourRegistered = false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('오류 발생: $e')),
       );
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    // 싱글모드 또는 멀티모드 모두에서 여행이 생성됐으나 중단된 경우 삭제 처리
+    if (_tourRegistered && _tourId != 0) {
+      _deleteUnfinishedTour(_tourId);
+    }
+  }
+
+  Future<void> _deleteUnfinishedTour(int tourId) async {
+    try {
+      final accessToken = await getAccessToken();
+      final dio = Dio();
+      final url = 'http://conever.duckdns.org:8000/tour/$tourId/';
+      final response = await dio.delete(
+        url,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+
+      if (response.statusCode == 204) {
+        print("임시 생성된 여행이 삭제되었습니다.");
+      } else {
+        print("여행 삭제 실패: 상태 코드 ${response.statusCode}");
+      }
+    } catch (e) {
+      print("여행 삭제 중 오류 발생: $e");
     }
   }
 
