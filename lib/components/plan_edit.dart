@@ -329,9 +329,7 @@ class _DeleteTourState extends State<DeleteTour> {
                     if (!mounted) return; // 안전 체크 추가
                     Navigator.of(context).pop(); // 다이얼로그 닫기
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => MainScreen(
-                        accessToken: accessToken,
-                      )), //처음으로 되돌아감
+                      MaterialPageRoute(builder: (context) => MainScreen()), //처음으로 되돌아감
                     );
                   } else { //TODO: 오류뜰때 어케할지 수정해야함
                     ScaffoldMessenger.of(context).showSnackBar(

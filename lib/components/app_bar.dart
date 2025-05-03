@@ -38,12 +38,10 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class SearchAppBar extends StatefulWidget {
-  final String? accessToken;
   final Future<void> Function(int, List<PlaceInfoBlock>) onSaveCourse;
 
   const SearchAppBar({
     Key? key,
-    required this.accessToken,
     required this.onSaveCourse,
   }) : super(key: key);
 
@@ -155,20 +153,17 @@ class _SearchAppBarState extends State<SearchAppBar> {
                                 builder: (_) => AddPage_2(
                                   title: gu,
                                   tourId: 0,
-                                  accessToken: widget.accessToken,
                                   onSaveCourseCallback: (places) {
                                     Navigator.push(
                                       context,
                                       CupertinoPageRoute(
                                         builder: (_) => AddPage_0(
-                                          accessToken: widget.accessToken,
                                           onFinishCreation: (int tourId) {
                                             Navigator.push(
                                               context,
                                               CupertinoPageRoute(
                                                 builder: (_) => AddPage_3(
                                                   tour_id: tourId,
-                                                  accessToken: widget.accessToken,
                                                 ),
                                               ),
                                             );

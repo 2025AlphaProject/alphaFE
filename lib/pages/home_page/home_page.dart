@@ -152,13 +152,13 @@ class _HomePageState extends State<HomePage> {
   Future<void> saveTourCourse(int tourId, List<PlaceInfoBlock> places) async {
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
-
     try {
+      final accessToken = await getAccessToken();
       // 여행 시작일을 불러오기 위한 GET 요청
       final startDateResponse = await dio.get(
         '$baseUrl/tour/$tourId/',
         options: Options(headers: {
-          'Authorization': 'Bearer ${widget.accessToken}',
+          'Authorization': 'Bearer $accessToken',
         }),
       );
       final startDate = startDateResponse.data['start_date'];
@@ -182,7 +182,7 @@ class _HomePageState extends State<HomePage> {
         },
         options: Options(headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${widget.accessToken}',
+          'Authorization': 'Bearer $accessToken',
         }),
       );
 
@@ -335,30 +335,28 @@ class _HomePageState extends State<HomePage> {
                                         vertical: MediaQuery.of(context).size.height * 0.012,
                                         horizontal: MediaQuery.of(context).size.width * 0.04,
                                       ),
-                                      onTap: () {
+                                      onTap: () async {
                                         final String sigun = (_recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
                                             ? (_recommendedPlace?['address'] as String).split(' ')[1]
                                             : '';
+                                        final accessToken = await getAccessToken();
                                         Navigator.push(
                                           context,
                                           CupertinoPageRoute(
                                             builder: (_) => AddPage_2(
                                               title: sigun,
                                               tourId: 0, // Placeholder, will be replaced after AddPage_0
-                                              accessToken: widget.accessToken,
                                               onSaveCourseCallback: (places) {
                                                 Navigator.push(
                                                   context,
                                                   CupertinoPageRoute(
                                                     builder: (_) => AddPage_0(
-                                                      accessToken: widget.accessToken,
                                                       onFinishCreation: (int tourId) {
                                                         Navigator.push(
                                                           context,
                                                           CupertinoPageRoute(
                                                             builder: (_) => AddPage_3(
                                                               tour_id: tourId,
-                                                              accessToken: widget.accessToken,
                                                             ),
                                                           ),
                                                         );
@@ -434,7 +432,6 @@ class _HomePageState extends State<HomePage> {
             ),
             // 행정구역 검색 기능을 제공하는 앱바, 오버레이 리스트와 연결됨
             SearchAppBar(
-              accessToken: widget.accessToken,
               onSaveCourse: saveTourCourse,
             ),
           ],
