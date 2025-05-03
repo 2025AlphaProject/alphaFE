@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
 import '../../components/plan_card.dart'; // 여행 계획 카드 컴포넌트
-import '../../components/proceed_button.dart'; // 버튼 컴포넌트
+import '../../components/proceed_button.dart';
+import '../../components/token_controller.dart'; // 버튼 컴포넌트
 
 class HomePage extends StatefulWidget {
-  final String? accessToken;
-  const HomePage({super.key, this.accessToken});
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchPlans() async {
+    final accessToken = getAccessToken();
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
 
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage> {
         '$baseUrl/user/me/',
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${widget.accessToken}',
+            'Authorization': 'Bearer $accessToken',
             'Accept': 'application/json'
           },
         ),
@@ -66,7 +67,7 @@ class _HomePageState extends State<HomePage> {
         '$baseUrl/tour/',
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${widget.accessToken}',
+            'Authorization': 'Bearer $accessToken',
             'Accept': 'application/json'
           },
         ),

@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/proceed_button.dart';
 import '../../components/app_bar.dart';
+import '../../components/token_controller.dart';
 
 // TODO: 여행 이름과 날짜를 확정짓고 '다음' 을 눌러 여행 id가 발급된 상태에서 다른 탭으로 전환할 때 별도의 처리가 필요(무분별한 여행 id 생성 방지)
 // 본 페이지에서 발급받은 tour_id 값은 최종 여행 등록에 필요하므로 모든 연결된 페이지에 인자값으로 전달됨
 
 // 추가 탭 0번째 페이지: 여행 이름과 날짜 입력
 class AddPage_0 extends StatefulWidget {
-  final String? accessToken;
-
-  const AddPage_0({Key? key, required this.accessToken}) : super(key: key);
+  const AddPage_0({Key? key}) : super(key: key);
 
   @override
   _AddPage_0State createState() => _AddPage_0State();
@@ -70,6 +69,7 @@ class _AddPage_0State extends State<AddPage_0> {
 
   // 입력한 여행 정보로 서버에 여행 등록 요청
   Future<void> _registerTour() async {
+    final accessToken = getAccessToken();
     if (_titleController.text.isEmpty ||
         _titleController.text.length > 10 ||
         _selectedDateRange == null) {
@@ -89,7 +89,7 @@ class _AddPage_0State extends State<AddPage_0> {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${widget.accessToken}'
+            'Authorization': 'Bearer $accessToken'
           }
         ),
         data: {

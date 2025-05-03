@@ -1,3 +1,4 @@
+import 'package:alpha_fe/components/token_controller.dart';
 import 'package:alpha_fe/mainscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -5,22 +6,20 @@ import 'package:alpha_fe/components/app_bar.dart';
 
 class ProfileListPage extends StatelessWidget {
   final int tour_id;
-  final String? accessToken;
-  const ProfileListPage({super.key, required this.tour_id, required this.accessToken});
+  const ProfileListPage({super.key, required this.tour_id});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const DefaultAppBar(title: "친구추가"),
-      body: ProfileListBody(tour_id: tour_id, accessToken: accessToken),
+      body: ProfileListBody(tour_id: tour_id),
     );
   }
 }
 
 class ProfileListBody extends StatefulWidget {
   final int tour_id;
-  final String? accessToken;
-  const ProfileListBody({super.key, required this.tour_id, required this.accessToken});
+  const ProfileListBody({super.key, required this.tour_id});
 
   @override
   State<ProfileListBody> createState() => _ProfileListBodyState();
@@ -136,13 +135,14 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () async {
+                                      final accessToken = getAccessToken();
                                       try { //유저추가 api
                                         final dio = Dio();
                                         final response = await dio.post(
                                           'http://conever.duckdns.org:8000/tour/add_traveler/',
                                           options: Options(
                                             headers: {
-                                              'Authorization': 'Bearer ${widget.accessToken}',
+                                              'Authorization': 'Bearer $accessToken',
                                               'Content-Type': 'application/json',
                                             },
                                           ),
@@ -154,9 +154,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                         if (response.statusCode == 201) {
                                           Navigator.pop(context); // close the dialog
                                           Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(builder: (context) => MainScreen(
-                                              accessToken: widget.accessToken,
-                                            )), //처음으로 되돌아감
+                                            MaterialPageRoute(builder: (context) => const MainScreen()), //처음으로 되돌아감
                                           );
                                         }
                                       } catch (e) {

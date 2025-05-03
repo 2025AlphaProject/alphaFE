@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dio/dio.dart';
+import '../../components/token_controller.dart';
 import 'add_page_3.dart';
 import '../../components/app_bar.dart';
 import '../../components/proceed_button.dart';
@@ -14,12 +15,10 @@ import '../../components/placeinput_card.dart';
 class AddPage_2 extends StatefulWidget {
   final String title;
   final int tourId;
-  final String? accessToken;
 
   const AddPage_2({
     required this.title,
     required this.tourId,
-    required this.accessToken,
     Key? key
   }) : super(key: key);
 
@@ -130,6 +129,7 @@ class _AddPage_2State extends State<AddPage_2> {
 
   //
   Future<void> saveTourCourse() async {
+    final accessToken = getAccessToken();
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
 
@@ -139,7 +139,7 @@ class _AddPage_2State extends State<AddPage_2> {
           '$baseUrl/tour/${widget.tourId}/',
           options: Options(
               headers: {
-                'Authorization': 'Bearer ${widget.accessToken}'
+                'Authorization': 'Bearer $accessToken'
               }
           )
 
@@ -166,7 +166,7 @@ class _AddPage_2State extends State<AddPage_2> {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${widget.accessToken}'
+            'Authorization': 'Bearer $accessToken'
           },
         ),
       );
@@ -180,7 +180,6 @@ class _AddPage_2State extends State<AddPage_2> {
           CupertinoPageRoute(
             builder: (_) => AddPage_3(
               tour_id: widget.tourId,
-              accessToken: widget.accessToken,
             ),
           ),
         );

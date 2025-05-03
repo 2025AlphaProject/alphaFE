@@ -1,11 +1,11 @@
+import 'package:alpha_fe/components/token_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart'; //
 import '../../components/app_bar.dart';
 import 'package:alpha_fe/pages/my_page/mission_page_2.dart';
 
 class Mission_Page extends StatefulWidget {
-  final String? accessToken;
-  const Mission_Page({super.key, this.accessToken});
+  const Mission_Page({super.key});
 
   @override
   State<Mission_Page> createState() => _Mission_PageState();
@@ -23,6 +23,7 @@ class _Mission_PageState extends State<Mission_Page> {
 
   //미션 진행도 - [GET] 미션 리스트 가져오기
   Future<void> _fetchMissions() async {
+    final accessToken =getAccessToken();
     final dio = Dio();
     try {
       final response = await dio.get(
@@ -30,7 +31,7 @@ class _Mission_PageState extends State<Mission_Page> {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${widget.accessToken}', //
+            'Authorization': 'Bearer $accessToken', //
           },
         ),
       );

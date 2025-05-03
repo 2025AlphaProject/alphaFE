@@ -48,18 +48,14 @@ class PlanCard extends StatelessWidget {
         ),
         child: InkWell(
           onTap: () async {
-            final accessToken = await getAccessTokenFromRefreshToken();
-            if (accessToken != null) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => PlanPage2(
                     tour_id: tour_id,
-                    accessToken: accessToken,
                   ),
                 ),
               );
-            }
           },
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),

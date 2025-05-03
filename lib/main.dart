@@ -27,7 +27,7 @@
 *   9. gps.dart
 * */
 
-import 'package:alpha_fe/components/refresh_token_controller.dart';
+import 'package:alpha_fe/components/token_controller.dart';
 import 'package:alpha_fe/pages/loading_page/page_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -89,9 +89,7 @@ Future<void> main() async {
       GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
     ],
     home: (accessToken?.isNotEmpty == true)
-        ? MainScreen(
-      accessToken: accessToken,
-    )
+        ? MainScreen()
         : LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey),
   ));
   // 화면 세로로 고정
