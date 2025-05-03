@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:flutter/cupertino.dart';
+import '../../components/logout.dart';
 import '../../components/token_controller.dart';
 import 'mission_page.dart';
 import 'my_page_Q&A.dart';
@@ -162,6 +163,7 @@ class _MyPageBodyState extends State<MyPageBody> {
             children: [
               _menuItem(context, Icons.trending_up, "미션 진행도", const Mission_Page(), width),
               _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width),
+              _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, onTap: () {Logout(context);}),
             ],
           ),
         ],
@@ -196,13 +198,13 @@ Widget _StateItem(String value, String label, double width) {
 }
 
 //미션 진행도랑 자주묻는 질문 나타내는 위젯
-Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, double width) {
+Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, double width, {VoidCallback? onTap}) {
   return Padding(
     padding: EdgeInsets.symmetric(vertical: width * 0.01),
     child: SizedBox(
       width: width * 0.75,
       child: TextButton(
-        onPressed: () {
+        onPressed: onTap ?? () {
           Navigator.push(context, CupertinoPageRoute(builder: (context) => page));
         },
         style: TextButton.styleFrom(
