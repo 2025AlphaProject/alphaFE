@@ -65,6 +65,13 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
 
   List<Map<String, dynamic>> courseData = [];
   bool _isLoading = true;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchTourName();
+    fetchTourCourse();
+    _refreshData();
+  }
 
   //여행 경로 가져오기 api
   Future<void> fetchTourCourse() async {
@@ -157,13 +164,13 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _refreshData();
-    });
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     _refreshData();
+  //   });
+  // }
 
   Future<void> _refreshData() async {
     setState(() {

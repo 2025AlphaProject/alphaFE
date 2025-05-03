@@ -156,19 +156,15 @@ class EditTourNameDialog extends StatefulWidget {
 
 class _EditTourNameDialogState extends State<EditTourNameDialog> {
   late TextEditingController _nameController;
-  late final String accessToken;
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.tourName);
-    _initToken();
   }
 
-  Future<void> _initToken() async {
-    accessToken = (await getAccessTokenFromRefreshToken()) ?? '';
-  }
+
 
 
   @override
@@ -217,6 +213,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
 
                 try {
                   final dio = Dio();
+                  final accessToken = await getAccessToken();
                   final response = await dio.put(
                     'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
                     data: {
@@ -285,17 +282,12 @@ class DeleteTour extends StatefulWidget {
 }
 
 class _DeleteTourState extends State<DeleteTour> {
-  late final String accessToken;
 
   @override
   void initState() {
     super.initState();
-    _initToken();
   }
 
-  Future<void> _initToken() async {
-    accessToken = (await getAccessTokenFromRefreshToken()) ?? '';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -315,6 +307,7 @@ class _DeleteTourState extends State<DeleteTour> {
               onPressed: () async { //내 여행 삭제하기
                 try {
                   final dio = Dio();
+                  final accessToken = await getAccessToken();
                   final response = await dio.delete(
                     'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
                     options: Options(
@@ -331,7 +324,7 @@ class _DeleteTourState extends State<DeleteTour> {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => MainScreen()), //처음으로 되돌아감
                     );
-                  } else { //TODO: 오류뜰때 어케할지 수정해야함
+                  } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -341,7 +334,7 @@ class _DeleteTourState extends State<DeleteTour> {
                       ),
                     );
                   }
-                } catch (e) { //TODO: 오류뜰때 어케할지 수정해야함
+                } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -379,18 +372,12 @@ class DeleteCourse extends StatefulWidget {
 }
 
 class _DeleteCourseState extends State<DeleteCourse> {
-  late final String accessToken;
-
 
   @override
   void initState() {
     super.initState();
-    _initToken();
   }
 
-  Future<void> _initToken() async {
-    accessToken = (await getAccessTokenFromRefreshToken()) ?? '';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -410,6 +397,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
               onPressed: () async { //여행경로 삭제하기
                 try {
                   final dio = Dio();
+                  final accessToken = await getAccessToken();
                   final response = await dio.delete(
                     'http://conever.duckdns.org:8000/tour/course/${widget.tour_id}/',
                     data: {
@@ -427,7 +415,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
                     EditState.showEditButton = false;
                     widget.onRefresh?.call();
                     Navigator.pop(context,true); // 다이얼로그 닫기
-                  } else { //TODO: 오류뜰때 어케할지 수정해야함
+                  } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -437,7 +425,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
                       ),
                     );
                   }
-                } catch (e) {//TODO: 오류뜰때 어케할지 수정해야함
+                } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(

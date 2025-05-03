@@ -42,8 +42,8 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
   List<Map<String, dynamic>> _cardData = [];
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _fetchTourData();
   }
 
