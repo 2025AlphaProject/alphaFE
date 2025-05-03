@@ -166,31 +166,10 @@ class _planEditDateState extends State<planEditDate> {
                       ),
                     ),
                     onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog( //shodialog 누르면 나타나기
-                            title: Text('날짜 수정 확인'),
-                            content: Text('선택한 기간으로 여행 일정을 수정하시겠습니까?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: Text('취소'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context); // Close confirmation dialog
-                                  Navigator.pop(context, {
-                                    'start_date': _rangeStart!.toIso8601String().split('T').first,
-                                    'end_date': _rangeEnd!.toIso8601String().split('T').first,
-                                  });
-                                },
-                                child: Text('확인'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                      Navigator.pop(context, {
+                        'start_date': _rangeStart!.toIso8601String().split('T').first,
+                        'end_date': _rangeEnd!.toIso8601String().split('T').first,
+                      });
                     },
                     child: Text(
                       "${_rangeStart!.year}.${_rangeStart!.month}.${_rangeStart!.day} - ${_rangeEnd!.month}.${_rangeEnd!.day} / 수정",
