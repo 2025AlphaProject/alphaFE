@@ -33,6 +33,8 @@ class PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     final remainingDays = calculateRemainingDays(endDate);
 
     return SizedBox( // 카드 위젯의 크기 명시
@@ -58,7 +60,12 @@ class PlanCard extends StatelessWidget {
               );
           },
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
+            padding: EdgeInsets.fromLTRB(
+              screenWidth * 0.05,
+              screenHeight * 0.05,
+              screenWidth * 0.05,
+              screenHeight * 0.05,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -72,12 +79,15 @@ class PlanCard extends StatelessWidget {
                   ),
                   margin: const EdgeInsets.all(5),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 1),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.03,
+                      vertical: screenHeight * 0.0015,
+                    ),
                     child: Text(
                       "D-$remainingDays",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 8,
+                        fontSize: screenWidth * 0.022,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -87,7 +97,7 @@ class PlanCard extends StatelessWidget {
                 // 여행 제목
                 Text(
                   title,
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: screenWidth * 0.085, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 // 여행 날짜 범위 (달력 아이콘 + 텍스트)
@@ -95,11 +105,11 @@ class PlanCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.calendar_today, size: 13, color: Colors.grey),
+                    Icon(Icons.calendar_today, size: screenWidth * 0.034, color: Colors.grey),
                     const SizedBox(width: 5),
                     Text(
                       dateRange,
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                      style: TextStyle(fontSize: screenWidth * 0.032, color: Colors.grey),
                     ),
                   ],
                 ),

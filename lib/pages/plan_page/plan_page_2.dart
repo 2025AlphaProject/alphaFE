@@ -7,6 +7,7 @@ import 'package:alpha_fe/components/plan_card.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/components/plan_course_event.dart';
 import 'package:alpha_fe/pages/plan_page/add_user.dart';
+import 'package:alpha_fe/components/plan_loading_page.dart';
 
 class PlanPage2 extends StatefulWidget {
   final int tour_id;
@@ -154,14 +155,38 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   @override
   void initState() {
     super.initState();
-    Future.wait([
-      fetchTourCourse(),
-      fetchTourName(),
-    ]).then((_) {
+    _loadInitialData();
+  }
+
+  // 초기 데이터 로딩 및 이미지 프리캐시 처리
+  Future<void> _loadInitialData() async {
+    await fetchTourCourse(); // 먼저 코스 정보만 불러옴
+
+    final context_ = context;
+
+    // 이미지 URL 목록 수집
+    final imageUrls = courseData
+        .expand((day) => day['places'] as List<Map<String, dynamic>>)
+        .map((place) => place['image_url'] as String)
+        .where((url) => url.isNotEmpty)
+        .toList();
+
+    // 이미지 프리캐싱
+    await Future.wait(
+      imageUrls.map((url) => precacheImage(NetworkImage(url), context_)),
+    );
+
+    // 이미지 프리캐싱 후 추가 대기 시간
+    await Future.delayed(const Duration(seconds: 2));
+
+    // 이후 여행 이름 등의 정보 로드
+    await fetchTourName();
+
+    if (mounted) {
       setState(() {
         _isLoading = false;
       });
-    });
+    }
   }
 
   // @override
@@ -193,7 +218,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
     return WillPopScope(
       onWillPop: () async => true,
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const PlanLoadingView() // 이미지가 로딩 중일 때 로딩 페이지 표시
           : Padding(
               padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
               child: RefreshIndicator(

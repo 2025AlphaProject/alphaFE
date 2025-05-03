@@ -180,7 +180,7 @@ class place_card extends StatelessWidget {
                               Container( //장소명
                                 width: MediaQuery.of(context).size.width * 0.416,
                                 child: Text(
-                                  placeName,
+                                  placeName.replaceAll(RegExp(r'[<>]'), ''),
                                   softWrap: true,
                                   overflow: TextOverflow.visible,
                                   style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.039, fontWeight: FontWeight.bold),
@@ -215,7 +215,7 @@ class place_card extends StatelessWidget {
                                   Container( //도로명 데이터
                                     width: MediaQuery.of(context).size.width * 0.361,
                                     child: Text(
-                                      roadAddress,
+                                      roadAddress.replaceAll(RegExp(r'[<>]'), ''),
                                       softWrap: true,
                                       overflow: TextOverflow.visible,
                                       style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.033),
@@ -239,7 +239,7 @@ class place_card extends StatelessWidget {
                                   Container( //지번 데이터
                                     width: MediaQuery.of(context).size.width * 0.361,
                                     child: Text(
-                                      numberAddress,
+                                      numberAddress.replaceAll(RegExp(r'[<>]'), ''),
                                       softWrap: true,
                                       overflow: TextOverflow.visible,
                                       style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.033),
