@@ -213,12 +213,13 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async => true,
       child: _isLoading
           ? const PlanLoadingView() // 이미지가 로딩 중일 때 로딩 페이지 표시
           : Padding(
-              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
+              padding: EdgeInsets.all(width * 0.02),
               child: RefreshIndicator(
                 key: _refreshIndicatorKey,
                 onRefresh: _refreshData,
@@ -232,7 +233,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                           Expanded(child: Plan_Name(startDate: startDate,
                             endDate: endDate,tourName: tourName,)),
                           IconButton(
-                            icon: Icon(Icons.edit, size: MediaQuery.of(context).size.width * 0.07),
+                            icon: Icon(Icons.edit, size: width * 0.07),
                             onPressed: () async {
                               final result = await showDialog(
                                 context: context,
@@ -281,6 +282,8 @@ class Plan_Name extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     int calculateRemainingDays(String endDate) {
       final today = DateTime.now();
       final endDateObj = DateTime.parse(endDate);
@@ -291,46 +294,46 @@ class Plan_Name extends StatelessWidget {
     final remainingDays = calculateRemainingDays(endDate);
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.025,0,0,0),
+      padding: EdgeInsets.fromLTRB(width * 0.025,0,0,0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Card(
             color: Colors.red[600],
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.01),
+              borderRadius: BorderRadius.circular(width * 0.01),
             ),
             // margin: const EdgeInsets.all(5),
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.03, vertical: MediaQuery.of(context).size.height * 0.0025),
+              padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.0025),
               child: Text(
                 "D-$remainingDays", //이거 디데이 인자로 바꿀예정
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: MediaQuery.of(context).size.width * 0.02,
+                  fontSize: width * 0.02,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.0075, 0, 0, 0),
+            padding: EdgeInsets.fromLTRB(width * 0.0075, 0, 0, 0),
             child: Text(
               tourName,
-              style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.07, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: width * 0.07, fontWeight: FontWeight.bold),
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.0075, 0, 0, 0),
+            padding: EdgeInsets.fromLTRB(width * 0.0075, 0, 0, 0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.calendar_today, size: MediaQuery.of(context).size.width * 0.035, color: Colors.grey),
-                SizedBox(width: MediaQuery.of(context).size.width * 0.0125),
+                Icon(Icons.calendar_today, size: width * 0.035, color: Colors.grey),
+                SizedBox(width: width * 0.0125),
                 Text(
                   "$startDate ~ $endDate",
-                  style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.032, color: Colors.grey),
+                  style: TextStyle(fontSize: width * 0.032, color: Colors.grey),
                 ),
               ],
             ),
@@ -348,39 +351,41 @@ class Traveler_List extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     final parentState = context.findAncestorStateOfType<_plan_page2_bodyState>();
     final travelers = parentState?.travelers ?? [];
 
     return Padding(
-      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.025),
+      padding: EdgeInsets.all(width * 0.025),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+          SizedBox(height: height * 0.01),
           Text(
             "여행자",
-            style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: width * 0.04, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.005),
+          SizedBox(height: height * 0.005),
           SizedBox(
             child: Wrap(
-              spacing: MediaQuery.of(context).size.width * 0.04,
-              runSpacing: MediaQuery.of(context).size.height * 0.01,
+              spacing: width * 0.04,
+              runSpacing: height * 0.01,
               children: [
                 ...travelers.map((traveler) => Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     CircleAvatar(
-                      radius: MediaQuery.of(context).size.width * 0.06,
+                      radius: width * 0.06,
                       backgroundImage: NetworkImage(traveler["imageUrl"]!),
                     ),
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.002),
+                    SizedBox(height: height * 0.002),
                     SizedBox(
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
                           traveler["name"]!,
-                          style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035),
+                          style: TextStyle(fontSize: width * 0.035),
                         ),
                       ),
                     ),
@@ -403,17 +408,17 @@ class Traveler_List extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       CircleAvatar(
-                        radius: MediaQuery.of(context).size.width * 0.06,
+                        radius: width * 0.06,
                         backgroundColor: Colors.grey.shade200,
-                        child: Icon(Icons.add, color: Colors.grey, size: MediaQuery.of(context).size.width * 0.05),
+                        child: Icon(Icons.add, color: Colors.grey, size: width * 0.05),
                       ),
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.002),
+                      SizedBox(height: height * 0.002),
                       SizedBox(
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
                             "초대",
-                            style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035),
+                            style: TextStyle(fontSize: width * 0.035),
                           ),
                         ),
                       ),

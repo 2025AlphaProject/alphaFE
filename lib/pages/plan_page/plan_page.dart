@@ -166,8 +166,8 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     final cards = sortedCardData;
 
     return _isLoading 
@@ -190,16 +190,16 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
                 ))
             : Column(
       children: [
-        SizedBox(height: screenHeight * 0.12),
+        SizedBox(height: height * 0.12),
 
         // 정렬 기준 드롭다운
         Container(
-          height: screenHeight * 0.06,
-          width: screenWidth * 0.35,
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+          height: height * 0.06,
+          width: width * 0.35,
+          padding: EdgeInsets.symmetric(horizontal: width * 0.04),
           decoration: BoxDecoration(
             color: const Color(0xFFFFFFFF),
-            borderRadius: BorderRadius.circular(screenWidth * 0.03),
+            borderRadius: BorderRadius.circular(width * 0.03),
             border: Border.all(color: Colors.grey.shade300),
           ),
           child: DropdownButton<SortType>(
@@ -207,7 +207,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
             isExpanded: true,
             underline: const SizedBox(),
             icon: Icon(Icons.keyboard_arrow_down, color: const Color(0xFF000000),
-                size: screenWidth * 0.05),
+                size: width * 0.05),
             dropdownColor: Colors.white,
             onChanged: (value) {
               if (value != null) {
@@ -220,35 +220,35 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
             items: [
               DropdownMenuItem(value: SortType.dDayAsc,
                   child: Text(
-                      "날짜순", style: TextStyle(fontSize: screenWidth * 0.035))),
+                      "날짜순", style: TextStyle(fontSize: width * 0.035))),
               DropdownMenuItem(value: SortType.dDayDesc,
                   child: Text(
-                      "날짜역순", style: TextStyle(fontSize: screenWidth * 0.035))),
+                      "날짜역순", style: TextStyle(fontSize: width * 0.035))),
               DropdownMenuItem(value: SortType.title,
                   child: Text(
-                      "제목순", style: TextStyle(fontSize: screenWidth * 0.035))),
+                      "제목순", style: TextStyle(fontSize: width * 0.035))),
             ],
           ),
         ),
 
-        SizedBox(height: screenHeight * 0.03),
+        SizedBox(height: height * 0.03),
 
         // 카드 슬라이더
         SizedBox(
-          height: screenHeight * 0.4,
+          height: height * 0.4,
           child: PageView.builder(
             controller: _pageController,
             itemCount: cards.length,
             itemBuilder: (context, index) {
               final item = cards[index];
               return Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+                padding: EdgeInsets.symmetric(horizontal: width * 0.02),
                 child: PlanCard(
                   title: item['title']!,
                   startDate: item['startDate']!,
                   endDate: item['endDate']!,
-                  size_h: screenHeight * 0.5,
-                  size_w: screenWidth * 0.65,
+                  size_h: height * 0.5,
+                  size_w: width * 0.65,
                   tour_id: item['tour_id'],
                 ),
               );
@@ -256,14 +256,14 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           ),
         ),
 
-        SizedBox(height: screenHeight * 0.03),
+        SizedBox(height: height * 0.03),
 
         // 페이지 인디케이터
         PlanPageIndicator(
           controller: _pageController,
           count: cards.length,
-          dotSize: screenWidth * 0.02,
-          dotActiveWidth: screenWidth * 0.03,
+          dotSize: width * 0.02,
+          dotActiveWidth: width * 0.03,
         ),
       ],
     );
@@ -316,9 +316,9 @@ class _PlanPageIndicatorState extends State<PlanPageIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final dotSize = widget.dotSize ?? screenWidth * 0.02;
-    final dotActiveWidth = widget.dotActiveWidth ?? screenWidth * 0.03;
+    final width = MediaQuery.of(context).size.width;
+    final dotSize = widget.dotSize ?? width * 0.02;
+    final dotActiveWidth = widget.dotActiveWidth ?? width * 0.03;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
