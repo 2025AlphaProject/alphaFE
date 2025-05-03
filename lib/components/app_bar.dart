@@ -68,15 +68,17 @@ class _SearchAppBarState extends State<SearchAppBar> {
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() {
-      setState(() {
-        _searchQuery = _searchController.text;
-        _removeOverlay();
-        if (_searchQuery.isNotEmpty) {
-          _overlayEntry = _createOverlayEntry();
-          Overlay.of(context).insert(_overlayEntry!);
-        }
-      });
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text;
+      _removeOverlay();
+      if (_searchQuery.isNotEmpty) {
+        _overlayEntry = _createOverlayEntry();
+        Overlay.of(context).insert(_overlayEntry!);
+      }
     });
   }
 
@@ -146,7 +148,12 @@ class _SearchAppBarState extends State<SearchAppBar> {
                         return ListTile(
                           title: Text(gu),
                           onTap: () {
+                            _searchController.removeListener(_onSearchChanged);
                             _removeOverlay();
+                            FocusScope.of(context).unfocus();
+
+                            if (!mounted) return;
+
                             Navigator.push(
                               context,
                               CupertinoPageRoute(
@@ -175,7 +182,11 @@ class _SearchAppBarState extends State<SearchAppBar> {
                                   },
                                 ),
                               ),
-                            );
+                            ).then((_) {
+                              if (mounted) {
+                                _searchController.addListener(_onSearchChanged);
+                              }
+                            });
                           },
                         );
                       },

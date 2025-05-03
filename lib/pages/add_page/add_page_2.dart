@@ -11,6 +11,7 @@ import '../../components/app_bar.dart';
 import '../../components/proceed_button.dart';
 import '../../components/placeinfo_card.dart';
 import '../../components/placeinput_card.dart';
+import '../../components/ai_loading_page.dart';
 
 class AddPage_2 extends StatefulWidget {
   final String title;
@@ -32,6 +33,8 @@ class _AddPage_2State extends State<AddPage_2> {
   late ScrollController _scrollController;
   bool _visibleButton = true;
   Timer? _idleTimer;
+  bool _isLoading = true;
+  bool _receivedDataOnce = false; // 최초 데이터 수신 여부를 기록하는 플래그
 
   // 장소 데이터 목록 (API에서 받아온 데이터와 사용자가 추가한 입력 모두 포함)
   List<PlaceInfoBlock> _placeWidgets = [];
@@ -52,26 +55,46 @@ class _AddPage_2State extends State<AddPage_2> {
       Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=111&areaCode=1&sigunguName=${widget.title}'),
     );
 
-    channel.stream.listen((message) {
+    channel.stream.listen((message) async {
       final data = jsonDecode(message);
+
+      // 이미 수신한 적 있으면 무시
+      if (_receivedDataOnce) return;
+
       if (data["status"] == "SUCCESS" && data["result"] != null) {
         final List<dynamic> firstCourse = data["result"][0];
 
-        setState(() {
-          _placeWidgets = firstCourse.take(5).map((place) {
-            final imageUrl = place['image1'] ?? '';
+        final context_ = context;
 
-            return PlaceInfoBlock(
-              imageUrl: imageUrl,
-              title: place['title'] ?? '제목 없음',
-              description: place['address'] ?? '주소 정보 없음',
-              mapX: double.tryParse(place['mapX'] ?? '0') ?? 0.0,
-              mapY: double.tryParse(place['mapY'] ?? '0') ?? 0.0,
-              width: MediaQuery.of(context).size.width * 0.63,
-              height: MediaQuery.of(context).size.width * 0.63 * 0.69,
-            );
-          }).toList();
-        });
+        final newWidgets = firstCourse.take(5).map((place) {
+          final imageUrl = (place['image1'] != null && place['image1'].toString().isNotEmpty)
+              ? place['image1']
+              : '';
+
+          return PlaceInfoBlock(
+            imageUrl: imageUrl,
+            title: place['title'] ?? '제목 없음',
+            description: place['address'] ?? '주소 정보 없음',
+            mapX: double.tryParse(place['mapX'] ?? '0') ?? 0.0,
+            mapY: double.tryParse(place['mapY'] ?? '0') ?? 0.0,
+            width: MediaQuery.of(context_).size.width * 0.63,
+            height: MediaQuery.of(context_).size.width * 0.63 * 0.69,
+          );
+        }).toList();
+
+        await Future.wait(newWidgets.map((place) async {
+          if (place.imageUrl.isNotEmpty) {
+            await precacheImage(NetworkImage(place.imageUrl), context_);
+          }
+        }));
+
+        if (mounted) {
+          setState(() {
+            _placeWidgets = newWidgets;
+            _isLoading = false;
+            _receivedDataOnce = true;
+          });
+        }
       }
     });
   }
@@ -151,7 +174,7 @@ class _AddPage_2State extends State<AddPage_2> {
         'name': '<${place.title}>',
         'mapX': place.mapX,
         'mapY': place.mapY,
-        'image': place.imageUrl,
+        'image_url': place.imageUrl,
         'road_address': '<${place.description}>'
       }).toList();
 
@@ -170,8 +193,6 @@ class _AddPage_2State extends State<AddPage_2> {
           },
         ),
       );
-
-      print(response);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // 성공 시 다음 페이지로 이동
@@ -219,6 +240,9 @@ class _AddPage_2State extends State<AddPage_2> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const AILoadingView();
+    }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "추가페이지_2nd"),
