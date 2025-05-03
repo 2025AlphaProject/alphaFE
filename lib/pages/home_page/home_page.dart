@@ -254,7 +254,7 @@ class _HomePageState extends State<HomePage> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
+      backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Stack(
           children: [
@@ -331,7 +331,7 @@ class _HomePageState extends State<HomePage> {
                                               size_h: height * 0.394,
                                               size_w: width * 0.8,
                                             )
-                                          : SizedBox.shrink()
+                                          : const SizedBox.shrink()
                                     ),
                             ),
                             SizedBox(height: height * 0.06),
@@ -368,7 +368,7 @@ class _HomePageState extends State<HomePage> {
                                     child: Image.network(
                                       _recommendedPlace!['image1'],
                                       width: width * 0.87,
-                                      height: width * 0.55,
+                                      height: height * 0.25,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -458,7 +458,7 @@ class _HomePageState extends State<HomePage> {
                                       horizontal: width * 0.04,
                                       vertical: height * 0.012,
                                     ),
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Color(0xFFFFFFFF),
                                     ),
                                     child: Align(

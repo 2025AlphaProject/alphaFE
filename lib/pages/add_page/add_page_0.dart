@@ -55,22 +55,22 @@ class _AddPage_0State extends State<AddPage_0> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            primaryColor: Color(0xFF2C2C2C),
-            colorScheme: ColorScheme.light(
+            primaryColor: const Color(0xFF2C2C2C),
+            colorScheme: const ColorScheme.light(
               primary: Color(0xFF2C2C2C),
               onPrimary: Colors.white,
               onSurface: Colors.black,
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: Color(0xFF2C2C2C),
+                foregroundColor: const Color(0xFF2C2C2C),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
             ),
             dialogBackgroundColor: Colors.white,
-            hintColor: Color(0xFFB5B5B5),
+            hintColor: const Color(0xFFB5B5B5),
           ),
           child: child!,
         );
@@ -106,13 +106,13 @@ class _AddPage_0State extends State<AddPage_0> {
         _titleController.text.length > 10 ||
         _selectedDateRange == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('여행 이름(10자 이내)과 날짜를 모두 입력해주세요')),
+        const SnackBar(content: Text('여행 이름(10자 이내)과 날짜를 모두 입력해주세요')),
       );
       return;
     }
 
     final dio = Dio();
-    final url = 'http://conever.duckdns.org:8000/tour/';
+    const url = 'http://conever.duckdns.org:8000/tour/';
 
     try {
       // 입력받은 2가지 데이터에 대해 POST 요청
@@ -153,7 +153,7 @@ class _AddPage_0State extends State<AddPage_0> {
         // 등록 실패 시
         _tourRegistered = false;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('여행 등록에 실패했습니다')),
+          const SnackBar(content: Text('여행 등록에 실패했습니다')),
         );
       }
     } catch (e) {
@@ -205,7 +205,7 @@ class _AddPage_0State extends State<AddPage_0> {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
+      backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "새 여행지 추가"),
       body: SingleChildScrollView(
         child: Padding(
@@ -287,7 +287,7 @@ class _AddPage_0State extends State<AddPage_0> {
                       height: height * 0.06,
                       child: TextField(
                         readOnly: true,
-                        cursorColor: Color(0xFF2C2C2C),
+                        cursorColor: const Color(0xFF2C2C2C),
                         decoration: InputDecoration(
                           isDense: true,
                           hintText: _selectedDateRange == null
@@ -300,7 +300,7 @@ class _AddPage_0State extends State<AddPage_0> {
                             fontWeight: FontWeight.w400,
                           ),
                           filled: true,
-                          fillColor: Color(0xFFF5F5F5),
+                          fillColor: const Color(0xFFF5F5F5),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(width * 0.03),
                           ),

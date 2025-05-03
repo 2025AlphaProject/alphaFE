@@ -357,7 +357,7 @@ class Traveler_List extends StatelessWidget {
     final travelers = parentState?.travelers ?? [];
 
     return Padding(
-      padding: EdgeInsets.all(width * 0.025),
+      padding: EdgeInsets.symmetric(horizontal: width * 0.025, vertical: 0.0115),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

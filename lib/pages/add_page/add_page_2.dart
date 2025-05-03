@@ -285,6 +285,7 @@ class _AddPage_2State extends State<AddPage_2> {
   void addNewPlace(String date, String imageUrl, String title, String description, double mapX, double mapY) {
     setState(() {
       final width = MediaQuery.of(context).size.width;
+      final height = MediaQuery.of(context).size.width;
       final newPlace = PlaceInfoBlock(
         imageUrl: imageUrl,
         title: title,
@@ -373,6 +374,7 @@ class _AddPage_2State extends State<AddPage_2> {
   // PlaceInfoBlock 목록 상단에 표시되는 안내 문구
   Widget _buildTitleBlock() {
     final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -383,11 +385,11 @@ class _AddPage_2State extends State<AddPage_2> {
             Text('근처 코스를 알려드릴게요', style: TextStyle(fontSize: width * 0.035, color: const Color(0xFF757575))),
           ],
         ),
-        SizedBox(height: width * 0.03),
+        SizedBox(height: height * 0.0138),
         Row(
           children: [
             Text('최근 업데이트', style: TextStyle(fontSize: width * 0.027, fontWeight: FontWeight.bold, color: const Color(0xFF7F7F7F))),
-            SizedBox(height: width * 0.018),
+            SizedBox(height: height * 0.00831),
             // 오늘 날짜를 yyyy-MM-dd 형식으로 표시
             Text('${DateTime.now().toLocal().toString().substring(0, 10)}', style: TextStyle(fontSize: width * 0.027, color: const Color(0xFF7F7F7F))),
           ],
@@ -436,7 +438,7 @@ class _AddPage_2State extends State<AddPage_2> {
               controller: _scrollController,
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  vertical: width * 0.03,
+                  vertical: height * 0.0138,
                   horizontal: width * 0.06,
                 ),
                 child: ConstrainedBox(
@@ -451,7 +453,7 @@ class _AddPage_2State extends State<AddPage_2> {
                     children: [
                       SizedBox(height: width * 0.063),
                       _buildTitleBlock(),
-                      SizedBox(height: width * 0.058),
+                      SizedBox(height: height * 0.0267),
 
                       // 장소 목록 표시 - 그룹화된 날짜별 렌더링
                       if (_placeWidgets.isNotEmpty && _placeWidgets[0].value.isNotEmpty)
@@ -552,7 +554,7 @@ class _AddPage_2State extends State<AddPage_2> {
             child: Stack(
               children: [
                 Positioned(
-                  bottom: width * 0.075,
+                  bottom: height * 0.0344,
                   left: 0,
                   right: 0,
                   child: AnimatedSlide(
@@ -562,7 +564,7 @@ class _AddPage_2State extends State<AddPage_2> {
                     child: Center(
                       child: ProceedButton(
                         size_w: width * 0.53,
-                        size_h: width * 0.12,
+                        size_h: height * 0.055,
                         text: "이 코스로 할게요!",
                         fontSize_: width * 0.037,
                         fontWeight_: FontWeight.bold,

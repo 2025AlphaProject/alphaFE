@@ -88,6 +88,7 @@ class _Mission_PageState extends State<Mission_Page> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     int completed = _missions.where((m) => m['isCompleted'] == true).length;
     int total = _missions.length;
@@ -98,11 +99,11 @@ class _Mission_PageState extends State<Mission_Page> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: EdgeInsets.all(width * 0.05),
+        padding: EdgeInsets.symmetric(horizontal: width * 0.05, vertical: 0.023),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: width * 0.1),
+            SizedBox(height: height * 0.046),
 
             // ✅ 반응형 원형 진행률 표시
             LayoutBuilder(
@@ -137,12 +138,12 @@ class _Mission_PageState extends State<Mission_Page> {
               },
             ),
 
-            SizedBox(height: width * 0.1),
+            SizedBox(height: height * 0.0461),
 
             // ✅ 미션 카드 리스트
             Column(
               children: _missions.map((mission) {
-                return _missionItem(context, mission, width);
+                return _missionItem(context, mission, width, height);
               }).toList(),
             ),
           ],
@@ -152,11 +153,11 @@ class _Mission_PageState extends State<Mission_Page> {
   }
 }
 
-Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double width) {
+Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double width, double height) {
   final bool isCompleted = mission['isCompleted'] ?? false;
 
   return Padding(
-    padding: EdgeInsets.symmetric(vertical: width * 0.02),
+    padding: EdgeInsets.symmetric(vertical: height * 0.01),
     child: ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: width * 0.95,
@@ -187,7 +188,7 @@ Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double w
             ]
           ),
           child: Padding(
-            padding: EdgeInsets.all(width * 0.04),
+            padding: EdgeInsets.symmetric(horizontal: width * 0.04, vertical: height * 0.018),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -209,7 +210,7 @@ Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double w
                   ],
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: width * 0.08, top: width * 0.01),
+                  padding: EdgeInsets.only(left: width * 0.08, top: height * 0.004),
                   child: Text(
                     "• ${mission['content']}",
                     style: TextStyle(fontSize: width * 0.04),

@@ -53,7 +53,7 @@ class _planEditDateState extends State<planEditDate> {
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "날짜수정 앱바 영역"),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(horizontal: width * 0.042, vertical: height * 0.019),
         child: Stack(
           children: [
             TableCalendar( //달력띄우기와 그쪽 디자인, 선택한 날짜부분 디자인 영역
@@ -72,16 +72,16 @@ class _planEditDateState extends State<planEditDate> {
               rangeEndDay: _rangeEnd,
               rangeSelectionMode: _rangeSelectionMode,
               calendarStyle: CalendarStyle(
-                todayDecoration: BoxDecoration(
+                todayDecoration: const BoxDecoration(
                   color: Colors.blue,
                   shape: BoxShape.circle,
                 ),
                 rangeHighlightColor: Colors.blue.withOpacity(0.3),
-                rangeStartDecoration: BoxDecoration(
+                rangeStartDecoration: const BoxDecoration(
                   color: Colors.blue,
                   shape: BoxShape.circle,
                 ),
-                rangeEndDecoration: BoxDecoration(
+                rangeEndDecoration: const BoxDecoration(
                   color: Colors.blue,
                   shape: BoxShape.circle,
                 ),
@@ -140,9 +140,9 @@ class _planEditDateState extends State<planEditDate> {
                         ),
                         Text(
                           '오늘',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.blue,
-                            fontSize: 10,
+                            fontSize: width * 0.0266,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -158,11 +158,11 @@ class _planEditDateState extends State<planEditDate> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.0533, vertical: height * 0.024),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
-                      minimumSize: Size(double.infinity, 50),
+                      minimumSize: Size(double.infinity, height * 0.061),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -175,7 +175,7 @@ class _planEditDateState extends State<planEditDate> {
                     },
                     child: Text(
                       "${_rangeStart!.year}.${_rangeStart!.month}.${_rangeStart!.day} - ${_rangeEnd!.month}.${_rangeEnd!.day} / 수정",
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: width * 0.042, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
