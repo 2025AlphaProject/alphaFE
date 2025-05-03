@@ -6,7 +6,6 @@ class ProceedButton extends StatelessWidget {
   final String text; // 버튼 텍스트
   final FontWeight fontWeight_; // 버튼 텍스트 굵기
   final double fontSize_; // 버튼 텍스트 크기
-  final EdgeInsetsGeometry padding_; // 버튼 패딩값
   final Function()? onTap; // 탭할 시 실행될 함수
 
   const ProceedButton ({
@@ -16,7 +15,6 @@ class ProceedButton extends StatelessWidget {
     required this.text,
     required this.fontSize_,
     required this.fontWeight_,
-    required this.padding_,
     this.onTap
   }) : super(key: key);
 
@@ -29,7 +27,6 @@ class ProceedButton extends StatelessWidget {
         // WidgetStateProperty.all -> hover, tap 등 모든 동작 상황에 같은 스타일 적용
         backgroundColor: MaterialStateProperty.all(const Color(0xFF2C2C2C)),
         foregroundColor: MaterialStateProperty.all(const Color(0xFFF5F5F5)),
-        padding: MaterialStateProperty.all(padding_),
         fixedSize: MaterialStateProperty.all(Size(size_w, size_h)),
         shape: MaterialStateProperty.all(
           RoundedRectangleBorder(

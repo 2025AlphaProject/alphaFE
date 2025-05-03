@@ -207,7 +207,6 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Stack(
           children: [
-            // 검색창 아래 영역에 메인 콘텐츠를 채워서 배치
             Positioned.fill(
               top: MediaQuery.of(context).size.height * 0.1,
               child: Column(
@@ -224,15 +223,28 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(height: MediaQuery.of(context).size.height * 0.024),
-                            Text(
-                              _currentUsername ?? '',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: MediaQuery.of(context).size.width * 0.05,
-                              ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                Text(
+                                  _currentUsername ?? '',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: MediaQuery.of(context).size.width * 0.072,
+                                  ),
+                                ),
+                                Text(
+                                  '님',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: MediaQuery.of(context).size.width * 0.05,
+                                  ),
+                                ),
+                              ],
                             ),
                             Text(
-                                "하이요",
+                                "오늘도 좋은 하루에요 👋",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: MediaQuery.of(context).size.width * 0.05,
@@ -240,10 +252,10 @@ class _HomePageState extends State<HomePage> {
                             ),
                             SizedBox(height: MediaQuery.of(context).size.height * 0.024),
                             Text(
-                              '⏰다가오는 일정',
+                              '⏰ 다가오는 일정',
                               style: TextStyle(
                                 fontSize: MediaQuery.of(context).size.width * 0.072,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w900,
                               ),
                             ),
                             SizedBox(height: MediaQuery.of(context).size.height * 0.012),
@@ -264,12 +276,8 @@ class _HomePageState extends State<HomePage> {
                                 size_w: MediaQuery.of(context).size.width * 0.586,
                                 size_h: MediaQuery.of(context).size.height * 0.055,
                                 text: "✨새로운 장소 탐험하기",
-                                fontSize_: MediaQuery.of(context).size.width * 0.033,
-                                fontWeight_: FontWeight.bold,
-                                padding_: EdgeInsets.symmetric(
-                                  vertical: MediaQuery.of(context).size.width * 0.032,
-                                  horizontal: MediaQuery.of(context).size.height * 0.014,
-                                ),
+                                fontSize_: MediaQuery.of(context).size.width * 0.04,
+                                fontWeight_: FontWeight.w900,
                                 onTap: _scrollToBottom,
                               ),
                             ),
@@ -334,10 +342,6 @@ class _HomePageState extends State<HomePage> {
                                           : "코스 생성하기",
                                       fontSize_: MediaQuery.of(context).size.width * 0.032,
                                       fontWeight_: FontWeight.bold,
-                                      padding_: EdgeInsets.symmetric(
-                                        vertical: MediaQuery.of(context).size.height * 0.012,
-                                        horizontal: MediaQuery.of(context).size.width * 0.04,
-                                      ),
                                       onTap: () async {
                                         final String sigun = (_recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
                                             ? (_recommendedPlace?['address'] as String).split(' ')[1]
@@ -414,10 +418,6 @@ class _HomePageState extends State<HomePage> {
                                       text: '가져오는 중...',
                                       fontSize_: MediaQuery.of(context).size.width * 0.032,
                                       fontWeight_: FontWeight.bold,
-                                      padding_: EdgeInsets.symmetric(
-                                        vertical: MediaQuery.of(context).size.height * 0.012,
-                                        horizontal: MediaQuery.of(context).size.width * 0.04,
-                                      ),
                                       onTap: () {},
                                     ),
                                   ),
