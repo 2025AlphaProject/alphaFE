@@ -36,11 +36,26 @@ class PlaceInfoBlock extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(20), // 이미지 모서리 둥글게 처리
+            // 네트워크 이미지가 로딩되지 않을 경우 대체 UI를 표시
             child: Image.network(
               imageUrl,
               width: width,
               height: height,
               fit: BoxFit.cover,
+              // 이미지 로딩 실패 시 회색 배경과 깨진 아이콘 표시
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: width,
+                  height: height,
+                  color: Colors.grey.shade300,
+                  // 깨진 이미지 아이콘 표시
+                  child: Icon(
+                    Icons.broken_image,
+                    color: Colors.grey.shade700,
+                    size: width * 0.2,
+                  ),
+                );
+              },
             ),
           ),
           SizedBox(height: width * 0.05 ),

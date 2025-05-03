@@ -110,16 +110,13 @@ class _AddPage_3State extends State<AddPage_3> {
               fontSize_: MediaQuery.of(context).size.width * 0.04,
               fontWeight_: FontWeight.bold,
               padding_: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-              onTap: () async {
-                final accessToken = await getAccessTokenFromRefreshToken();
-                if (accessToken != null) {
+              onTap: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const PlanPage(),
                       ),
                   );
-                }
               },
             ),
           )

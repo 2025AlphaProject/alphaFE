@@ -140,9 +140,11 @@ class _HomePageState extends State<HomePage> {
           final random = Random();
           final selectedPlace = filteredPlaces[random.nextInt(filteredPlaces.length)];
 
-          setState(() {
-            _recommendedPlace = selectedPlace;
-          });
+          if (mounted && (_recommendedPlace == null || _recommendedPlace!['title'] != selectedPlace['title'])) {
+            setState(() {
+              _recommendedPlace = selectedPlace;
+            });
+          }
         }
       }
     });
@@ -168,7 +170,7 @@ class _HomePageState extends State<HomePage> {
         'name': '<${place.title}>',
         'mapX': place.mapX,
         'mapY': place.mapY,
-        'image': place.imageUrl,
+        'image_url': place.imageUrl,
         'road_address': '<${place.description}>'
       }).toList();
 
@@ -283,15 +285,15 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             SizedBox(height: MediaQuery.of(context).size.height * 0.04),
-                            // 장소데이터 로딩 완료됐을 경우
-                            if (_recommendedPlace != null)
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                            // 장소 추천 영역: 단일 Column으로 조건부 children 렌더링
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (_recommendedPlace != null) ...[
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
                                     child: Image.network(
-                                      _recommendedPlace?['image1'] ?? '',
+                                      _recommendedPlace!['image1'],
                                       width: MediaQuery.of(context).size.width * 0.87,
                                       height: MediaQuery.of(context).size.width * 0.55,
                                       fit: BoxFit.cover,
@@ -303,7 +305,7 @@ class _HomePageState extends State<HomePage> {
                                       Icon(Icons.location_on, size: MediaQuery.of(context).size.width * 0.045, color: Colors.black),
                                       SizedBox(width: MediaQuery.of(context).size.width * 0.013),
                                       Text(
-                                        _recommendedPlace?['title'] ?? '',
+                                        _recommendedPlace!['title'],
                                         style: TextStyle(
                                           fontSize: MediaQuery.of(context).size.width * 0.037,
                                           fontWeight: FontWeight.bold,
@@ -345,7 +347,7 @@ class _HomePageState extends State<HomePage> {
                                           CupertinoPageRoute(
                                             builder: (_) => AddPage_2(
                                               title: sigun,
-                                              tourId: 0, // Placeholder, will be replaced after AddPage_0
+                                              tourId: 0,
                                               onSaveCourseCallback: (places) {
                                                 Navigator.push(
                                                   context,
@@ -360,7 +362,6 @@ class _HomePageState extends State<HomePage> {
                                                             ),
                                                           ),
                                                         );
-                                                        // Save course with the tourId
                                                         saveTourCourse(tourId, places);
                                                       },
                                                     ),
@@ -373,24 +374,58 @@ class _HomePageState extends State<HomePage> {
                                       },
                                     ),
                                   ),
-                                ],
-                              )
-                            // 장소 데이터가 아직 로딩되지 않았을 때 회색 박스 표시
-                            else
-                              Column(
-                                children: [
+                                ] else ...[
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
                                     child: Container(
                                       width: MediaQuery.of(context).size.width * 0.87,
-                                      height: MediaQuery.of(context).size.width * 0.77,
+                                      height: MediaQuery.of(context).size.width * 0.55,
                                       color: Colors.grey[300],
                                     ),
                                   ),
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                                  SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width * 0.87,
+                                    height: MediaQuery.of(context).size.height * 0.08,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: MediaQuery.of(context).size.width * 0.04,
+                                      vertical: MediaQuery.of(context).size.height * 0.012,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFFFFFFFF),
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        '트렌딩 페이지 정보를 받아오고 있습니다...',
+                                        style: TextStyle(
+                                          fontSize: MediaQuery.of(context).size.width * 0.032,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: MediaQuery.of(context).size.height * 0.017),
+                                  Center(
+                                    child: ProceedButton(
+                                      size_w: MediaQuery.of(context).size.width * 0.5,
+                                      size_h: MediaQuery.of(context).size.height * 0.05,
+                                      text: '가져오는 중...',
+                                      fontSize_: MediaQuery.of(context).size.width * 0.032,
+                                      fontWeight_: FontWeight.bold,
+                                      padding_: EdgeInsets.symmetric(
+                                        vertical: MediaQuery.of(context).size.height * 0.012,
+                                        horizontal: MediaQuery.of(context).size.width * 0.04,
+                                      ),
+                                      onTap: () {},
+                                    ),
+                                  ),
                                 ],
-                              ),
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.017),
+                              ],
+                            ),
+
+                            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+
                             // 맨 상단으로 되돌아가기 버튼
                             Center(
                               child: TextButton.icon(
