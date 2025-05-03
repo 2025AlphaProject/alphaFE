@@ -133,158 +133,158 @@ class _AddPage_0State extends State<AddPage_0> {
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "새 여행지 추가"),
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.08,
-          vertical: screenHeight * 0.03,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            // 페이지 제목
-            Center(
-              child: Text(
-                "여행 추가하기",
-                style: TextStyle(
-                  fontSize: screenWidth * 0.065,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            SizedBox(height: screenHeight * 0.05),
-
-            // 여행 제목 입력 - 10글자 제한
-            Text("✏️ 여행 제목",
-                style: TextStyle(
-                  fontSize: screenWidth * 0.05,
-                  fontWeight: FontWeight.bold,
-                )),
-            SizedBox(height: screenHeight * 0.01),
-            SizedBox(
-              height: screenHeight * 0.06,
-              child: TextField(
-                controller: _titleController,
-                maxLength: 10,
-                decoration: InputDecoration(
-                  isDense: true,
-                  hintText: "여행에 대한 정보를 간단한 제목으로 지어보세요",
-                  hintStyle: TextStyle(
-                    fontSize: screenWidth * 0.035,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                  ),
-                  counterText: "",
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: screenHeight * 0.02,
-                    horizontal: screenWidth * 0.03,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.08,
+            vertical: screenHeight * 0.03,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+        
+              // 페이지 제목
+              Center(
+                child: Text(
+                  "여행 추가하기",
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.065,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: screenHeight * 0.005),
-            Text("• 한글, 영문, 특수기호 구분없이 10자 이내로 입력",
-                style: TextStyle(fontSize: screenWidth * 0.035, color: Colors.grey)),
-            Text("• 결정 후 수정할 수 없으니 신중히 정해주세요",
-                style: TextStyle(fontSize: screenWidth * 0.035, color: Colors.grey)),
-
-            SizedBox(height: screenHeight * 0.05),
-
-            // 여행 날짜 입력 - material.dart의 DateRangePicker 사용
-            Text("✏️ 여행 날짜",
-                style: TextStyle(
-                  fontSize: screenWidth * 0.05,
-                  fontWeight: FontWeight.bold,
-                )),
-            SizedBox(height: screenHeight * 0.01),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-
-                // 날짜 표시 필드
-                Expanded(
-                  child: SizedBox(
-                    height: screenHeight * 0.06,
-                    child: TextField(
-                      readOnly: true,
-                      cursorColor: Color(0xFF2C2C2C),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        hintText: _selectedDateRange == null
-                            ? ""
-                            : "${_selectedDateRange!.start.year}.${_selectedDateRange!.start.month.toString().padLeft(2, '0')}.${_selectedDateRange!.start.day.toString().padLeft(2, '0')} ~ "
-                              "${_selectedDateRange!.end.year}.${_selectedDateRange!.end.month.toString().padLeft(2, '0')}.${_selectedDateRange!.end.day.toString().padLeft(2, '0')}",
-                        hintStyle: TextStyle(
-                          fontSize: screenWidth * 0.035,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w400,
+        
+              SizedBox(height: screenHeight * 0.05),
+        
+              // 여행 제목 입력 - 10글자 제한
+              Text("✏️ 여행 제목",
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.05,
+                    fontWeight: FontWeight.bold,
+                  )),
+              SizedBox(height: screenHeight * 0.01),
+              SizedBox(
+                height: screenHeight * 0.06,
+                child: TextField(
+                  controller: _titleController,
+                  maxLength: 10,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    hintText: "여행에 대한 정보를 간단한 제목으로 지어보세요",
+                    hintStyle: TextStyle(
+                      fontSize: screenWidth * 0.035,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                    ),
+                    counterText: "",
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.02,
+                      horizontal: screenWidth * 0.03,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.005),
+              Text("• 한글, 영문, 특수기호 구분없이 10자 이내로 입력",
+                  style: TextStyle(fontSize: screenWidth * 0.035, color: Colors.grey)),
+              Text("• 결정 후 수정할 수 없으니 신중히 정해주세요",
+                  style: TextStyle(fontSize: screenWidth * 0.035, color: Colors.grey)),
+        
+              SizedBox(height: screenHeight * 0.05),
+        
+              // 여행 날짜 입력 - material.dart의 DateRangePicker 사용
+              Text("✏️ 여행 날짜",
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.05,
+                    fontWeight: FontWeight.bold,
+                  )),
+              SizedBox(height: screenHeight * 0.01),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+        
+                  // 날짜 표시 필드
+                  Expanded(
+                    child: SizedBox(
+                      height: screenHeight * 0.06,
+                      child: TextField(
+                        readOnly: true,
+                        cursorColor: Color(0xFF2C2C2C),
+                        decoration: InputDecoration(
+                          isDense: true,
+                          hintText: _selectedDateRange == null
+                              ? ""
+                              : "${_selectedDateRange!.start.year}.${_selectedDateRange!.start.month.toString().padLeft(2, '0')}.${_selectedDateRange!.start.day.toString().padLeft(2, '0')} ~ "
+                                "${_selectedDateRange!.end.year}.${_selectedDateRange!.end.month.toString().padLeft(2, '0')}.${_selectedDateRange!.end.day.toString().padLeft(2, '0')}",
+                          hintStyle: TextStyle(
+                            fontSize: screenWidth * 0.035,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          filled: true,
+                          fillColor: Color(0xFFF5F5F5),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                          ),
+                          counterText: "",
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: screenHeight * 0.02,
+                            horizontal: screenWidth * 0.03,
+                          ),
                         ),
-                        filled: true,
-                        fillColor: Color(0xFFF5F5F5),
-                        border: OutlineInputBorder(
+                      ),
+                    ),
+                  ),
+        
+                  SizedBox(width: screenWidth * 0.02),
+        
+                  // 날짜 선택 버튼 - showDateRangePicker 호출
+                  SizedBox(
+                    height: screenHeight * 0.058,
+                    width: screenWidth * 0.14,
+                    child: ElevatedButton(
+                      onPressed: _selectDateRange,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2C2C2C),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(screenWidth * 0.03),
                         ),
-                        counterText: "",
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: screenHeight * 0.02,
-                          horizontal: screenWidth * 0.03,
+                      ),
+                      child: Text(
+                        "🗓️",
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.045,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
-                ),
-
-                SizedBox(width: screenWidth * 0.02),
-
-                // 날짜 선택 버튼 - showDateRangePicker 호출
-                SizedBox(
-                  height: screenHeight * 0.058,
-                  width: screenWidth * 0.14,
-                  child: ElevatedButton(
-                    onPressed: _selectDateRange,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2C2C2C),
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                      ),
-                    ),
-                    child: Text(
-                      "🗓️",
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.045,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const Spacer(),
-
-            // 새 여행 만들기 버튼 - 여행 id 발급 및 행정구역 선택 페이지로 이동
-            Center(
-              child: ProceedButton(
-                size_w: screenWidth * 0.8,
-                size_h: screenHeight * 0.06,
-                text: "새 여행 만들기",
-                fontSize_: screenWidth * 0.045,
-                fontWeight_: FontWeight.bold,
-                padding_: EdgeInsets.symmetric(
-                  vertical: MediaQuery.of(context).size.height * 0.012,
-                  horizontal: MediaQuery.of(context).size.width * 0.03,
-                ),
-                onTap: _registerTour,
+                ],
               ),
-            ),
-          ],
+              SizedBox(height: screenHeight * 0.073,),
+              // 새 여행 만들기 버튼 - 여행 id 발급 및 행정구역 선택 페이지로 이동
+              Center(
+                child: ProceedButton(
+                  size_w: screenWidth * 0.8,
+                  size_h: screenHeight * 0.06,
+                  text: "새 여행 만들기",
+                  fontSize_: screenWidth * 0.045,
+                  fontWeight_: FontWeight.bold,
+                  padding_: EdgeInsets.symmetric(
+                    vertical: MediaQuery.of(context).size.height * 0.012,
+                    horizontal: MediaQuery.of(context).size.width * 0.03,
+                  ),
+                  onTap: _registerTour,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
