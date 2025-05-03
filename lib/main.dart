@@ -35,9 +35,8 @@ import 'mainscreen.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:alpha_fe/components/auth_token_handler.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
@@ -77,20 +76,24 @@ Future<void> main() async {
 
   final accessToken = await getAccessToken();
 
-  runApp(MaterialApp(
-    locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
-    supportedLocales: const [
-      Locale('ko', 'KR'), // 지원하는 로케일에 한국어 추가
-      Locale('en', 'US')
-    ],
-    localizationsDelegates: const [
-      GlobalMaterialLocalizations.delegate,   //  머티리얼 컴포넌트 한글화
-      GlobalWidgetsLocalizations.delegate,    //  일반 위젯 한글화
-      GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
-    ],
-    home: (accessToken?.isNotEmpty == true)
-        ? MainScreen()
-        : LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey),
-  ));
+  runApp(
+    Phoenix(
+      child: MaterialApp(
+        locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
+        supportedLocales: const [
+          Locale('ko', 'KR'), // 지원하는 로케일에 한국어 추가
+          Locale('en', 'US')
+        ],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,   //  머티리얼 컴포넌트 한글화
+          GlobalWidgetsLocalizations.delegate,    //  일반 위젯 한글화
+          GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
+        ],
+        home: (accessToken?.isNotEmpty == true)
+            ? MainScreen()
+            : LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey),
+      ),
+    ),
+  );
   // 화면 세로로 고정
 }
