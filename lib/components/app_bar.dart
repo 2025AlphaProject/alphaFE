@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import '../pages/add_page/add_page_0.dart';
 import '../pages/add_page/add_page_2.dart';
 import '../pages/add_page/add_page_3.dart';
 import 'placeinfo_card.dart';
 import 'dart:math';
+import '../main.dart'; // navigatorKey 사용을 위해 import
 
 class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -101,7 +103,9 @@ class _SearchAppBarState extends State<SearchAppBar> {
 
   // 검색어에 따라 오버레이 리스트를 생성하여 화면에 표시
   OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
+    // 현재 context를 지역 변수에 저장
+    final currentContext = context;
+    RenderBox renderBox = currentContext.findRenderObject() as RenderBox;
     final size = renderBox.size;
     final offset = renderBox.localToGlobal(Offset.zero);
 
@@ -109,8 +113,8 @@ class _SearchAppBarState extends State<SearchAppBar> {
     final filteredDistricts = seoulDistricts.where((gu) => gu.contains(_searchQuery)).toList();
 
     // 반응형으로 리스트 항목의 높이 및 최대 높이 계산
-    final itemHeight = MediaQuery.of(context).size.height * 0.07;
-    final maxListHeight = MediaQuery.of(context).size.height * 0.35;
+    final itemHeight = MediaQuery.of(currentContext).size.height * 0.07;
+    final maxListHeight = MediaQuery.of(currentContext).size.height * 0.35;
     final listHeight = min(filteredDistricts.length * itemHeight, maxListHeight);
 
     return OverlayEntry(
@@ -119,7 +123,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
           GestureDetector(
         onTap: () {
           _removeOverlay();
-          FocusScope.of(context).unfocus();
+          FocusScope.of(currentContext).unfocus();
         },
         behavior: HitTestBehavior.translucent,
         child: Stack(
@@ -127,19 +131,19 @@ class _SearchAppBarState extends State<SearchAppBar> {
             // 오버레이 리스트의 위치를 SearchAppBar 아래로 반응형 배치
             Positioned(
               left: offset.dx + 20,
-              top: offset.dy + MediaQuery.of(context).size.height * 0.045,
+              top: offset.dy + MediaQuery.of(currentContext).size.height * 0.045,
               width: size.width - 40,
               child: SafeArea( // 시스템 UI 침범 방지
                 // 리스트에 그림자와 모서리 둥글기 효과 적용
                 child: PhysicalModel(
                   color: Color(0xFFFFFFFF),
                   elevation: 2,
-                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.03),
+                  borderRadius: BorderRadius.circular(MediaQuery.of(currentContext).size.width * 0.03),
                   clipBehavior: Clip.antiAlias,
                   // 리스트 배경, 높이, 내부 패딩 및 항목 구성 설정
                   child: Container(
                     height: listHeight,
-                    padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
+                    padding: EdgeInsets.all(MediaQuery.of(currentContext).size.width * 0.02),
                     child: ListView.builder(
                       itemCount: filteredDistricts.length,
                       itemBuilder: (context, index) {
@@ -150,24 +154,21 @@ class _SearchAppBarState extends State<SearchAppBar> {
                           onTap: () {
                             _searchController.removeListener(_onSearchChanged);
                             _removeOverlay();
-                            FocusScope.of(context).unfocus();
+                            FocusScope.of(currentContext).unfocus();
 
                             if (!mounted) return;
-
-                            Navigator.push(
-                              context,
+                            Navigator.of(currentContext).push(
                               CupertinoPageRoute(
                                 builder: (_) => AddPage_2(
                                   title: gu,
                                   tourId: 0,
+                                  isSingleDayMode: true,
                                   onSaveCourseCallback: (places) {
-                                    Navigator.push(
-                                      context,
+                                    Navigator.of(currentContext).push(
                                       CupertinoPageRoute(
                                         builder: (_) => AddPage_0(
                                           onFinishCreation: (int tourId) {
-                                            Navigator.push(
-                                              context,
+                                            Navigator.of(currentContext).push(
                                               CupertinoPageRoute(
                                                 builder: (_) => AddPage_3(
                                                   tour_id: tourId,
