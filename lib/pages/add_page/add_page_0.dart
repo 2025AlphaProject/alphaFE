@@ -11,7 +11,8 @@ import '../../components/token_controller.dart';
 
 // 추가 탭 0번째 페이지: 여행 이름과 날짜 입력
 class AddPage_0 extends StatefulWidget {
-  const AddPage_0({Key? key}) : super(key: key);
+  final Function(int)? onFinishCreation;
+  const AddPage_0({Key? key, this.onFinishCreation}) : super(key: key);
 
   @override
   _AddPage_0State createState() => _AddPage_0State();
@@ -107,10 +108,15 @@ class _AddPage_0State extends State<AddPage_0> {
 
         print(_tourId);
 
-        Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => AddPage_1(tourId: _tourId)),
-        );
+        if (widget.onFinishCreation != null) {
+          // 콜백 함수가 주어진 경우 → AddPage_2로부터 이어지는 흐름 → onFinishCreation으로 tourId 전달하여 이후 saveTourCourse에 활용
+          widget.onFinishCreation!(_tourId);
+        } else {
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => AddPage_1(tourId: _tourId)),
+          );
+        }
       } else {
         // 등록 실패 시
         ScaffoldMessenger.of(context).showSnackBar(

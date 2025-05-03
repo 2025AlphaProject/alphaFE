@@ -15,10 +15,12 @@ import '../../components/placeinput_card.dart';
 class AddPage_2 extends StatefulWidget {
   final String title;
   final int tourId;
+  final Function(List<PlaceInfoBlock>)? onSaveCourseCallback;
 
   const AddPage_2({
     required this.title,
     required this.tourId,
+    this.onSaveCourseCallback,
     Key? key
   }) : super(key: key);
 
@@ -57,13 +59,10 @@ class _AddPage_2State extends State<AddPage_2> {
 
         setState(() {
           _placeWidgets = firstCourse.take(5).map((place) {
-            final rawUrl = place['image1'] ?? '';
-            final proxyUrl = rawUrl.startsWith('http://')
-                ? 'https://images.weserv.nl/?url=${Uri.encodeComponent(rawUrl.replaceFirst('http://', ''))}'
-                : rawUrl;
+            final imageUrl = place['image1'] ?? '';
 
             return PlaceInfoBlock(
-              imageUrl: proxyUrl,
+              imageUrl: imageUrl,
               title: place['title'] ?? '제목 없음',
               description: place['address'] ?? '주소 정보 없음',
               mapX: double.tryParse(place['mapX'] ?? '0') ?? 0.0,
@@ -127,16 +126,17 @@ class _AddPage_2State extends State<AddPage_2> {
     });
   }
 
-  //
-  Future<void> saveTourCourse() async {
+  Future<void> saveTourCourse([int? tourId, List<PlaceInfoBlock>? places]) async {
     final accessToken = await getAccessToken();
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
+    final int useTourId = tourId ?? widget.tourId;
+    final List<PlaceInfoBlock> usePlaces = places ?? _placeWidgets;
 
     try {
       // tour_id값을 이용해 여행 시작 날짜 불러옴
       final startDateResponse = await dio.get(
-          '$baseUrl/tour/${widget.tourId}/',
+          '$baseUrl/tour/$useTourId/',
           options: Options(
               headers: {
                 'Authorization': 'Bearer $accessToken'
@@ -147,7 +147,7 @@ class _AddPage_2State extends State<AddPage_2> {
       final startDate = startDateResponse.data['start_date'];
 
       // 등록할 JSON 데이터의 places 인자에 들어갈 데이터 생성
-      final List<Map<String, dynamic>> courseData = _placeWidgets.map((place) => {
+      final List<Map<String, dynamic>> courseData = usePlaces.map((place) => {
         'name': '<${place.title}>',
         'mapX': place.mapX,
         'mapY': place.mapY,
@@ -159,7 +159,7 @@ class _AddPage_2State extends State<AddPage_2> {
       final response = await dio.post(
         '$baseUrl/tour/course/',
         data: {
-          'tour_id': '${widget.tourId}',
+          'tour_id': '$useTourId',
           'date': startDate,
           'places': courseData
         },
@@ -325,8 +325,15 @@ class _AddPage_2State extends State<AddPage_2> {
                           horizontal: MediaQuery.of(context).size.width * 0.03,
                         ),
                         onTap: () {
-                          // 최종 경로 확정
-                          saveTourCourse();
+
+                          // 저장 흐름 분기 처리:
+                          // 콜백이 존재하면 AddPage_0으로 이동
+                          // 아니면 현재 페이지에서 saveTourCourse 직접 호출
+                          if (widget.onSaveCourseCallback != null) {
+                            widget.onSaveCourseCallback!(_placeWidgets);
+                          } else {
+                            saveTourCourse();
+                          }
                         },
                       ),
                     ),
