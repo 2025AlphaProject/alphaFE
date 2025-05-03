@@ -133,8 +133,8 @@ class _AddPage_0State extends State<AddPage_0> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
@@ -142,8 +142,8 @@ class _AddPage_0State extends State<AddPage_0> {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.08,
-            vertical: screenHeight * 0.03,
+            horizontal: width * 0.08,
+            vertical: height * 0.03,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,23 +154,23 @@ class _AddPage_0State extends State<AddPage_0> {
                 child: Text(
                   "여행 추가하기",
                   style: TextStyle(
-                    fontSize: screenWidth * 0.065,
+                    fontSize: width * 0.065,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
         
-              SizedBox(height: screenHeight * 0.05),
+              SizedBox(height: height * 0.05),
         
               // 여행 제목 입력 - 10글자 제한
               Text("✏️ 여행 제목",
                   style: TextStyle(
-                    fontSize: screenWidth * 0.05,
+                    fontSize: width * 0.05,
                     fontWeight: FontWeight.bold,
                   )),
-              SizedBox(height: screenHeight * 0.01),
+              SizedBox(height: height * 0.01),
               SizedBox(
-                height: screenHeight * 0.06,
+                height: height * 0.06,
                 child: TextField(
                   controller: _titleController,
                   maxLength: 10,
@@ -178,36 +178,36 @@ class _AddPage_0State extends State<AddPage_0> {
                     isDense: true,
                     hintText: "여행에 대한 정보를 간단한 제목으로 지어보세요",
                     hintStyle: TextStyle(
-                      fontSize: screenWidth * 0.035,
+                      fontSize: width * 0.035,
                       color: Colors.grey,
                       fontWeight: FontWeight.w400,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                      borderRadius: BorderRadius.circular(width * 0.03),
                     ),
                     counterText: "",
                     contentPadding: EdgeInsets.symmetric(
-                      vertical: screenHeight * 0.02,
-                      horizontal: screenWidth * 0.03,
+                      vertical: height * 0.02,
+                      horizontal: width * 0.03,
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: screenHeight * 0.005),
+              SizedBox(height: height * 0.005),
               Text("• 한글, 영문, 특수기호 구분없이 10자 이내로 입력",
-                  style: TextStyle(fontSize: screenWidth * 0.035, color: Colors.grey)),
+                  style: TextStyle(fontSize: width * 0.035, color: Colors.grey)),
               Text("• 결정 후 수정할 수 없으니 신중히 정해주세요",
-                  style: TextStyle(fontSize: screenWidth * 0.035, color: Colors.grey)),
+                  style: TextStyle(fontSize: width * 0.035, color: Colors.grey)),
         
-              SizedBox(height: screenHeight * 0.05),
+              SizedBox(height: height * 0.05),
         
               // 여행 날짜 입력 - material.dart의 DateRangePicker 사용
               Text("✏️ 여행 날짜",
                   style: TextStyle(
-                    fontSize: screenWidth * 0.05,
+                    fontSize: width * 0.05,
                     fontWeight: FontWeight.bold,
                   )),
-              SizedBox(height: screenHeight * 0.01),
+              SizedBox(height: height * 0.01),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -216,7 +216,7 @@ class _AddPage_0State extends State<AddPage_0> {
                   // 날짜 표시 필드
                   Expanded(
                     child: SizedBox(
-                      height: screenHeight * 0.06,
+                      height: height * 0.06,
                       child: TextField(
                         readOnly: true,
                         cursorColor: Color(0xFF2C2C2C),
@@ -227,31 +227,31 @@ class _AddPage_0State extends State<AddPage_0> {
                               : "${_selectedDateRange!.start.year}.${_selectedDateRange!.start.month.toString().padLeft(2, '0')}.${_selectedDateRange!.start.day.toString().padLeft(2, '0')} ~ "
                                 "${_selectedDateRange!.end.year}.${_selectedDateRange!.end.month.toString().padLeft(2, '0')}.${_selectedDateRange!.end.day.toString().padLeft(2, '0')}",
                           hintStyle: TextStyle(
-                            fontSize: screenWidth * 0.035,
+                            fontSize: width * 0.035,
                             color: Colors.grey,
                             fontWeight: FontWeight.w400,
                           ),
                           filled: true,
                           fillColor: Color(0xFFF5F5F5),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                            borderRadius: BorderRadius.circular(width * 0.03),
                           ),
                           counterText: "",
                           contentPadding: EdgeInsets.symmetric(
-                            vertical: screenHeight * 0.02,
-                            horizontal: screenWidth * 0.03,
+                            vertical: height * 0.02,
+                            horizontal: width * 0.03,
                           ),
                         ),
                       ),
                     ),
                   ),
         
-                  SizedBox(width: screenWidth * 0.02),
+                  SizedBox(width: width * 0.02),
         
                   // 날짜 선택 버튼 - showDateRangePicker 호출
                   SizedBox(
-                    height: screenHeight * 0.058,
-                    width: screenWidth * 0.14,
+                    height: height * 0.058,
+                    width: width * 0.14,
                     child: ElevatedButton(
                       onPressed: _selectDateRange,
                       style: ElevatedButton.styleFrom(
@@ -259,13 +259,13 @@ class _AddPage_0State extends State<AddPage_0> {
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                          borderRadius: BorderRadius.circular(width * 0.03),
                         ),
                       ),
                       child: Text(
                         "🗓️",
                         style: TextStyle(
-                          fontSize: screenWidth * 0.045,
+                          fontSize: width * 0.045,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -273,14 +273,14 @@ class _AddPage_0State extends State<AddPage_0> {
                   ),
                 ],
               ),
-              SizedBox(height: screenHeight * 0.073,),
+              SizedBox(height: height * 0.073,),
               // 새 여행 만들기 버튼 - 여행 id 발급 및 행정구역 선택 페이지로 이동
               Center(
                 child: ProceedButton(
-                  size_w: screenWidth * 0.8,
-                  size_h: screenHeight * 0.06,
+                  size_w: width * 0.8,
+                  size_h: height * 0.06,
                   text: "새 여행 만들기",
-                  fontSize_: screenWidth * 0.045,
+                  fontSize_: width * 0.045,
                   fontWeight_: FontWeight.bold,
                   onTap: _registerTour,
                 ),

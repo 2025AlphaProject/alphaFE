@@ -251,13 +251,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
       body: SafeArea(
         child: Stack(
           children: [
             Positioned.fill(
-              top: MediaQuery.of(context).size.height * 0.1,
+              top: height * 0.1,
               child: Column(
                 children: [
                   Expanded(
@@ -266,12 +268,12 @@ class _HomePageState extends State<HomePage> {
                       physics: const NeverScrollableScrollPhysics(),
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width * 0.066,
+                          horizontal: width * 0.066,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.024),
+                            SizedBox(height: height * 0.024),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.baseline,
                               textBaseline: TextBaseline.alphabetic,
@@ -280,14 +282,14 @@ class _HomePageState extends State<HomePage> {
                                   _currentUsername ?? '',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
-                                    fontSize: MediaQuery.of(context).size.width * 0.072,
+                                    fontSize: width * 0.072,
                                   ),
                                 ),
                                 Text(
                                   '님',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
-                                    fontSize: MediaQuery.of(context).size.width * 0.05,
+                                    fontSize: width * 0.05,
                                   ),
                                 ),
                               ],
@@ -296,24 +298,24 @@ class _HomePageState extends State<HomePage> {
                                 "오늘도 좋은 하루에요 👋",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: MediaQuery.of(context).size.width * 0.05,
+                                  fontSize: width * 0.05,
                                 )
                             ),
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.024),
+                            SizedBox(height: height * 0.024),
                             Text(
                               '⏰ 다가오는 일정',
                               style: TextStyle(
-                                fontSize: MediaQuery.of(context).size.width * 0.072,
+                                fontSize: width * 0.072,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.012),
+                            SizedBox(height: height * 0.012),
                             // ⬇️ PlanCard 위젯: 여행 카드의 크기를 반응형으로 지정, _nearestPlan에서 동적 데이터 사용
                             Center(
                               child: _isLoading
                                   ? Container(
-                                      width: MediaQuery.of(context).size.width * 0.8,
-                                      height: MediaQuery.of(context).size.height * 0.394,
+                                      width: width * 0.8,
+                                      height: height * 0.394,
                                       decoration: BoxDecoration(
                                         color: Colors.grey[300],
                                         borderRadius: BorderRadius.circular(20),
@@ -326,36 +328,36 @@ class _HomePageState extends State<HomePage> {
                                               title: _nearestPlan!['title'] ?? '제목 없음',
                                               startDate: _nearestPlan!['start_date'] ?? '',
                                               endDate: _nearestPlan!['end_date'] ?? '',
-                                              size_h: MediaQuery.of(context).size.height * 0.394,
-                                              size_w: MediaQuery.of(context).size.width * 0.8,
+                                              size_h: height * 0.394,
+                                              size_w: width * 0.8,
                                             )
                                           : SizedBox.shrink()
                                     ),
                             ),
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.06),
+                            SizedBox(height: height * 0.06),
                             Center(
                               child: ProceedButton(
-                                size_w: MediaQuery.of(context).size.width * 0.586,
-                                size_h: MediaQuery.of(context).size.height * 0.055,
+                                size_w: width * 0.586,
+                                size_h: height * 0.055,
                                 text: "✨새로운 장소 탐험하기",
-                                fontSize_: MediaQuery.of(context).size.width * 0.04,
+                                fontSize_: width * 0.04,
                                 fontWeight_: FontWeight.w900,
                                 onTap: _scrollToBottom,
                               ),
                             ),
                             // 트렌딩 버튼 하단에 여백 추가
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.09),
+                            SizedBox(height: height * 0.09),
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.02),
+                              padding: EdgeInsets.symmetric(horizontal: width * 0.02),
                               child: Text(
                                 "오늘\n이런 곳은 어떤가요?",
                                 style: TextStyle(
-                                  fontSize: MediaQuery.of(context).size.width * 0.0748,
+                                  fontSize: width * 0.0748,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
                             ),
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+                            SizedBox(height: height * 0.04),
                             // 장소 추천 영역: 단일 Column으로 조건부 children 렌더링
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -365,44 +367,44 @@ class _HomePageState extends State<HomePage> {
                                     borderRadius: BorderRadius.circular(20),
                                     child: Image.network(
                                       _recommendedPlace!['image1'],
-                                      width: MediaQuery.of(context).size.width * 0.87,
-                                      height: MediaQuery.of(context).size.width * 0.55,
+                                      width: width * 0.87,
+                                      height: width * 0.55,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                                  SizedBox(height: height * 0.015),
                                   Row(
                                     children: [
-                                      Icon(Icons.location_on, size: MediaQuery.of(context).size.width * 0.045, color: Colors.black),
-                                      SizedBox(width: MediaQuery.of(context).size.width * 0.013),
+                                      Icon(Icons.location_on, size: width * 0.045, color: Colors.black),
+                                      SizedBox(width: width * 0.013),
                                       Text(
                                         _recommendedPlace!['title'],
                                         style: TextStyle(
-                                          fontSize: MediaQuery.of(context).size.width * 0.037,
+                                          fontSize: width * 0.037,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.007),
+                                  SizedBox(height: height * 0.007),
                                   Text(
                                     (_recommendedPlace?['title'] != null && _recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
                                         ? "${_recommendedPlace?['title']}은(는) ${(_recommendedPlace?['address'] as String).split(' ')[1]}의 관광지 입니다.\n${_currentUsername ?? ''} 님의 마음에 드셨으면 좋겠네요!"
                                         : '',
                                     style: TextStyle(
-                                      fontSize: MediaQuery.of(context).size.width * 0.03,
+                                      fontSize: width * 0.03,
                                       color: Colors.grey[700],
                                     ),
                                   ),
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.017),
+                                  SizedBox(height: height * 0.017),
                                   Center(
                                     child: ProceedButton(
-                                      size_w: MediaQuery.of(context).size.width * 0.5,
-                                      size_h: MediaQuery.of(context).size.height * 0.05,
+                                      size_w: width * 0.5,
+                                      size_h: height * 0.05,
                                       text: (_recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
                                           ? "${(_recommendedPlace?['address'] as String).split(' ')[1]} 코스 생성하기"
                                           : "코스 생성하기",
-                                      fontSize_: MediaQuery.of(context).size.width * 0.032,
+                                      fontSize_: width * 0.032,
                                       fontWeight_: FontWeight.bold,
                                       onTap: () async {
                                         final String sigun = (_recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
@@ -445,18 +447,18 @@ class _HomePageState extends State<HomePage> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
                                     child: Container(
-                                      width: MediaQuery.of(context).size.width * 0.87,
-                                      height: MediaQuery.of(context).size.width * 0.55,
+                                      width: width * 0.87,
+                                      height: width * 0.55,
                                       color: Colors.grey[300],
                                     ),
                                   ),
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                                  SizedBox(height: height * 0.015),
                                   Container(
-                                    width: MediaQuery.of(context).size.width * 0.87,
-                                    height: MediaQuery.of(context).size.height * 0.08,
+                                    width: width * 0.87,
+                                    height: height * 0.08,
                                     padding: EdgeInsets.symmetric(
-                                      horizontal: MediaQuery.of(context).size.width * 0.04,
-                                      vertical: MediaQuery.of(context).size.height * 0.012,
+                                      horizontal: width * 0.04,
+                                      vertical: height * 0.012,
                                     ),
                                     decoration: BoxDecoration(
                                       color: Color(0xFFFFFFFF),
@@ -466,19 +468,19 @@ class _HomePageState extends State<HomePage> {
                                       child: Text(
                                         '트렌딩 페이지 정보를 받아오고 있습니다...',
                                         style: TextStyle(
-                                          fontSize: MediaQuery.of(context).size.width * 0.032,
+                                          fontSize: width * 0.032,
                                           color: Colors.grey[600],
                                         ),
                                       ),
                                     ),
                                   ),
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.017),
+                                  SizedBox(height: height * 0.017),
                                   Center(
                                     child: ProceedButton(
-                                      size_w: MediaQuery.of(context).size.width * 0.5,
-                                      size_h: MediaQuery.of(context).size.height * 0.05,
+                                      size_w: width * 0.5,
+                                      size_h: height * 0.05,
                                       text: '가져오는 중...',
-                                      fontSize_: MediaQuery.of(context).size.width * 0.032,
+                                      fontSize_: width * 0.032,
                                       fontWeight_: FontWeight.bold,
                                       onTap: () {},
                                     ),
@@ -487,7 +489,7 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
 
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                            SizedBox(height: height * 0.01),
 
                             // 맨 상단으로 되돌아가기 버튼
                             Center(
@@ -502,13 +504,13 @@ class _HomePageState extends State<HomePage> {
                                 icon: Icon(
                                   Icons.arrow_drop_up,
                                   color: Colors.grey,
-                                  size: MediaQuery.of(context).size.width * 0.06,
+                                  size: width * 0.06,
                                 ),
                                 label: Text(
                                   '홈으로 이동',
                                   style: TextStyle(
                                     color: Colors.grey,
-                                    fontSize: MediaQuery.of(context).size.width * 0.025,
+                                    fontSize: width * 0.025,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -519,7 +521,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.092),
+                            SizedBox(height: height * 0.092),
                           ],
                         ),
                       ),

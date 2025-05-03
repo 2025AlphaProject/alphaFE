@@ -58,23 +58,23 @@ class _ProfileListBodyState extends State<ProfileListBody> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.all(screenWidth * 0.02),
+          padding: EdgeInsets.all(width * 0.02),
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration( //원하는 유저 검색가능
               hintText: '검색...',
-              hintStyle: TextStyle(fontSize: screenWidth * 0.04),
-              prefixIcon: Icon(Icons.search, size: screenWidth * 0.06),
+              hintStyle: TextStyle(fontSize: width * 0.04),
+              prefixIcon: Icon(Icons.search, size: width * 0.06),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            style: TextStyle(fontSize: screenWidth * 0.04),
+            style: TextStyle(fontSize: width * 0.04),
             onSubmitted: (value) {
               setState(() {}); // 엔터 누르면 화면 리빌드
             },
@@ -90,8 +90,8 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                   .contains(_searchController.text)) {
                 return Padding(
                   padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.02,
-                      vertical: screenHeight * 0.005),
+                      horizontal: width * 0.02,
+                      vertical: height * 0.005),
                   child: Row(
                     children: [
                       Expanded(
@@ -101,12 +101,12 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                 ? NetworkImage(profile['profile_image_url'])
                                 : null,
                             child: profile['profile_image_url'] == null || profile['profile_image_url'] == ""
-                                ? Icon(Icons.person, size: screenWidth * 0.06)
+                                ? Icon(Icons.person, size: width * 0.06)
                                 : null,
                           ),
                           title: Text(
                             profile['username'],
-                            style: TextStyle(fontSize: screenWidth * 0.045),
+                            style: TextStyle(fontSize: width * 0.045),
                           ),
                         ),
                       ),
@@ -171,7 +171,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                             },
                           );
                         },
-                        icon: Icon(Icons.add, size: screenWidth * 0.06),
+                        icon: Icon(Icons.add, size: width * 0.06),
                       ),
                     ],
                   ),

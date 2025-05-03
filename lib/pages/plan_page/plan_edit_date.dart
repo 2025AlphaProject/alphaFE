@@ -47,6 +47,8 @@ class _planEditDateState extends State<planEditDate> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "날짜수정 앱바 영역"),

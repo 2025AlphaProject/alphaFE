@@ -60,29 +60,31 @@ class _AddPage_3State extends State<AddPage_3> {
   // "이 코스로 할게요!" 버튼 탭할 시 연결되어야 할 페이지, 경로 확정됨
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "추가하기 완료"),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: MediaQuery.of(context).size.height * 0.075),
+          SizedBox(height: height * 0.075),
 
           // 축하 이모지
-          Text('🥳', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.12)),
+          Text('🥳', style: TextStyle(fontSize: width * 0.12)),
 
-          SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+          SizedBox(height: height * 0.015),
 
           // 상단 텍스트
           Text(
             "새 여행이 추가됐어요!",
             style: TextStyle(
-              fontSize: MediaQuery.of(context).size.width * 0.06,
+              fontSize: width * 0.06,
               fontWeight: FontWeight.bold,
             ),
           ),
 
-          SizedBox(height: MediaQuery.of(context).size.height * 0.035),
+          SizedBox(height: height * 0.035),
 
           // PlanCard로 구성된 회색 박스
           _tourData == null
@@ -92,8 +94,8 @@ class _AddPage_3State extends State<AddPage_3> {
                   title: _tourData!['tour_name'] ?? '',
                   startDate: _tourData!['start_date'] ?? '',
                   endDate: _tourData!['end_date'] ?? '',
-                  size_h: MediaQuery.of(context).size.height * 0.38,
-                  size_w: MediaQuery.of(context).size.width * 0.75,
+                  size_h: height * 0.38,
+                  size_w: width * 0.75,
                   tour_id: widget.tour_id,
                 ),
               ),
@@ -102,12 +104,12 @@ class _AddPage_3State extends State<AddPage_3> {
 
           // 하단 버튼
           Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.04),
+            padding: EdgeInsets.only(bottom: height * 0.04),
             child: ProceedButton(
-              size_w: MediaQuery.of(context).size.width * 0.7,
-              size_h: MediaQuery.of(context).size.height * 0.055,
+              size_w: width * 0.7,
+              size_h: height * 0.055,
               text: '나의 계획에서 보기',
-              fontSize_: MediaQuery.of(context).size.width * 0.04,
+              fontSize_: width * 0.04,
               fontWeight_: FontWeight.bold,
               onTap: () {
                   Navigator.push(
