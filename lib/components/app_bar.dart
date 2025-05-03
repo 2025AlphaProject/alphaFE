@@ -203,7 +203,10 @@ class _SearchAppBarState extends State<SearchAppBar> {
       right: 0,
       top: 0,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.05,
+          vertical: MediaQuery.of(context).size.height * 0.015,
+        ),
         decoration: BoxDecoration(
           color: Colors.transparent,
         ),
@@ -211,27 +214,30 @@ class _SearchAppBarState extends State<SearchAppBar> {
         child: CompositedTransformTarget(
           link: _layerLink,
           child: Container(
-            height: 40,
+            height: MediaQuery.of(context).size.height * 0.055,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.07),
             ),
             // 사용자 입력을 받는 검색창 구현
             child: TextField(
               controller: _searchController,
               focusNode: _focusNode,
               decoration: InputDecoration(
-                hintText: '가고싶은 여행지를 검색하세요!',
+                hintText: '궁금한 여행지를 구 단위로 검색하세요!',
                 hintStyle: const TextStyle(fontSize: 16, color: Colors.grey),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.07),
                   borderSide: const BorderSide(color: Color(0xFFD9D9D9)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.07),
                   borderSide: const BorderSide(color: Color(0xFFD9D9D9)),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.04,
+                  vertical: MediaQuery.of(context).size.height * 0.014,
+                ),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search, color: Color(0xFF1E1E1E)),
                   onPressed: () {
