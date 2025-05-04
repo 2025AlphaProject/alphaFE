@@ -48,6 +48,8 @@ class _AddPage_2State extends State<AddPage_2> {
   // 날짜별로 장소 추가 입력폼이 열려있는지 여부를 관리하는 맵
   Map<String, bool> _isAddingPlaceMap = {};
 
+  String? _selectedDate;
+
   @override
   void initState() {
     super.initState();
@@ -290,7 +292,6 @@ class _AddPage_2State extends State<AddPage_2> {
               height: MediaQuery.of(context_).size.width * 0.63 * 0.69,
             );
           }).toList();
-
           groupedWidgets.add(MapEntry(date, placeInfoBlocks));
         }
 
@@ -392,7 +393,7 @@ class _AddPage_2State extends State<AddPage_2> {
       );
 
       // 날짜별로 장소 데이터를 묶어 개별 POST 요청 수행
-      for (var entry in _placeWidgets) {
+      for (var entry in _placeWidgets.where((e) => e.key == _selectedDate))  {
         final date = entry.key;
         final places = entry.value;
 
@@ -474,17 +475,27 @@ class _AddPage_2State extends State<AddPage_2> {
   }
 
   // 날짜별 섹션 제목을 그리는 위젯
-  Widget _buildDateLabel(String date) {
+  Widget _buildDateDropdown() {
     final width = MediaQuery.of(context).size.width;
+
     return Padding(
-      padding: EdgeInsets.only(bottom: width * 0.03, top: width * 0.05),
-      child: Row(
-        children: [
-          Text(
-            date,
-            style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold, color: Colors.black87),
-          ),
-        ],
+      padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+      child: DropdownButton<String>(
+        value: _selectedDate,
+        isExpanded: true,
+        dropdownColor: const Color(0xFFF5F5F5),
+        hint: Text("날짜를 선택해주세요", style: TextStyle(fontSize: width * 0.045, color: Colors.black)),
+        items: _placeWidgets.map((entry) {
+          return DropdownMenuItem<String>(
+            value: entry.key,
+            child: Text(entry.key, style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold)),
+          );
+        }).toList(),
+        onChanged: (value) {
+          setState(() {
+            _selectedDate = value;
+          });
+        },
       ),
     );
   }
@@ -529,6 +540,8 @@ class _AddPage_2State extends State<AddPage_2> {
                       SizedBox(height: height * 0.028),
                       _buildTitleBlock(),
                       SizedBox(height: height * 0.0267),
+                      _buildDateDropdown(),
+
 
                       // 장소 목록 표시 - 그룹화된 날짜별 렌더링
                       if (_placeWidgets.isNotEmpty && _placeWidgets[0].value.isNotEmpty)
@@ -549,8 +562,8 @@ class _AddPage_2State extends State<AddPage_2> {
                             },
                           ),
                         ),
-                      for (var entry in _placeWidgets) ...[
-                        _buildDateLabel(entry.key),
+                      for (var entry in _placeWidgets.where((e) => e.key == _selectedDate)) ...[
+                        SizedBox.shrink(),
                         for (var place in entry.value) ...[
                           // 편집 모드일 경우, 각 장소 좌측 상단에 삭제(X) 버튼 표시
                           // 사용자가 해당 버튼을 누르면 해당 장소가 리스트에서 제거됨
