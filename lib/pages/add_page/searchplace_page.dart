@@ -58,7 +58,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
 
   // 지도 마커를 업데이트하는 함수
   void _updateMarkers() {
-    final double width = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width;
     // 기존 마커 삭제
     for (final marker in _markers) {
       _mapController.deleteOverlay(NOverlayInfo(type: NOverlayType.marker, id: marker.info.id));

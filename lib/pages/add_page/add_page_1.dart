@@ -19,9 +19,10 @@ class AddPage_1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
+      backgroundColor: const Color(0xFFFFFFFF),
 
       // 상단 앱바 설정
       appBar: const DefaultAppBar(title: "추천경로 생성하기"),
@@ -29,14 +30,14 @@ class AddPage_1 extends StatelessWidget {
       // 스크롤 가능한 콘텐츠 영역
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: width * 0.03, horizontal: width * 0.065),
+          padding: EdgeInsets.symmetric(vertical: height * 0.0138, horizontal: width * 0.065),
 
           // 안내 문구와 행정구역 단위별(시, 군, 구) 카드들을 세로로 배치
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
 
-              SizedBox(height: width * 0.1),
+              SizedBox(height: height * 0.0461),
 
               // 안내 문구 (가운데 정렬)
               Column(
@@ -48,12 +49,12 @@ class AddPage_1 extends StatelessWidget {
                   ),
                   Text(
                     "나머지는 저희에게 맡겨두세요!",
-                    style: TextStyle(fontSize: width * 0.032, fontWeight: FontWeight.normal, color: Color(0xFF757575)),
+                    style: TextStyle(fontSize: width * 0.032, fontWeight: FontWeight.normal, color: const Color(0xFF757575)),
                   ),
                 ]
               ),
 
-              SizedBox(height: width * 0.15),
+              SizedBox(height: height * 0.0692),
 
               // 행정구역 목록에 있는 요소들에 대해 GeneratorItem 생성
               ...districts.map((name) => GeneratorItem(title: name, tourId: tourId)).toList(),

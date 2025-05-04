@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:flutter/cupertino.dart';
+import '../../components/auth_token_handler.dart';
 import '../../components/logout_by_user.dart';
 import '../../components/token_controller.dart';
 import '../../components/mission_loading_page.dart';
@@ -13,9 +14,9 @@ class MyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
-      appBar: const DefaultAppBar(title: "마이 앱바 영역"),
+      appBar: DefaultAppBar(title: "마이페이지"),
       body: MyPageBody(),
     );
   }
@@ -51,24 +52,33 @@ class _MyPageBodyState extends State<MyPageBody> {
     final accessToken = await getAccessToken();
     final dio = Dio();
 
-    final response = await dio.get(
-      'http://conever.duckdns.org:8000/user/me/',
-      options: Options(headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      }),
-    );
+    try {
+      final response = await dio.get(
+        'http://conever.duckdns.org:8000/user/me/',
+        options: Options(headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        }),
+      );
 
-    final data = response.data;
-    if (data is Map<String, dynamic>) {
-      setState(() {
-        username = data['username'];
-        profileImageUrl = data['profile_image_url'];
-        _isLoading = false;
-      });
-      await todayTours(username!).then((_) => this.loadTodayPlaces());
-    } else {
-      print('⚠️ 예상한 JSON 형식이 아닙니다: $data');
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        setState(() {
+          username = data['username'];
+          profileImageUrl = data['profile_image_url'];
+          _isLoading = false;
+        });
+        await todayTours(username!).then((_) => this.loadTodayPlaces());
+      } else {
+        print('⚠️ 예상한 JSON 형식이 아닙니다: $data');
+      }
+    } catch (e) {
+      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+      if (e is DioException && e.response?.statusCode == 403) {
+        await getAccessTokenFromRefreshToken();
+        await _fetchUserInfo();
+        return;
+      }
     }
   }
 
@@ -226,6 +236,7 @@ class _MyPageBodyState extends State<MyPageBody> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator()); //연결 안되면 로딩뜨는거
@@ -234,16 +245,16 @@ class _MyPageBodyState extends State<MyPageBody> {
     final safeUrl = profileImageUrl?.replaceFirst('http://', 'https://') ?? '';
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: width * 0.02, horizontal: width * 0.06),
+      padding: EdgeInsets.symmetric(vertical: width * 0.09, horizontal: width * 0.06),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Column( //이게 프로필 사진, 이름
             children: [
-              SizedBox(height: width * 0.05),
+              SizedBox(height: width * 0.023),
               Container(
                 width: width * 0.25,
-                height: width * 0.25,
+                height: height  * 0.115,
                 alignment: Alignment.center,
                 child: CircleAvatar(
                   radius: width * 0.125,
@@ -251,35 +262,35 @@ class _MyPageBodyState extends State<MyPageBody> {
                   backgroundColor: Colors.transparent,
                 ),
               ),
-              SizedBox(height: width * 0.01),
+              SizedBox(height: height * 0.03),
               Text(
                 username ?? '',
                 style: TextStyle(
-                  color: Color(0xFF757575),
-                  fontSize: width * 0.045,
+                  color: const Color(0xFF757575),
+                  fontSize: width * 0.06,
                   fontWeight: FontWeight.bold,
                   shadows: [
-                    Shadow(offset: Offset(2, 2), blurRadius: 10, color: Color(0xFFCCCCCC))
+                    const Shadow(offset: Offset(2, 2), blurRadius: 10, color: Color(0xFFCCCCCC))
                   ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: width * 0.05),
+          SizedBox(height: height * 0.023),
           Row( //여행이랑 미션 수
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _StateItem(tourCount.toString(), "여행", width),
+              _StateItem(tourCount.toString(), "여행", width, height),
               SizedBox(width: width * 0.08),
-              _StateItem(missionCount.toString(), "미션", width),
+              _StateItem(missionCount.toString(), "미션", width, height),
             ],
           ),
-          SizedBox(height: width * 0.12),
+          SizedBox(height: height * 0.05),
           Column( //미션진행도랑 자주묻는 질문
             children: [
-              _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page(todayPlaces: todayPlaces), width),
-              _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width),
-              _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, onTap: () {LogoutByUser(context);}),
+              _menuItem(context, Icons.trending_up, "미션 진행도", const Mission_Page(), width, height),
+              _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width, height),
+              _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, height, onTap: () {LogoutByUser(context);}),
             ],
           ),
         ],
@@ -289,23 +300,23 @@ class _MyPageBodyState extends State<MyPageBody> {
 }
 
 //여행수랑 미션수 나타내는 위젯
-Widget _StateItem(String value, String label, double width) {
+Widget _StateItem(String value, String label, double width, double height) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
       Text(
         value,
         style: TextStyle(
-          color: Color(0xFF000000),
+          color: const Color(0xFF000000),
           fontSize: width * 0.06,
           fontWeight: FontWeight.bold,
         ),
       ),
-      SizedBox(height: width * 0.02),
+      SizedBox(height: height * 0.002),
       Text(
         label,
         style: TextStyle(
-          color: Color(0xFF757575),
+          color: const Color(0xFF757575),
           fontSize: width * 0.03,
         ),
       ),
@@ -314,9 +325,9 @@ Widget _StateItem(String value, String label, double width) {
 }
 
 //미션 진행도랑 자주묻는 질문 나타내는 위젯
-Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, double width, {VoidCallback? onTap}) {
+Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, double width, double height, {VoidCallback? onTap}) {
   return Padding(
-    padding: EdgeInsets.symmetric(vertical: width * 0.01),
+    padding: EdgeInsets.symmetric(vertical: height * 0.0046),
     child: SizedBox(
       width: width * 0.75,
       child: TextButton(
@@ -326,18 +337,18 @@ Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, 
         style: TextButton.styleFrom(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           alignment: Alignment.centerLeft,
-          foregroundColor: Color(0xFFCCCCCC),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          foregroundColor: const Color(0xFFCCCCCC),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
         child: Row(
           children: [
-            Icon(icon, size: width * 0.045, color: Color(0xFF000000)),
+            Icon(icon, size: width * 0.055, color: const Color(0xFF000000)),
             SizedBox(width: width * 0.02),
             Text(
               menu,
               style: TextStyle(
-                color: Color(0xFF000000),
-                fontSize: width * 0.04,
+                color: const Color(0xFF000000),
+                fontSize: width * 0.05,
                 fontWeight: FontWeight.w600,
               ),
             ),

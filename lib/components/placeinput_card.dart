@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../pages/add_page/searchplace_page.dart';
 
@@ -20,109 +19,189 @@ class PlaceInputCard extends StatefulWidget {
 // PlaceInputCard의 상태 관리 클래스
 // 텍스트 필드 컨트롤러로 입력값을 관리
 class _PlaceInputCardState extends State<PlaceInputCard> {
-  final _imageUrlController = TextEditingController();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _mapXController = TextEditingController();
-  final _mapYController = TextEditingController();
+  // 입력된 장소명 저장
+  String _title = '';
+  // 입력된 주소 저장
+  String _description = '';
+  String _imageUrl = '';
+  double _mapX = 0.0;
+  double _mapY = 0.0;
 
   // 카드 UI 구성
-  // 검색 버튼, 텍스트 필드, 취소/완료 버튼
+  // 검색 버튼, 텍스트 필드(장소명, 주소), 취소/완료 버튼
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Container(
-      width: MediaQuery.of(context).size.width * 0.63,
-      padding: const EdgeInsets.all(16),
+      width: width * 0.63,
+      padding: EdgeInsets.symmetric(horizontal: width * 0.016, vertical: height * .03),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(width * 0.05),
       ),
       child: Column(
         children: [
           // 🔹 '장소 찾아보기' 버튼: 외부 검색 화면으로 이동
-          ElevatedButton(
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => SearchPlacePage(
-                    onPlaceSelected: ({
-                      required String title,
-                      required String address,
-                      required String imageUrl,
-                      required double mapX,
-                      required double mapY,
-                    }) {
-                      if (mounted) {
-                        setPlaceInfo({
-                          'title': title,
-                          'address': address,
-                          'imageUrl': imageUrl,
-                          'mapX': mapX,
-                          'mapY': mapY,
-                        });
-                      }
-                    },
+          SizedBox(
+            width: width * 0.38,
+            child: ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SearchPlacePage(
+                      onPlaceSelected: ({
+                        required String title,
+                        required String address,
+                        required String imageUrl,
+                        required double mapX,
+                        required double mapY,
+                      }) {
+                        if (mounted) {
+                          setPlaceInfo({
+                            'title': title,
+                            'address': address,
+                            'imageUrl': imageUrl,
+                            'mapX': mapX,
+                            'mapY': mapY,
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey.shade700,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(width * 0.02)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("🔍 장소 찾아보기", style: TextStyle(color: Colors.white, fontSize: width * 0.03)),
+                ],
+              ),
+            ),
+          ),
+
+          SizedBox(height: height * 0.04),
+
+          // 장소명 표시용 위젯
+          Container(
+            width: width * 0.5,
+            height: height * 0.045,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(width * 0.015),
+              border: Border.all(color: Colors.grey.shade400),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+            alignment: Alignment.centerLeft,
+            child: Row(
+              children: [
+                Text('🏠', style: TextStyle(fontSize: width * 0.025)),
+                SizedBox(width: width * 0.02),
+                Expanded(
+                  child: Text(
+                    _title,
+                    style: TextStyle(
+                        fontSize: width * 0.028,
+                        color: Color(0xFFB3B3B3),
+                    ),
+                    // 긴 텍스트일 경우 말줄임 표시
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey.shade700,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("🔍 장소 찾아보기", style: TextStyle(color: Colors.white)),
               ],
             ),
           ),
-          SizedBox(height: MediaQuery.of(context).size.width * 0.63 * 0.045),
 
-          // 장소 정보를 입력하는 필드들, 검색을 통해 장소를 선택하면 자동으로 채워짐
-          // 이미지 URL, 장소명, 설명, 위도(mapX), 경도(mapY)
-          TextField(
-            controller: _imageUrlController,
-            decoration: const InputDecoration(labelText: '이미지 URL'),
+          SizedBox(height: height * 0.02,),
+
+          // 주소 표시용 위젯
+          Container(
+            width: width * 0.5,
+            height: height * 0.045,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(width * 0.015),
+              border: Border.all(color: Colors.grey.shade400),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+            alignment: Alignment.centerLeft,
+            child: Row(
+              children: [
+                Text('📍', style: TextStyle(fontSize: width * 0.028)),
+                SizedBox(width: width * 0.02),
+                Expanded(
+                  child: Text(
+                    _description,
+                    style: TextStyle(
+                      fontSize: width * 0.028,
+                      color: Color(0xFFB3B3B3),
+                    ),
+                    // 긴 텍스트일 경우 말줄임 표시
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
-          TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(labelText: '장소명'),
-          ),
-          TextField(
-            controller: _descriptionController,
-            decoration: const InputDecoration(labelText: '설명'),
-          ),
-          TextField(
-            controller: _mapXController,
-            decoration: const InputDecoration(labelText: 'mapX'),
-          ),
-          TextField(
-            controller: _mapYController,
-            decoration: const InputDecoration(labelText: 'mapY'),
-          ),
-          SizedBox(height: MediaQuery.of(context).size.width * 0.63 * 0.045),
+
+          SizedBox(height: height * 0.06),
 
           // 완료, 취소 버튼
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              TextButton(onPressed: widget.onCancel, child: const Text("취소")),
+              TextButton(
+                onPressed: widget.onCancel,
+                child: const Text("취소", style: TextStyle(color: Colors.black)),
+              ),
               ElevatedButton(
-                // 🔹 완료 버튼 클릭 시 현재 입력된 정보로 onComplete 콜백 호출
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade700,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(width * 0.02)),
+                ),
+                // 입력 값 유효성 검사: 타이틀, 설명, 좌표가 올바른지 확인
                 onPressed: () {
-                  final mapX = double.tryParse(_mapXController.text) ?? 0.0;
-                  final mapY = double.tryParse(_mapYController.text) ?? 0.0;
+                  if (_title.isEmpty || _description.isEmpty || _mapX == 0.0 || _mapY == 0.0) {
+                    // 유효하지 않은 경우 경고 다이얼로그 표시 후 함수 종료
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) => AlertDialog(
+                        title: const Text('올바르지 않은 장소입니다'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(dialogContext).pop();
+                            },
+                            child: const Text('확인'),
+                          ),
+                        ],
+                      ),
+                    );
+                    return;
+                  }
+
+                  // 모든 값이 유효할 때만 onComplete 호출
                   widget.onComplete(
-                    _imageUrlController.text,
-                    _titleController.text,
-                    _descriptionController.text,
-                    mapX,
-                    mapY,
+                    _imageUrl,
+                    _title,
+                    _description,
+                    _mapX,
+                    _mapY,
                   );
                 },
-                child: const Text("완료"),
+                child: const Text("완료", style: TextStyle(color: Colors.white)),
               ),
             ],
           )
@@ -133,21 +212,11 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
 
   // 외부 검색 화면에서 장소를 선택했을 때 입력값을 자동으로 채워넣음
   void setPlaceInfo(Map<String, dynamic> place) {
-    _imageUrlController.text = place['imageUrl'] ?? '';
-    _titleController.text = place['title'] ?? '';
-    _descriptionController.text = place['address'] ?? '';
-    _mapXController.text = (place['mapX'] ?? '').toString();
-    _mapYController.text = (place['mapY'] ?? '').toString();
-  }
-
-  // 페이지 종료 시 텍스트 필드 컨트롤러 메모리 해제
-  @override
-  void dispose() {
-    _imageUrlController.dispose();
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _mapXController.dispose();
-    _mapYController.dispose();
-    super.dispose();
+    _imageUrl = place['imageUrl'] ?? '';
+    _title = place['title'] ?? '';
+    _description = place['address'] ?? '';
+    _mapX = place['mapX'] ?? 0.0;
+    _mapY = place['mapY'] ?? 0.0;
+    setState(() {});
   }
 }

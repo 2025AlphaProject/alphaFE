@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
+import 'package:alpha_fe/components/auth_token_handler.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -46,12 +47,11 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchPlans() async {
     final accessToken = await getAccessToken();
-    print(accessToken);
+    print('accessToken:$accessToken');
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
 
     try {
-
       // /user/me/ API 호출하여 현재 사용자 정보 가져오기
       final userResponse = await dio.get(
         '$baseUrl/user/me/',
@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage> {
             'Authorization': 'Bearer $accessToken',
             'Accept': 'application/json'
           },
+
         ),
       );
 
@@ -88,23 +89,54 @@ class _HomePageState extends State<HomePage> {
         return users.any((u) => u['username'] == currentUsername);
       }).toList();
 
-      // 여행 계획이 존재하는지 확인
-      if (userPlans.isNotEmpty) {
-        // 현재 시각을 기준으로 가장 가까운 여행 계획을 찾기 위해 현재 시각 저장
-        DateTime now = DateTime.now();
+      // 여행 목록 필터링 후 불완전한 여행(코스 없음)을 제거하는 과정
+      final List<dynamic> validUserPlans = [];
 
-        // 필터링된 여행 계획 리스트를 시작 날짜와 현재 시각 간의 차이 절대값 기준으로 오름차순 정렬
-        userPlans.sort((a, b) {
+      for (final plan in userPlans) {
+        final int tourId = int.tryParse(plan['id'].toString()) ?? -1;
+        try {
+          final courseResponse = await dio.get(
+            '$baseUrl/tour/course/$tourId/',
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer $accessToken',
+                'Accept': 'application/json'
+              },
+            ),
+          );
+
+          if (courseResponse.data is Map &&
+              courseResponse.data['courses'] is List &&
+              (courseResponse.data['courses'] as List).isEmpty) {
+            await dio.delete(
+              '$baseUrl/tour/$tourId/',
+              options: Options(
+                headers: {
+                  'Authorization': 'Bearer $accessToken',
+                },
+              ),
+            );
+            continue; // 삭제된 항목은 추가하지 않음
+          }
+
+          validUserPlans.add(plan); // 유효한 여행만 추가
+        } catch (e) {
+          print('삭제 실패: $e');
+          continue;
+        }
+      }
+
+      // 여행 계획이 존재하는지 확인
+      if (validUserPlans.isNotEmpty) {
+        DateTime now = DateTime.now();
+        validUserPlans.sort((a, b) {
           DateTime aStart = DateTime.parse(a['start_date']);
           DateTime bStart = DateTime.parse(b['start_date']);
           Duration aDiff = aStart.difference(now).abs();
           Duration bDiff = bStart.difference(now).abs();
           return aDiff.compareTo(bDiff);
         });
-
-        // 가장 가까운 여행 계획을 상태에 저장하고 로딩 상태를 false로 변경하여 UI 갱신
-        final nearest = userPlans.first;
-
+        final nearest = validUserPlans.first;
         setState(() {
           _nearestPlan = {
             'id': nearest['id'],
@@ -115,15 +147,18 @@ class _HomePageState extends State<HomePage> {
           _isLoading = false;
         });
       } else {
-        // 여행 계획이 없을 경우, userPlans가 비어있지 않으면 null로 설정
         setState(() {
           _nearestPlan = null;
           _isLoading = false;
         });
       }
     } catch (e) {
-
-      // API 호출 실패 혹은 예외 발생 시, 여행 계획을 null로 설정하고 로딩 상태를 false로 변경
+      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+      if (e is DioException && e.response?.statusCode == 403) {
+        await getAccessTokenFromRefreshToken();
+        await fetchPlans();
+        return;
+      }
       setState(() {
         _nearestPlan = null;
         _isLoading = false;
@@ -151,7 +186,7 @@ class _HomePageState extends State<HomePage> {
     final uniqueCode = Random().nextInt(1 << 31); // 랜덤 정수 생성
 
     final channel = WebSocketChannel.connect(
-      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode'),
+      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode&days=1'),
     );
 
     late StreamSubscription subscription;
@@ -241,10 +276,12 @@ class _HomePageState extends State<HomePage> {
       // 저장 성공 시 콘솔에 출력
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('경로 저장 완료');
-      } else {
+      }
+      else {
         print('저장 실패: ${response.statusCode}');
       }
-    } catch (e) {
+    }
+    catch (e) {
       print('예외 발생: $e');
     }
   }
@@ -254,7 +291,7 @@ class _HomePageState extends State<HomePage> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
+      backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
         child: Stack(
           children: [
@@ -331,7 +368,7 @@ class _HomePageState extends State<HomePage> {
                                               size_h: height * 0.394,
                                               size_w: width * 0.8,
                                             )
-                                          : SizedBox.shrink()
+                                          : const SizedBox.shrink()
                                     ),
                             ),
                             SizedBox(height: height * 0.06),
@@ -368,7 +405,7 @@ class _HomePageState extends State<HomePage> {
                                     child: Image.network(
                                       _recommendedPlace!['image1'],
                                       width: width * 0.87,
-                                      height: width * 0.55,
+                                      height: height * 0.25,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -411,20 +448,18 @@ class _HomePageState extends State<HomePage> {
                                             ? (_recommendedPlace?['address'] as String).split(' ')[1]
                                             : '';
                                         final accessToken = await getAccessToken();
-                                        Navigator.push(
-                                          context,
+                                        Navigator.of(context).push(
                                           CupertinoPageRoute(
                                             builder: (_) => AddPage_2(
                                               title: sigun,
                                               tourId: 0,
+                                              isSingleDayMode: true, // 싱글모드 명시 -> 트렌딩, 검색창일 경우 true
                                               onSaveCourseCallback: (places) {
-                                                Navigator.push(
-                                                  context,
+                                                Navigator.of(context).push(
                                                   CupertinoPageRoute(
                                                     builder: (_) => AddPage_0(
                                                       onFinishCreation: (int tourId) {
-                                                        Navigator.push(
-                                                          context,
+                                                        Navigator.of(context).push(
                                                           CupertinoPageRoute(
                                                             builder: (_) => AddPage_3(
                                                               tour_id: tourId,
@@ -460,7 +495,7 @@ class _HomePageState extends State<HomePage> {
                                       horizontal: width * 0.04,
                                       vertical: height * 0.012,
                                     ),
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Color(0xFFFFFFFF),
                                     ),
                                     child: Align(

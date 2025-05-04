@@ -45,9 +45,10 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(width * 0.05),
+        padding: EdgeInsets.symmetric(horizontal: width * 0.05, vertical: height * 0.023),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -79,14 +80,13 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: width * 0.05),
-            // 미션 설명 및 예시 이미지/아이콘
+            SizedBox(height: height * 0.023),
 
 
             // ✅ 사진 미리보기 - 찍은 사진보기
             if (_image != null)
               Container(
-                height: width * 0.7,
+                height: height * 0.32,
                 width: width * 0.7,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
@@ -183,7 +183,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                   ),
                                   ],
               ),
-              SizedBox(height: width * 0.1),
+              SizedBox(height: height * 0.046),
               ElevatedButton.icon( //찍은 사진이 없는 경우 사진 촬영버튼 나타남
                 onPressed: () async {
                   final File? image = await _cameraService.getImageFromCamera();
@@ -207,13 +207,13 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                   ),
                   padding: EdgeInsets.symmetric(
                     horizontal: width * 0.08,
-                    vertical: width * 0.035,
+                    vertical: height * 0.016,
                   ),
                   elevation: 2,
                 ),
               ),
             ] else ...[ //찍은 사진이 있는 경우 -  재촬영버튼, 미션수행 버튼 띄우기
-              SizedBox(height: width * 0.08),
+              SizedBox(height: height * 0.036),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -232,7 +232,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                       foregroundColor: Colors.black,
                       padding: EdgeInsets.symmetric(
                         horizontal: width * 0.07,
-                        vertical: width * 0.03,
+                        vertical: height * 0.013,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(width * 0.025),
@@ -282,7 +282,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                       foregroundColor: Colors.black,
                       padding: EdgeInsets.symmetric(
                         horizontal: width * 0.07,
-                        vertical: width * 0.03,
+                        vertical: height * 0.013,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(width * 0.025),

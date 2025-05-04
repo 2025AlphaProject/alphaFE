@@ -6,6 +6,8 @@ import '../../components/app_bar.dart';
 import 'package:alpha_fe/pages/my_page/mission_page_2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../components/auth_token_handler.dart';
+
 class Mission_Page extends StatefulWidget {
   final todayPlaces;
   const Mission_Page({super.key,required this.todayPlaces});
@@ -121,6 +123,14 @@ class _Mission_PageState extends State<Mission_Page> {
       setState(() {
         _isLoading = false;
       });
+
+      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+      if (e is DioException && e.response?.statusCode == 403) {
+        await getAccessTokenFromRefreshToken();
+        await _fetchMissions();
+        return;
+      }
+
       print("에러 발생: $e");
     }
   }
@@ -128,6 +138,7 @@ class _Mission_PageState extends State<Mission_Page> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     int completed = _missions.where((m) => m['isCompleted'] == true).length;
     int total = _missions.length;
@@ -139,11 +150,11 @@ class _Mission_PageState extends State<Mission_Page> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: EdgeInsets.all(width * 0.05),
+        padding: EdgeInsets.symmetric(horizontal: width * 0.05, vertical: 0.023),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: width * 0.1),
+            SizedBox(height: height * 0.046),
 
             // ✅ 반응형 원형 진행률 표시
             LayoutBuilder(
@@ -178,12 +189,12 @@ class _Mission_PageState extends State<Mission_Page> {
               },
             ),
 
-            SizedBox(height: width * 0.1),
+            SizedBox(height: height * 0.0461),
 
             // ✅ 미션 카드 리스트
             Column(
               children: _missions.map((mission) {
-                return _missionItem(context, mission, width);
+                return _missionItem(context, mission, width, height);
               }).toList(),
             ),
           ],
@@ -193,12 +204,11 @@ class _Mission_PageState extends State<Mission_Page> {
   }
 }
 
-//각각 미션별로 정보와 페이지 넘어가는 버튼
-Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double width) {
+Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double width, double height) {
   final bool isCompleted = mission['isCompleted'] ?? false;
 
   return Padding(
-    padding: EdgeInsets.symmetric(vertical: width * 0.02),
+    padding: EdgeInsets.symmetric(vertical: height * 0.01),
     child: ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: width * 0.95,
@@ -226,7 +236,7 @@ Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double w
             ]
           ),
           child: Padding(
-            padding: EdgeInsets.all(width * 0.04),
+            padding: EdgeInsets.symmetric(horizontal: width * 0.04, vertical: height * 0.018),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -251,7 +261,7 @@ Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double w
                   ],
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: width * 0.08, top: width * 0.01),
+                  padding: EdgeInsets.only(left: width * 0.08, top: height * 0.004),
                   child: Text( //미션 내용
                     mission['image_url'].toString().isNotEmpty
                         ? "• 예시 사진과 유사하게 촬영하기"  //사진 O

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import '../pages/add_page/add_page_0.dart';
 import '../pages/add_page/add_page_2.dart';
 import '../pages/add_page/add_page_3.dart';
 import 'placeinfo_card.dart';
 import 'dart:math';
+import '../main.dart'; // navigatorKey 사용을 위해 import
 
 class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -13,6 +15,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return Container(
       // AppBar에 그림자 효과 추가
       decoration: BoxDecoration(
@@ -24,7 +27,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           )
         ],
       ),
-      height: 120,
+      height: height * 0.147,
       child: AppBar(
         title: Text(title),
         backgroundColor: Color(0xFFFFFFFF),
@@ -101,7 +104,9 @@ class _SearchAppBarState extends State<SearchAppBar> {
 
   // 검색어에 따라 오버레이 리스트를 생성하여 화면에 표시
   OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
+    // 현재 context를 지역 변수에 저장
+    final currentContext = context;
+    RenderBox renderBox = currentContext.findRenderObject() as RenderBox;
     final size = renderBox.size;
     final offset = renderBox.localToGlobal(Offset.zero);
 
@@ -109,8 +114,8 @@ class _SearchAppBarState extends State<SearchAppBar> {
     final filteredDistricts = seoulDistricts.where((gu) => gu.contains(_searchQuery)).toList();
 
     // 반응형으로 리스트 항목의 높이 및 최대 높이 계산
-    final itemHeight = MediaQuery.of(context).size.height * 0.07;
-    final maxListHeight = MediaQuery.of(context).size.height * 0.35;
+    final itemHeight = MediaQuery.of(currentContext).size.height * 0.07;
+    final maxListHeight = MediaQuery.of(currentContext).size.height * 0.35;
     final listHeight = min(filteredDistricts.length * itemHeight, maxListHeight);
 
     return OverlayEntry(
@@ -119,7 +124,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
           GestureDetector(
         onTap: () {
           _removeOverlay();
-          FocusScope.of(context).unfocus();
+          FocusScope.of(currentContext).unfocus();
         },
         behavior: HitTestBehavior.translucent,
         child: Stack(
@@ -127,19 +132,19 @@ class _SearchAppBarState extends State<SearchAppBar> {
             // 오버레이 리스트의 위치를 SearchAppBar 아래로 반응형 배치
             Positioned(
               left: offset.dx + 20,
-              top: offset.dy + MediaQuery.of(context).size.height * 0.045,
+              top: offset.dy + MediaQuery.of(currentContext).size.height * 0.045,
               width: size.width - 40,
               child: SafeArea( // 시스템 UI 침범 방지
                 // 리스트에 그림자와 모서리 둥글기 효과 적용
                 child: PhysicalModel(
                   color: Color(0xFFFFFFFF),
                   elevation: 2,
-                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.03),
+                  borderRadius: BorderRadius.circular(MediaQuery.of(currentContext).size.width * 0.03),
                   clipBehavior: Clip.antiAlias,
                   // 리스트 배경, 높이, 내부 패딩 및 항목 구성 설정
                   child: Container(
                     height: listHeight,
-                    padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
+                    padding: EdgeInsets.all(MediaQuery.of(currentContext).size.width * 0.02),
                     child: ListView.builder(
                       itemCount: filteredDistricts.length,
                       itemBuilder: (context, index) {
@@ -150,24 +155,21 @@ class _SearchAppBarState extends State<SearchAppBar> {
                           onTap: () {
                             _searchController.removeListener(_onSearchChanged);
                             _removeOverlay();
-                            FocusScope.of(context).unfocus();
+                            FocusScope.of(currentContext).unfocus();
 
                             if (!mounted) return;
-
-                            Navigator.push(
-                              context,
+                            Navigator.of(currentContext).push(
                               CupertinoPageRoute(
                                 builder: (_) => AddPage_2(
                                   title: gu,
                                   tourId: 0,
+                                  isSingleDayMode: true,
                                   onSaveCourseCallback: (places) {
-                                    Navigator.push(
-                                      context,
+                                    Navigator.of(currentContext).push(
                                       CupertinoPageRoute(
                                         builder: (_) => AddPage_0(
                                           onFinishCreation: (int tourId) {
-                                            Navigator.push(
-                                              context,
+                                            Navigator.of(currentContext).push(
                                               CupertinoPageRoute(
                                                 builder: (_) => AddPage_3(
                                                   tour_id: tourId,
@@ -203,6 +205,8 @@ class _SearchAppBarState extends State<SearchAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     // SearchAppBar UI를 화면 상단에 고정 배치
     return Positioned(
       left: 0,
@@ -210,8 +214,8 @@ class _SearchAppBarState extends State<SearchAppBar> {
       top: 0,
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.05,
-          vertical: MediaQuery.of(context).size.height * 0.015,
+          horizontal: width * 0.05,
+          vertical: height * 0.015,
         ),
         decoration: BoxDecoration(
           color: Colors.transparent,
@@ -220,10 +224,10 @@ class _SearchAppBarState extends State<SearchAppBar> {
         child: CompositedTransformTarget(
           link: _layerLink,
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.055,
+            height: height * 0.055,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.07),
+              borderRadius: BorderRadius.circular(width * 0.07),
             ),
             // 사용자 입력을 받는 검색창 구현
             child: TextField(
@@ -233,16 +237,16 @@ class _SearchAppBarState extends State<SearchAppBar> {
                 hintText: '궁금한 여행지를 구 단위로 검색하세요!',
                 hintStyle: const TextStyle(fontSize: 16, color: Colors.grey),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.07),
+                  borderRadius: BorderRadius.circular(width * 0.07),
                   borderSide: const BorderSide(color: Color(0xFFD9D9D9)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.07),
+                  borderRadius: BorderRadius.circular(width * 0.07),
                   borderSide: const BorderSide(color: Color(0xFFD9D9D9)),
                 ),
                 contentPadding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.04,
-                  vertical: MediaQuery.of(context).size.height * 0.014,
+                  horizontal: width * 0.04,
+                  vertical: height * 0.014,
                 ),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search, color: Color(0xFF1E1E1E)),

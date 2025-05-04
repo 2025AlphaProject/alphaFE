@@ -24,6 +24,8 @@ class _LoginPageControllerState extends State<LoginPageController> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -41,13 +43,13 @@ class _LoginPageControllerState extends State<LoginPageController> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 24.0),
+            padding: EdgeInsets.only(bottom: height * 0.029),
             child: SmoothPageIndicator(
               controller: _controller,
               count: 3,
               effect: WormEffect(
-                dotHeight: 10,
-                dotWidth: 10,
+                dotHeight: height * 0.012,
+                dotWidth: width * 0.026,
                 activeDotColor: Colors.black,
                 dotColor: Colors.grey.shade300,
               ),

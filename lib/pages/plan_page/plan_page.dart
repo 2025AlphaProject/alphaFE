@@ -2,7 +2,10 @@ import 'package:alpha_fe/components/plan_card.dart';
 import 'package:alpha_fe/components/token_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import '../../components/app_bar.dart';
+import '../../components/auth_token_handler.dart';
+import '../../components/plan_loading_page.dart';
 
 
 // 전역 상태 관리 클래스
@@ -66,7 +69,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
       String? currentUsername;
       try {
         final userResponse = await dio.get(
-          'http://conever.duckdns.org:8000/user/me',
+          'http://conever.duckdns.org:8000/user/me/',
           options: Options(
             headers: {
               'Authorization': 'Bearer $accessToken',
@@ -78,6 +81,13 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           currentUsername = userResponse.data['username'];
         }
       } catch (e) {
+        // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+        if (e is DioException && e.response?.statusCode == 403) {
+          await getAccessTokenFromRefreshToken();
+          await _fetchTourData();
+          return;
+        }
+
         // If fetching user fails, show error and stop loading
         setState(() {
           _isLoading = false;
@@ -100,8 +110,65 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           'endDate': item['end_date'],
         }).toList();
 
+        // 불필요한 여행 삭제: 코스가 없는 경우
+        final List<int> deletedTourIds = [];
+
+        for (final plan in parsedData) {
+          final dynamic tourIdRaw = plan['tour_id'];
+          final int? tourId = tourIdRaw is int ? tourIdRaw : int.tryParse(tourIdRaw.toString());
+
+          if (tourId == null) {
+            print('Invalid tour_id: $tourIdRaw');
+            continue;
+          }
+
+          try {
+            final courseResponse = await dio.get(
+              'http://conever.duckdns.org:8000/tour/course/$tourId/',
+              options: Options(
+                headers: {
+                  'Authorization': 'Bearer $accessToken',
+                  'Content-Type': 'application/json',
+                },
+              ),
+            );
+
+            if (courseResponse.statusCode == 200 &&
+                courseResponse.data is Map &&
+                courseResponse.data['courses'] is List &&
+                (courseResponse.data['courses'] as List).isEmpty) {
+              await dio.delete(
+                'http://conever.duckdns.org:8000/tour/$tourId/',
+                options: Options(
+                  headers: {
+                    'Authorization': 'Bearer $accessToken',
+                    'Content-Type': 'application/json',
+                  },
+                ),
+              );
+              deletedTourIds.add(tourId);
+            }
+          } catch (e) {
+            print('Error checking or deleting tour $tourIdRaw: $e');
+          }
+        }
+
+        // 삭제된 여행 제외
+        final filteredData = parsedData.where((plan) {
+          final tourId = int.tryParse(plan['tour_id'].toString()) ?? -1;
+          return !deletedTourIds.contains(tourId);
+        }).toList();
+
         setState(() {
-          _cardData = parsedData;
+          _cardData = filteredData;
+          _isLoading = false;
+          if (_cardData.isNotEmpty) {
+            _initController();
+          }
+        });
+
+        setState(() {
+          _cardData = filteredData;
           _isLoading = false;
           if (_cardData.isNotEmpty) {
             _initController();
@@ -170,8 +237,8 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     final height = MediaQuery.of(context).size.height;
     final cards = sortedCardData;
 
-    return _isLoading 
-        ? const Center(child: CircularProgressIndicator())
+    return _isLoading
+        ? const PlanLoadingView()
         : _cardData.isEmpty
             ? Center(
                 child: Column(
@@ -179,10 +246,10 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
                   children: [
                     Text('등록된 여행이 없습니다.',
                         style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.045)),
+                            fontSize: width * 0.045)),
                     Text('여행을 추가해주세요!',
                         style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.06,
+                            fontSize: width * 0.06,
                           fontWeight: FontWeight.bold
                         ),
                     ),
@@ -193,22 +260,22 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
         SizedBox(height: height * 0.12),
 
         // 정렬 기준 드롭다운
-        Container(
-          height: height * 0.06,
-          width: width * 0.35,
-          padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFFFFF),
-            borderRadius: BorderRadius.circular(width * 0.03),
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: DropdownButton<SortType>(
-            value: _sortType,
+        DropdownButtonHideUnderline(
+          child: DropdownButton2<SortType>(
             isExpanded: true,
-            underline: const SizedBox(),
-            icon: Icon(Icons.keyboard_arrow_down, color: const Color(0xFF000000),
-                size: width * 0.05),
-            dropdownColor: Colors.white,
+            hint: Text(
+              '정렬 기준 선택',
+              style: TextStyle(fontSize: width * 0.035),
+            ),
+            items: [
+              DropdownMenuItem(value: SortType.dDayAsc,
+                  child: Text("날짜순", style: TextStyle(fontSize: width * 0.04))),
+              DropdownMenuItem(value: SortType.dDayDesc,
+                  child: Text("날짜역순", style: TextStyle(fontSize: width * 0.04))),
+              DropdownMenuItem(value: SortType.title,
+                  child: Text("제목순", style: TextStyle(fontSize: width * 0.04))),
+            ],
+            value: _sortType,
             onChanged: (value) {
               if (value != null) {
                 setState(() {
@@ -217,17 +284,26 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
                 });
               }
             },
-            items: [
-              DropdownMenuItem(value: SortType.dDayAsc,
-                  child: Text(
-                      "날짜순", style: TextStyle(fontSize: width * 0.035))),
-              DropdownMenuItem(value: SortType.dDayDesc,
-                  child: Text(
-                      "날짜역순", style: TextStyle(fontSize: width * 0.035))),
-              DropdownMenuItem(value: SortType.title,
-                  child: Text(
-                      "제목순", style: TextStyle(fontSize: width * 0.035))),
-            ],
+            buttonStyleData: ButtonStyleData(
+              height: height * 0.06,
+              width: width * 0.8,
+              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFFFFF),
+                borderRadius: BorderRadius.circular(width * 0.03),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+            ),
+            iconStyleData: IconStyleData(
+              icon: Icon(Icons.keyboard_arrow_down,
+                  color: const Color(0xFF000000), size: width * 0.05),
+            ),
+            dropdownStyleData: DropdownStyleData(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
           ),
         ),
 
