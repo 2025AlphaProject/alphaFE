@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dio/dio.dart';
+import '../../components/save_loading_page.dart';
 import '../../components/token_controller.dart';
 import 'add_page_3.dart';
 import '../../components/app_bar.dart';
@@ -380,9 +381,14 @@ class _AddPage_2State extends State<AddPage_2> {
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
     final int useTourId = tourId ?? widget.tourId;
-    // final List<PlaceInfoBlock> usePlaces = places ?? _placeWidgets.expand((entry) => entry.value).toList();
 
     try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const SaveLoadingView(),
+      );
+
       // tour_id값을 이용해 여행 시작 날짜 불러옴
       final startDateResponse = await dio.get(
           '$baseUrl/tour/$useTourId/',
@@ -428,6 +434,8 @@ class _AddPage_2State extends State<AddPage_2> {
 
       if (!mounted) return;
 
+      Navigator.pop(context); // Remove SaveLoadingView
+
       Navigator.push(
         context,
         CupertinoPageRoute(
@@ -437,6 +445,7 @@ class _AddPage_2State extends State<AddPage_2> {
         ),
       );
     } catch (e) {
+      Navigator.pop(context); // Remove SaveLoadingView on error
       print(e);
     }
   }

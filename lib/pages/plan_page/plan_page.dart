@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
 import '../../components/auth_token_handler.dart';
+import '../../components/plan_loading_page.dart';
 
 
 // 전역 상태 관리 클래스
@@ -236,7 +237,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     final cards = sortedCardData;
 
     return _isLoading 
-        ? const Center(child: CircularProgressIndicator())
+        ? const PlanLoadingView()
         : _cardData.isEmpty
             ? Center(
                 child: Column(
