@@ -17,7 +17,7 @@ class Mission_Page extends StatefulWidget {
 }
 
 class _Mission_PageState extends State<Mission_Page> {
-  static final List<Map<String, dynamic>> _missions = [];
+  final List<Map<String, dynamic>> _missions = [];
 
   //오늘의 미션 리스트 정보 주기
   void updateMissionsWithTodayPlaces(List<Map<String, dynamic>> todayPlaces) {
@@ -36,12 +36,19 @@ class _Mission_PageState extends State<Mission_Page> {
           'isCompleted': false,
           'mission_id': 1, //TODO: 미션확인
         });
+        checkMissionComplete(place['tdp_id']).then((completed) {
+          setState(() {
+            final index = _missions.indexWhere((m) => m['tdp_id'] == place['tdp_id']);
+            if (index != -1) {
+              _missions[index]['isCompleted'] = completed;
+            }
+          });
+        });
       }
     }
   }
 
   bool _isLoading = true;
-  bool _hasShownDialogToday = false;
 
   @override
   void initState() {
@@ -49,39 +56,43 @@ class _Mission_PageState extends State<Mission_Page> {
     updateMissionsWithTodayPlaces(widget.todayPlaces);
     missionCreate();
   }
-
-  //이건 임의의 미션 생성을 위한 창으로 하루에 한번만 뜬다.
-  Future<void> _checkAndShowDialog() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String today = DateTime.now().toIso8601String().substring(0, 10);
-    final String? lastShownDate = prefs.getString('lastMissionDialogDate');
-
-    // Early return if already shown dialog today in this session
-    if (_hasShownDialogToday || lastShownDate == today) {
-      return;
+  @override
+  void didUpdateWidget(covariant Mission_Page oldWidget) { //변경사항있으면 update
+    super.didUpdateWidget(oldWidget);
+    if (widget.todayPlaces != oldWidget.todayPlaces) {
+      _missions.clear();
+      updateMissionsWithTodayPlaces(widget.todayPlaces);
+      setState(() {});
     }
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      _hasShownDialogToday = true;
-      await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('오늘의 미션 설명'),
-          content: const Text('오늘의 미션 내용을 확인해보세요!'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                prefs.setString('lastMissionDialogDate', today);
-                Navigator.of(context).pop();
-                missionCreate();
-              },
-              child: const Text('확인'),
-            ),
-          ],
+  //미션 성공여부
+  Future<bool> checkMissionComplete(int tdpId) async {
+    final accessToken = await getAccessToken();  // 인증 토큰 가져오기
+    final dio = Dio();
+    final tdp_id = tdpId;
+
+    try {
+      final response = await dio.get(
+        'http://conever.duckdns.org:8000/mission/is_complete/$tdp_id',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
         ),
       );
-    });
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        return data['mission_success'] ?? false;
+      } else {
+        print('❌ 요청 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('이거🚨 예외 발생: $e');
+    }
+    return false;
   }
 
   //임의의 미션 부여하기
@@ -94,7 +105,7 @@ class _Mission_PageState extends State<Mission_Page> {
           return {
             "tdp_id": place["tdp_id"],
             "image_url": place["image_url"]?.toString() ?? "",
-            //"image_url":"",
+
           };
         }).toList()
       };

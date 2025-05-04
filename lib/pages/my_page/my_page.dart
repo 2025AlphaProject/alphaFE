@@ -226,7 +226,7 @@ class _MyPageBodyState extends State<MyPageBody> {
       setState(() {
         todayPlaces = placeMap.values.toList();
         print(todayPlaces);
-        missionCount = placeMap.length;
+        missionCount =  placeMap.length;
       });
     } catch (e) {
       print('Fetch today places error: $e');

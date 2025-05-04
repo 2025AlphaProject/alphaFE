@@ -39,7 +39,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
   final CameraService _cameraService = CameraService();
   File? _image;
   // 체크박스 상태 변수 - 미션 선택용
-  int _selectedPoseIndex = -1;
+  int _selectedPoseIndex = 1;
   int? _selectedMissionId = 1;
 
   @override
@@ -139,7 +139,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        value: 0,
+                        value: 1,
                         groupValue: _selectedPoseIndex,
                         onChanged: (int? value) {
                           setState(() {
@@ -159,7 +159,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        value: 1,
+                        value: 2,
                         groupValue: _selectedPoseIndex,
                         onChanged: (int? value) {
                           setState(() {
@@ -179,7 +179,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        value: 2,
+                        value: 3,
                         groupValue: _selectedPoseIndex,
                         onChanged: (int? value) {
                           setState(() {

@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:alpha_fe/components/mission_loading_page.dart';
 import 'package:dio/dio.dart';
 import 'package:alpha_fe/components/camera.dart';
+import 'package:alpha_fe/mainscreen.dart';
 import '../../components/token_controller.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
+import '../../components/gps.dart';
 
 class missionTest extends StatefulWidget {
   final Map<String, dynamic> mission;
@@ -20,6 +22,7 @@ class missionTest extends StatefulWidget {
 }
 
 class _missionTestState extends State<missionTest> {
+  final LocationService _locationService = LocationService();
   bool _isLoading = true;
   @override
   void initState() {
@@ -33,25 +36,27 @@ class _missionTestState extends State<missionTest> {
     final dio = Dio();
 
     try {
+      final currentLocation = await _locationService.getCurrentLocation(); // "위도,경도" 형태 문자열
+      final parts = currentLocation.split(',');
+      final mapY = parts[0].replaceAll('위도:', '').trim();
+      final mapX = parts[1].replaceAll('경도:', '').trim();
+
       final requestData = {
         "travel_id": widget.mission['tour_id'],
         "place_id": widget.mission['place_id'],
         "mission_id": widget.mission['mission_id'],
-        "mapX": widget.mission['mapX'].toString(),
-        "mapY": widget.mission['mapY'].toString()
+        "mapX": mapX.toString(),
+        "mapY": mapY.toString()
+        //미션 장소 성공용 테스트에 사용
+        // "mapX": widget.mission['mapX'].toString(),
+        // "mapY": widget.mission['mapY'].toString()
       };
+
       print('📤 미션 체크 요청 데이터: $requestData'); //확인용 코드
 
       final response = await dio.post(
         'http://conever.duckdns.org:8000/mission/check_complete/',
-        data:  {
-          "travel_id": widget.mission['tour_id'],
-          "place_id": widget.mission['place_id'],
-          "mission_id": widget.mission['mission_id'],
-          "mapX": "${widget.mission['mapX']}",
-          "mapY": "${widget.mission['mapY']}",
-        },
-
+        data: requestData,
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',
@@ -63,6 +68,7 @@ class _missionTestState extends State<missionTest> {
       if (response.statusCode == 200) {
         print('✅ 미션 진입 API 성공');
         final data = response.data;
+        print(data);
         if(data['result']=="success"){
           widget.mission['isCompleted']= true;
         }
@@ -119,7 +125,6 @@ class _missionTestState extends State<missionTest> {
     }
   }
 
-  //TODO: 요기 API 오류 없어지면 디자인 수정해야함
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,6 +172,15 @@ class _missionTestState extends State<missionTest> {
                     ),
                     child: Image.file(widget.image, fit: BoxFit.cover),
                   ),
+                  ElevatedButton( //홈으로 버튼
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainScreen()),
+                      );
+                    },
+                    child: const Text("홈으로"),
+                  )
                 ],
               ),
             ),
