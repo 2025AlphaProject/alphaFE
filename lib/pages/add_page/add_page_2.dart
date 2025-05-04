@@ -65,6 +65,7 @@ class _AddPage_2State extends State<AddPage_2> {
     int? userId;
     DateTime? startDate;
     DateTime? endDate;
+    int numberOfDays = 1;
 
     // 사용자 ID를 요청하고 최대 3회 재시도
     Future<int?> fetchUserId() async {
@@ -109,25 +110,36 @@ class _AddPage_2State extends State<AddPage_2> {
     }
 
     userId = await fetchUserId();
-    final dates = await fetchTourDates();
 
-    print('userId: $userId, dates: $dates');
-    // 사용자 ID 또는 여행 날짜 불러오기에 실패한 경우 사용자에게 알리고 이전 페이지로 이동
-    if (userId == null || dates == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("코스 추천 요청 실패: 사용자 정보 또는 여행 날짜 불러오기 오류")),
-        );
-        Navigator.pop(context);
+    // 싱글 모드일 때와 멀티 모드일 때 분기 처리
+    if (widget.isSingleDayMode) {
+      // 싱글 모드: 여행 날짜 조회 없이 오늘 날짜를 사용하고, 일수는 1로 고정
+      // 한국어 주석: 싱글 모드에서는 여행 날짜 조회 없이 현재 날짜를 startDate로 설정합니다.
+      startDate = DateTime.now();
+      endDate = startDate;
+      numberOfDays = 1;
+    } else {
+      // 멀티 모드: 기존과 같이 여행 날짜를 조회하여 사용
+      // 한국어 주석: 멀티 모드에서는 여행 시작일과 종료일을 조회합니다.
+      final dates = await fetchTourDates();
+      print('userId: $userId, dates: $dates');
+      // 사용자 ID 또는 여행 날짜 불러오기에 실패한 경우 사용자에게 알리고 이전 페이지로 이동
+      if (userId == null || dates == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("코스 추천 요청 실패: 사용자 정보 또는 여행 날짜 불러오기 오류")),
+          );
+          Navigator.pop(context);
+        }
+        return;
       }
-      return;
+      startDate = dates['start'];
+      endDate = dates['end'];
+      numberOfDays = endDate!.difference(startDate!).inDays + 1;
     }
 
-    startDate = dates['start'];
-    endDate = dates['end'];
-    int numberOfDays = endDate!.difference(startDate!).inDays + 1;
+    // wsUri 생성 시 days 파라미터를 numberOfDays로 설정
     final uniqueCode = Random().nextInt(1 << 31);
-
     final wsUri = 'ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=${widget.title}&unique_code=$uniqueCode&days=$numberOfDays';
 
     try {

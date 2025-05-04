@@ -103,6 +103,77 @@ class _AddPage_0State extends State<AddPage_0> {
   // 입력한 여행 정보로 서버에 여행 등록 요청
   Future<void> _registerTour() async {
     final accessToken = await getAccessToken();
+    final dio = Dio();
+    const url = 'http://conever.duckdns.org:8000';
+
+    // 기존 여행 중 동일한 제목과 날짜가 있는지 확인
+    try {
+      // 현재 사용자 이름 가져오기
+      final userResponse = await dio.get(
+        '$url/user/me/',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+      final currentUsername = userResponse.data['username'];
+
+      // 모든 여행 목록 가져오기
+      final tourResponse = await dio.get(
+        '$url/tour/',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+      final List<dynamic> allPlans = tourResponse.data;
+
+      // 현재 사용자의 여행만 필터링
+      final List<dynamic> userPlans = allPlans.where((plan) {
+        final List<dynamic> users = plan['user'] ?? [];
+        return users.any((u) => u['username'] == currentUsername);
+      }).toList();
+
+      // 입력된 제목과 날짜 포맷 생성
+      final String inputTitle = _titleController.text;
+      final String inputStart = '${_selectedDateRange!.start.year.toString().padLeft(4, '0')}-${_selectedDateRange!.start.month.toString().padLeft(2, '0')}-${_selectedDateRange!.start.day.toString().padLeft(2, '0')}';
+      final String inputEnd =   '${_selectedDateRange!.end.year.toString().padLeft(4, '0')}-${_selectedDateRange!.end.month.toString().padLeft(2, '0')}-${_selectedDateRange!.end.day.toString().padLeft(2, '0')}';
+
+      // 동일한 여행이 이미 존재하는지 검사
+      final bool exists = userPlans.any((plan) =>
+        plan['tour_name'] == inputTitle &&
+        plan['start_date'] == inputStart &&
+        plan['end_date'] == inputEnd
+      );
+
+      if (exists) {
+        // 이미 존재하는 여행인 경우 알림 후 종료
+        await showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) => AlertDialog(
+            title: const Text('이미 존재하는 여행입니다'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // 다이얼로그만 닫고 페이지 이동 방지
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+    } catch (e) {
+      // 예외 발생 시 로깅 후 계속 진행
+      print('중복 여행 확인 중 오류 발생: $e');
+    }
+
     if (_titleController.text.isEmpty ||
         _titleController.text.length > 10 ||
         _selectedDateRange == null) {
@@ -112,13 +183,10 @@ class _AddPage_0State extends State<AddPage_0> {
       return;
     }
 
-    final dio = Dio();
-    const url = 'http://conever.duckdns.org:8000/tour/';
-
     try {
       // 입력받은 2가지 데이터에 대해 POST 요청
       final response = await dio.post(
-        url,
+        '$url/tour/',
         options: Options(
           headers: {
             'Content-Type': 'application/json',
@@ -158,7 +226,6 @@ class _AddPage_0State extends State<AddPage_0> {
         );
       }
     } catch (e) {
-
       // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
       if (e is DioException && e.response?.statusCode == 403) {
         await getAccessTokenFromRefreshToken();

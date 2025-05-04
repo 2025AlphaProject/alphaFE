@@ -38,9 +38,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 
-// 전역에서 네비게이터를 사용할 수 있도록 GlobalKey 선언
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
 
@@ -75,15 +72,13 @@ Future<void> main() async {
   ]);
 
   // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
-  //await initNaverMapSdk();
+  // await initNaverMapSdk();
 
   final accessToken = await getAccessToken();
 
   runApp(
     Phoenix(
       child: MaterialApp(
-        // navigatorKey를 MaterialApp에 지정하여 context 없이도 전역 네비게이션 가능하도록 설정
-        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
         supportedLocales: const [

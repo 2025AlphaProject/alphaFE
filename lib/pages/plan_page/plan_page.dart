@@ -67,7 +67,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
       String? currentUsername;
       try {
         final userResponse = await dio.get(
-          'http://conever.duckdns.org:8000/user/me',
+          'http://conever.duckdns.org:8000/user/me/',
           options: Options(
             headers: {
               'Authorization': 'Bearer $accessToken',
