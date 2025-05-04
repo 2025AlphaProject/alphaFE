@@ -14,9 +14,9 @@ class MyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
-      appBar: const DefaultAppBar(title: "마이 앱바 영역"),
+      appBar: DefaultAppBar(title: "마이페이지"),
       body: MyPageBody(),
     );
   }
@@ -253,7 +253,7 @@ class _MyPageBodyState extends State<MyPageBody> {
               SizedBox(height: width * 0.023),
               Container(
                 width: width * 0.25,
-                height: width * 0.115,
+                height: height  * 0.115,
                 alignment: Alignment.center,
                 child: CircleAvatar(
                   radius: width * 0.125,
@@ -261,15 +261,15 @@ class _MyPageBodyState extends State<MyPageBody> {
                   backgroundColor: Colors.transparent,
                 ),
               ),
-              SizedBox(height: height * 0.0046),
+              SizedBox(height: height * 0.03),
               Text(
                 username ?? '',
                 style: TextStyle(
-                  color: Color(0xFF757575),
-                  fontSize: width * 0.045,
+                  color: const Color(0xFF757575),
+                  fontSize: width * 0.06,
                   fontWeight: FontWeight.bold,
                   shadows: [
-                    Shadow(offset: Offset(2, 2), blurRadius: 10, color: Color(0xFFCCCCCC))
+                    const Shadow(offset: Offset(2, 2), blurRadius: 10, color: Color(0xFFCCCCCC))
                   ],
                 ),
               ),
@@ -284,7 +284,7 @@ class _MyPageBodyState extends State<MyPageBody> {
               _StateItem(missionCount.toString(), "미션", width, height),
             ],
           ),
-          SizedBox(height: height * 0.055),
+          SizedBox(height: height * 0.05),
           Column( //미션진행도랑 자주묻는 질문
             children: [
               _menuItem(context, Icons.trending_up, "미션 진행도", const Mission_Page(), width, height),
@@ -306,16 +306,16 @@ Widget _StateItem(String value, String label, double width, double height) {
       Text(
         value,
         style: TextStyle(
-          color: Color(0xFF000000),
+          color: const Color(0xFF000000),
           fontSize: width * 0.06,
           fontWeight: FontWeight.bold,
         ),
       ),
-      SizedBox(height: height * 0.092),
+      SizedBox(height: height * 0.002),
       Text(
         label,
         style: TextStyle(
-          color: Color(0xFF757575),
+          color: const Color(0xFF757575),
           fontSize: width * 0.03,
         ),
       ),
@@ -336,18 +336,18 @@ Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, 
         style: TextButton.styleFrom(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           alignment: Alignment.centerLeft,
-          foregroundColor: Color(0xFFCCCCCC),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          foregroundColor: const Color(0xFFCCCCCC),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
         child: Row(
           children: [
-            Icon(icon, size: width * 0.045, color: Color(0xFF000000)),
+            Icon(icon, size: width * 0.055, color: const Color(0xFF000000)),
             SizedBox(width: width * 0.02),
             Text(
               menu,
               style: TextStyle(
-                color: Color(0xFF000000),
-                fontSize: width * 0.04,
+                color: const Color(0xFF000000),
+                fontSize: width * 0.05,
                 fontWeight: FontWeight.w600,
               ),
             ),
