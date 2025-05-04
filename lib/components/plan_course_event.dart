@@ -17,107 +17,110 @@ class travel_plan extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 0.0222, vertical: height * 0.011),
-          child:
-              Text("🧭 예정된 코스",style: TextStyle(fontSize:width * 0.044 ),),
-        ),
-        ...courseData.map((day) {
-          final date = day['date'] ?? '';
-          final places = day['places'] as List<dynamic>? ?? [];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.022, vertical: height * 0.011),
-                child: Row(
-                  children: [
-                    Text(
-                      "📅 $date",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: width * 0.044,
-                      ),
-                    ),
-                    if (EditState.showEditButton)
-                      Padding(
-                        padding: EdgeInsets.only(left: width * 0.022),
-                        child: Row(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () async {
-                                final result = await showDialog(
-                                  context: context,
-                                  builder: (context) => Center(child: DeleteCourse(tour_id: tour_id, target_date: date,onRefresh: onRefresh,)),
-                                );
-                                // if (result == true && onRefresh != null) {
-                                //   onRefresh!(); // 콜백 호출
-                                // }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: width * 0.033,
-                                  vertical: height * 0.011,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                backgroundColor: Colors.orangeAccent,
-                                foregroundColor: Colors.white,
-                              ),
-                              child: Text("삭제",style: TextStyle(fontSize: width * 0.04),),
-                            ),
-                            ElevatedButton(onPressed: (){
-                              EditState.showEditButton = false;
-                              onRefresh?.call();
-                            },
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: width * 0.033,
-                                  vertical: height * 0.011,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                backgroundColor: Colors.orangeAccent,
-                                foregroundColor: Colors.white,
-                              ),
-                              child: Text("취소",style: TextStyle(fontSize: width * 0.04),),)
-                          ],
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: width * 0.032),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.0222, vertical: height * 0.011),
+            child:
+                Text("🧭 예정된 코스",style: TextStyle(fontSize:width * 0.08, fontWeight: FontWeight.bold),),
+          ),
+          ...courseData.map((day) {
+            final date = day['date'] ?? '';
+            final places = day['places'] as List<dynamic>? ?? [];
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.022, vertical: height * 0.011),
+                  child: Row(
+                    children: [
+                      Text(
+                        "📅 $date",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: width * 0.044,
                         ),
                       ),
-                  ],
+                      if (EditState.showEditButton)
+                        Padding(
+                          padding: EdgeInsets.only(left: width * 0.022),
+                          child: Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () async {
+                                  final result = await showDialog(
+                                    context: context,
+                                    builder: (context) => Center(child: DeleteCourse(tour_id: tour_id, target_date: date,onRefresh: onRefresh,)),
+                                  );
+                                  // if (result == true && onRefresh != null) {
+                                  //   onRefresh!(); // 콜백 호출
+                                  // }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.033,
+                                    vertical: height * 0.011,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  backgroundColor: Colors.orangeAccent,
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: Text("삭제",style: TextStyle(fontSize: width * 0.04),),
+                              ),
+                              ElevatedButton(onPressed: (){
+                                EditState.showEditButton = false;
+                                onRefresh?.call();
+                              },
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.033,
+                                    vertical: height * 0.011,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  backgroundColor: Colors.orangeAccent,
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: Text("취소",style: TextStyle(fontSize: width * 0.04),),)
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                ...places.map((place) {
+                  return place_card(
+                    imageUrl: place['image_url'] ?? '',
+                    placeName: place['name'] ?? '',
+                    roadAddress: place['road_address'] ?? '',
+                    numberAddress: place['parcel_address'] ?? '',
+                    mapX: place['mapX']?? '',
+                    mapY: place['mapY']?? '',
+                  );
+                }).toList(),
+              ],
+            );
+          }).toList(),
+          if (courseData.isEmpty)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.044, vertical: height * 0.02),
+              child: Text(
+                "등록된 경로가 없습니다.",
+                style: TextStyle(
+                  fontSize: width * 0.039,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
                 ),
               ),
-              ...places.map((place) {
-                return place_card(
-                  imageUrl: place['image_url'] ?? '',
-                  placeName: place['name'] ?? '',
-                  roadAddress: place['road_address'] ?? '',
-                  numberAddress: place['parcel_address'] ?? '',
-                  mapX: place['mapX']?? '',
-                  mapY: place['mapY']?? '',
-                );
-              }).toList(),
-            ],
-          );
-        }).toList(),
-        if (courseData.isEmpty)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: width * 0.044, vertical: height * 0.02),
-            child: Text(
-              "등록된 경로가 없습니다.",
-              style: TextStyle(
-                fontSize: width * 0.039,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -169,7 +172,6 @@ class place_card extends StatelessWidget {
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal:  width * 0.022),
-                  width: width * 0.611,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
