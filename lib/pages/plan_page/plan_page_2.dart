@@ -270,7 +270,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                       SizedBox(height: height * 0.02),
                       DashedLine(),
                       travel_plan(
-                        touㅈr_id: widget.tour_id,
+                        tour_id: widget.tour_id,
                         courseData: courseData,
                         onRefresh: _refreshData,
                       ),
