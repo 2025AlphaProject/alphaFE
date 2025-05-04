@@ -127,10 +127,9 @@ class _Mission_PageState extends State<Mission_Page> {
       // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
       if (e is DioException && e.response?.statusCode == 403) {
         await getAccessTokenFromRefreshToken();
-        await _fetchMissions();
+        await missionCreate();
         return;
       }
-
       print("에러 발생: $e");
     }
   }
