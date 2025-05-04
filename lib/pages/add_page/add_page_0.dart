@@ -2,6 +2,7 @@ import 'package:alpha_fe/pages/add_page/add_page_1.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import '../../components/auth_token_handler.dart';
 import '../../components/proceed_button.dart';
 import '../../components/app_bar.dart';
 import '../../components/token_controller.dart';
@@ -157,6 +158,13 @@ class _AddPage_0State extends State<AddPage_0> {
         );
       }
     } catch (e) {
+
+      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+      if (e is DioException && e.response?.statusCode == 403) {
+        await getAccessTokenFromRefreshToken();
+        await _registerTour();
+        return;
+      }
       // 요청 에러 발생 시
       _tourRegistered = false;
       ScaffoldMessenger.of(context).showSnackBar(

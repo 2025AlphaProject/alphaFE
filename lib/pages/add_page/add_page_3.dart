@@ -35,6 +35,7 @@ class _AddPage_3State extends State<AddPage_3> {
   Future<Map<String, dynamic>> fetchTourData() async {
     final accessToken = await getAccessToken();
     final dio = Dio();
+
     final url = 'http://conever.duckdns.org:8000/tour/${widget.tour_id}/';
     try {
       final response = await dio.get(
@@ -48,6 +49,11 @@ class _AddPage_3State extends State<AddPage_3> {
       );
       return response.data;
     } catch (e) {
+      if (e is DioException && e.response?.statusCode == 403) {
+        await getAccessTokenFromRefreshToken();
+        await fetchTourData();
+      }
+
       print("❌ 여행 데이터 불러오기 실패: $e");
       return {
         'tour_name': '여행 이름 불러오기 실패',

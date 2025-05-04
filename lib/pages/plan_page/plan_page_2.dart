@@ -7,6 +7,8 @@ import 'package:alpha_fe/components/plan_course_event.dart';
 import 'package:alpha_fe/pages/plan_page/add_user.dart';
 import 'package:alpha_fe/components/plan_loading_page.dart';
 
+import '../../components/auth_token_handler.dart';
+
 class PlanPage2 extends StatefulWidget {
   final int tour_id;
   const PlanPage2({Key? key, required this.tour_id}) : super(key: key);
@@ -110,6 +112,13 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
         });
       }
     } catch (e) {
+
+      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+      if (e is DioException && e.response?.statusCode == 403) {
+        await getAccessTokenFromRefreshToken();
+        await fetchTourCourse();
+        return;
+      }
       print("코스 불러오기 실패: $e");
     }
   }

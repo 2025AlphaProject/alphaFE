@@ -258,6 +258,43 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                     );
                   }
                 } catch (e) {
+                  if (e is DioException && e.response?.statusCode == 403) {
+                    await getAccessTokenFromRefreshToken();
+                    // Retry the request after refreshing the token
+                    final dio = Dio();
+                    final accessToken = await getAccessToken();
+                    final retryResponse = await dio.put(
+                      'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
+                      data: {
+                        'tour_name': _nameController.text,
+                      },
+                      options: Options(
+                        headers: {
+                          'Authorization': 'Bearer $accessToken',
+                          'Content-Type': 'application/json',
+                        },
+                      ),
+                    );
+
+                    if (!mounted) return;
+                    setState(() {
+                      _isLoading = false;
+                    });
+
+                    if (retryResponse.statusCode == 200) {
+                      Navigator.of(context).pop();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '재시도 실패: ${retryResponse.statusCode}',
+                            style: TextStyle(fontSize: width * 0.04),
+                          ),
+                        ),
+                      );
+                    }
+                    return;
+                  }
                   if (!mounted) return;
                   setState(() {
                     _isLoading = false;

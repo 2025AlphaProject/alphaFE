@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
+import 'package:alpha_fe/components/auth_token_handler.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -60,6 +61,7 @@ class _HomePageState extends State<HomePage> {
             'Authorization': 'Bearer $accessToken',
             'Accept': 'application/json'
           },
+
         ),
       );
 
@@ -122,6 +124,12 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } catch (e) {
+      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+      if (e is DioException && e.response?.statusCode == 403) {
+        await getAccessTokenFromRefreshToken();
+        await fetchPlans();
+        return;
+      }
 
       // API 호출 실패 혹은 예외 발생 시, 여행 계획을 null로 설정하고 로딩 상태를 false로 변경
       setState(() {
@@ -241,10 +249,12 @@ class _HomePageState extends State<HomePage> {
       // 저장 성공 시 콘솔에 출력
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('경로 저장 완료');
-      } else {
+      }
+      else {
         print('저장 실패: ${response.statusCode}');
       }
-    } catch (e) {
+    }
+    catch (e) {
       print('예외 발생: $e');
     }
   }

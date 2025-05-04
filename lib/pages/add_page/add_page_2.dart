@@ -458,7 +458,7 @@ class _AddPage_2State extends State<AddPage_2> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: width * 0.063),
+                      SizedBox(height: height * 0.028),
                       _buildTitleBlock(),
                       SizedBox(height: height * 0.0267),
 
@@ -504,7 +504,7 @@ class _AddPage_2State extends State<AddPage_2> {
                                         color: Colors.red.withOpacity(0.8),
                                         shape: BoxShape.circle,
                                       ),
-                                      padding: EdgeInsets.all(4),
+                                      padding: EdgeInsets.symmetric(vertical: height * .004, horizontal: width * 0.01),
                                       child: Icon(Icons.close, size: width * 0.045, color: Colors.white),
                                     ),
                                   ),
@@ -542,9 +542,9 @@ class _AddPage_2State extends State<AddPage_2> {
                                   ),
                                 ),
                               ),
-                        SizedBox(height: width * 0.04),
+                        SizedBox(height: height * 0.0184),
                       ],
-                      SizedBox(height: width * 0.2835),
+                      SizedBox(height: height * 0.13),
                     ],
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:flutter/cupertino.dart';
+import '../../components/auth_token_handler.dart';
 import '../../components/logout_by_user.dart';
 import '../../components/token_controller.dart';
 import '../../components/mission_manager.dart';
@@ -51,24 +52,33 @@ class _MyPageBodyState extends State<MyPageBody> {
     final accessToken = await getAccessToken();
     final dio = Dio();
 
-    final response = await dio.get(
-      'http://conever.duckdns.org:8000/user/me/',
-      options: Options(headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      }),
-    );
+    try {
+      final response = await dio.get(
+        'http://conever.duckdns.org:8000/user/me/',
+        options: Options(headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        }),
+      );
 
-    final data = response.data;
-    if (data is Map<String, dynamic>) {
-      setState(() {
-        username = data['username'];
-        profileImageUrl = data['profile_image_url'];
-        _isLoading = false;
-      });
-      await todayTours(username!).then((_) => this.loadTodayPlaces());
-    } else {
-      print('⚠️ 예상한 JSON 형식이 아닙니다: $data');
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        setState(() {
+          username = data['username'];
+          profileImageUrl = data['profile_image_url'];
+          _isLoading = false;
+        });
+        await todayTours(username!).then((_) => this.loadTodayPlaces());
+      } else {
+        print('⚠️ 예상한 JSON 형식이 아닙니다: $data');
+      }
+    } catch (e) {
+      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+      if (e is DioException && e.response?.statusCode == 403) {
+        await getAccessTokenFromRefreshToken();
+        await _fetchUserInfo();
+        return;
+      }
     }
   }
 
