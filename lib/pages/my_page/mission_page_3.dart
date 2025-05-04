@@ -45,13 +45,13 @@ class _missionTestState extends State<missionTest> {
         "travel_id": widget.mission['tour_id'],
         "place_id": widget.mission['place_id'],
         "mission_id": widget.mission['mission_id'],
-        // "mapX": mapX.toString(),
-        // "mapY": mapY.toString()
-        "mapX": widget.mission['mapX'].toString(),
-        "mapY": widget.mission['mapY'].toString()
+        "mapX": mapX.toString(),
+        "mapY": mapY.toString()
+        //미션 장소 성공용 테스트에 사용
+        // "mapX": widget.mission['mapX'].toString(),
+        // "mapY": widget.mission['mapY'].toString()
       };
-      print(widget.mission['mapX'].toString(),);
-      print(widget.mission['mapY'].toString());
+
       print('📤 미션 체크 요청 데이터: $requestData'); //확인용 코드
 
       final response = await dio.post(
