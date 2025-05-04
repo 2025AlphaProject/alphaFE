@@ -168,105 +168,141 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchRecommendedPlace({int retryCount = 0}) async {
+    print('트렌딩 장소 가져오기 시작...');
     final accessToken = await getAccessToken();
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
 
+    // 사용자 ID를 최대 3회까지 재시도해서 받아오는 함수
+    Future<int?> fetchUserId() async {
+      for (int i = 0; i < 3; i++) {
+        try {
+          final response = await dio.get(
+            '$baseUrl/user/me/',
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer $accessToken',
+                'Accept': 'application/json',
+              },
+            ),
+          );
+          return response.data['sub'];
+        } catch (_) {
+          await Future.delayed(const Duration(seconds: 2));
+        }
+      }
+      return null;
+    }
+
+    final userId = await fetchUserId();
+    if (userId == null) {
+      if (mounted) {
+        await showDialog(
+          context: context,
+          builder: (_) => const CustomAlertDialog(
+            title: '오류',
+            contentText: '사용자 정보를 불러오는 데 실패했습니다.',
+          ),
+        );
+      }
+      return;
+    }
+
+    final uniqueCode = Random().nextInt(1 << 31);
+
     try {
-      final userResponse = await dio.get(
-        '$baseUrl/user/me/',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'Accept': 'application/json',
-          },
-        ),
-      );
-
-      final userId = userResponse.data['sub'];
-      final uniqueCode = Random().nextInt(1 << 31);
-
       final channel = WebSocketChannel.connect(
         Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode&days=1'),
       );
+      print('웹소켓 연결 성공');
 
       late StreamSubscription subscription;
 
       subscription = channel.stream.listen((message) async {
-        final data = jsonDecode(message);
-        dynamic result = data["result"];
+        try {
+          final data = jsonDecode(message);
 
-        if (result is String) {
-          try {
-            result = jsonDecode(result);
-          } catch (e) {
+          // 중간 메시지 (state: OK)는 무시
+          if (data['status'] != 'SUCCESS' || data['result'] == null) {
+            print('중간 메시지 수신: $data');
             return;
           }
-        }
 
-        if (data["status"] != "SUCCESS" || result == null || result.isEmpty) {
-          await subscription.cancel();
-          channel.sink.close();
-          return;
-        }
+          // 실제 추천 결과 처리
+          dynamic result = data['result'];
+          if (result is String) {
+            result = jsonDecode(result);
+          }
 
-        final List<dynamic> flatPlaces = result.expand((course) => course is List ? course : []).toList();
-        final filteredPlaces = flatPlaces.where((place) => (place['image1'] ?? '').isNotEmpty).toList();
+          final List<dynamic> flatPlaces = result.expand((course) => course is List ? course : []).toList();
+          final filteredPlaces = flatPlaces.where((place) => (place['image1'] ?? '').isNotEmpty).toList();
 
-        if (filteredPlaces.isEmpty) {
-          await subscription.cancel();
-          channel.sink.close();
-          return;
-        }
+          if (filteredPlaces.isEmpty) {
+            await subscription.cancel();
+            channel.sink.close();
+            return;
+          }
 
-        final selectedPlace = filteredPlaces[Random().nextInt(filteredPlaces.length)];
+          final selectedPlace = filteredPlaces[Random().nextInt(filteredPlaces.length)];
 
-        try {
-          await precacheImage(NetworkImage(selectedPlace['image1']), context);
-        } catch (e) {
-          print("이미지 프리캐싱 실패: $e");
-        }
+          try {
+            await precacheImage(NetworkImage(selectedPlace['image1']), context);
+          } catch (e) {
+            print("이미지 프리캐싱 실패: $e");
+          }
 
-        if (mounted) {
-          setState(() {
-            _recommendedPlace = selectedPlace;
-          });
-        }
-
-        await subscription.cancel();
-        channel.sink.close();
-      }, onError: (error) async {
-        await subscription.cancel();
-        channel.sink.close();
-        if (retryCount < 5) {
-          await Future.delayed(const Duration(seconds: 8));
-          await _fetchRecommendedPlace(retryCount: retryCount + 1);
-        } else {
           if (mounted) {
+            setState(() {
+              _recommendedPlace = selectedPlace;
+            });
+          }
+
+          await subscription.cancel();
+          channel.sink.close();
+        } catch (_) {
+          await subscription.cancel();
+          channel.sink.close();
+          if (retryCount < 5) {
+            await Future.delayed(const Duration(seconds: 8));
+            _fetchRecommendedPlace(retryCount: retryCount + 1);
+          } else if (mounted) {
             await showDialog(
               context: context,
               builder: (_) => const CustomAlertDialog(
-                title: "오류",
-                contentText: "추천 장소를 가져오는 데 실패했습니다.",
+                title: '오류',
+                contentText: '추천 장소를 가져오는 데 실패했습니다.',
               ),
             );
           }
         }
-      });
-    } catch (e) {
-      if (retryCount < 5) {
-        await Future.delayed(const Duration(seconds: 8));
-        await _fetchRecommendedPlace(retryCount: retryCount + 1);
-      } else {
-        if (mounted) {
+      }, onError: (_) async {
+        await subscription.cancel();
+        channel.sink.close();
+        if (retryCount < 5) {
+          await Future.delayed(const Duration(seconds: 8));
+          _fetchRecommendedPlace(retryCount: retryCount + 1);
+        } else if (mounted) {
           await showDialog(
             context: context,
             builder: (_) => const CustomAlertDialog(
-              title: "오류",
-              contentText: "추천 장소를 가져오는 데 실패했습니다.",
+              title: '오류',
+              contentText: '추천 장소를 가져오는 데 실패했습니다.',
             ),
           );
         }
+      });
+    } catch (_) {
+      if (retryCount < 5) {
+        await Future.delayed(const Duration(seconds: 8));
+        _fetchRecommendedPlace(retryCount: retryCount + 1);
+      } else if (mounted) {
+        await showDialog(
+          context: context,
+          builder: (_) => const CustomAlertDialog(
+            title: '오류',
+            contentText: '추천 장소를 가져오는 데 실패했습니다.',
+          ),
+        );
       }
     }
   }
