@@ -152,7 +152,7 @@ class _AddPage_2State extends State<AddPage_2> {
           await subscription.cancel();
           channel.sink.close();
           if (retryCount < 5) {
-            await Future.delayed(const Duration(seconds: 2));
+            await Future.delayed(const Duration(seconds: 8));
             connectWebSocket(retryCount: retryCount + 1);
           } else if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -167,7 +167,7 @@ class _AddPage_2State extends State<AddPage_2> {
         await subscription.cancel();
         channel.sink.close();
         if (retryCount < 5) {
-          await Future.delayed(const Duration(seconds: 2));
+          await Future.delayed(const Duration(seconds: 8));
           connectWebSocket(retryCount: retryCount + 1);
         } else if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -179,7 +179,7 @@ class _AddPage_2State extends State<AddPage_2> {
     } catch (_) {
       // 웹소켓 연결 시도 자체가 실패한 경우 재시도 (최대 5회)
       if (retryCount < 5) {
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 8));
         connectWebSocket(retryCount: retryCount + 1);
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -392,8 +392,8 @@ class _AddPage_2State extends State<AddPage_2> {
           )
       );
 
-      // 날짜별로 장소 데이터를 묶어 개별 POST 요청 수행
-      for (var entry in _placeWidgets.where((e) => e.key == _selectedDate))  {
+      // 날짜별로 장소 데이터를 묶어 개별 POST 요청 수행 (모든 날짜를 저장)
+      for (var entry in _placeWidgets) {
         final date = entry.key;
         final places = entry.value;
 
