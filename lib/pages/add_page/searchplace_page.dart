@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:alpha_fe/components/proceed_button.dart'; // 진행 버튼 컴포넌트 임포트
 
 class SearchPlacePage extends StatefulWidget {
 
@@ -98,7 +99,9 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppBar(
+        backgroundColor: Color(0xFFFFFFFF),
 
         // 검색 입력창
         title: TextField(
@@ -108,89 +111,128 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
             hintText: '장소를 입력하세요',
             suffixIcon: IconButton(
               icon: const Icon(Icons.search),
-              onPressed: () => _searchPlace(_searchController.text), // 검색 아이콘 탭할 시 장소 검색 실행
+
+              // 검색 버튼 탭 시 키보드 닫고 장소 검색 실행
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                _searchPlace(_searchController.text);
+              },
             ),
           ),
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
+          Column(
+            children: [
 
-          // 지도 영역: 네이버 지도 위젯
-          SizedBox(
-            height: height * 0.35,
-            child: NaverMap(
-              onMapReady: (controller) {
-                _mapController = controller; // 지도 컨트롤러 초기화
-              },
-              options: const NaverMapViewOptions(
-                initialCameraPosition: NCameraPosition(
-                  target: NLatLng(37.5665, 126.9780), // 초기 위치: 서울 시청
-                  zoom: 12,
+              // 지도 영역 배경 흰색
+              Container(
+                width: double.infinity,
+                height: height * 0.35,
+                color: const Color(0xFFFFFFFF),
+                child: NaverMap(
+                  onMapReady: (controller) {
+                    _mapController = controller; // 지도 컨트롤러 초기화
+                  },
+                  options: const NaverMapViewOptions(
+                    initialCameraPosition: NCameraPosition(
+                      target: NLatLng(37.5665, 126.9780), // 초기 위치: 서울 시청
+                      zoom: 12,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          SizedBox(height: height * 0.015),
+              SizedBox(height: height * 0.015),
 
-          // 검색 결과 리스트: 검색된 장소들을 리스트뷰로 표시
-          Expanded(
-            child: ListView.builder(
-              itemCount: _places.length,
-              itemBuilder: (context, index) {
-                final place = _places[index];
-                final isSelected = _selectedPlace?['id'] == place['id']; // 선택된 장소인지 여부
-                return ListTile(
-                  title: Text(
-                    place['place_name'] ?? '',
-                    style: TextStyle(fontSize: width * 0.035),
-                  ),
-                  subtitle: Text(
-                    place['address_name'] ?? '',
-                    style: TextStyle(fontSize: width * 0.03),
-                  ),
-                  tileColor: isSelected ? Colors.grey.shade300 : null, // 선택된 항목 배경색 변경
-                  onTap: () {
-                    setState(() {
-                      _selectedPlace = place; // 선택된 장소 저장
-                    });
+              // 검색 결과 리스트: 검색된 장소들을 리스트뷰로 표시
+              Expanded(
+                child: Container(
+                  color: const Color(0xFFFFFFFF), // 리스트 배경 흰색
+                  child: ListView.separated(
+                    // 하단 버튼 오버레이 공간 확보 패딩 제거
+                    itemCount: _places.length,
+                    // 항목 사이에 얇은 구분선 추가
+                    separatorBuilder: (context, index) => Divider(
+                      color: Colors.grey.shade300,
+                      height: 1,
+                    ),
+                    itemBuilder: (context, index) {
+                      final place = _places[index];
+                      final isSelected = _selectedPlace?['id'] == place['id'];
 
-                    // 선택된 장소 위치로 지도 이동 및 확대
-                    _mapController.updateCamera(
-                      NCameraUpdate.scrollAndZoomTo(
-                        target: NLatLng(
-                          double.parse(place['y']),
-                          double.parse(place['x']),
+                      // 선택된 경우 텍스트 색상 변경
+                      final titleColor = isSelected ? Colors.black : Colors.grey.shade600;
+                      final subtitleColor = isSelected ? Colors.black : Colors.grey.shade600;
+
+                      return Material(
+                        // 일반 상태는 흰색, 선택 시 회색으로 배경색 적용
+                        color: isSelected ? Colors.grey.shade100 : Colors.transparent,
+                        child: ListTile(
+                          title: Text(
+                            place['place_name'] ?? '',
+                            style: TextStyle(
+                              fontSize: width * 0.035,
+                              color: titleColor,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          subtitle: Text(
+                            place['address_name'] ?? '',
+                            style: TextStyle(
+                              fontSize: width * 0.03,
+                              color: subtitleColor,
+                            ),
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _selectedPlace = place;
+                            });
+
+                            _mapController.updateCamera(
+                              NCameraUpdate.scrollAndZoomTo(
+                                target: NLatLng(
+                                  double.parse(place['y']),
+                                  double.parse(place['x']),
+                                ),
+                                zoom: width > 500 ? 14 : 15,
+                              ),
+                            );
+                          },
                         ),
-                        zoom: width > 500 ? 14 : 15,
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-
-          // "이 장소 추가하기" 버튼: 선택된 장소가 있을 때만 표시
-          if (_selectedPlace != null)
-            Padding(
-              padding: EdgeInsets.all(width * 0.04),
-              child: ElevatedButton(
-                onPressed: () {
-
-                  // 선택된 장소 정보를 콜백 함수로 전달
-                  widget.onPlaceSelected(
-                    imageUrl: _selectedPlace!['thumbnail'] ?? '', // TODO: 대체 이미지로 변경 필요
-                    title: _selectedPlace!['place_name'] ?? '제목 없음',
-                    address: _selectedPlace!['address_name'] ?? '주소 없음',
-                    mapX: double.parse(_selectedPlace!['x']),
-                    mapY: double.parse(_selectedPlace!['y']),
-                  );
-                  Navigator.pop(context); // 이전 화면(add_page_2)으로 돌아감
-                },
-                child: const Text("이 장소 추가하기"),
+                      );
+                    },
+                  ),
+                ),
               ),
-            ),
+            ],
+          ),
+          // 선택된 장소가 있을 때만 하단에 버튼 오버레이
+          if (_selectedPlace != null)
+            Positioned(
+              // 버튼만 해당 영역을 차지하도록 너비와 높이를 지정
+              bottom: height * 0.02,
+              left: width * 0.235,
+              width: width * 0.53,
+              height: height * 0.055,
+              child:ProceedButton(
+                  fontSize_: width * 0.037,
+                  fontWeight_: FontWeight.bold,
+                  text: "이 장소 추가하기",
+                  onTap: () {
+                    widget.onPlaceSelected(
+                      imageUrl: _selectedPlace!['thumbnail'] ?? '',
+                      title: _selectedPlace!['place_name'] ?? '제목 없음',
+                      address: _selectedPlace!['address_name'] ?? '주소 없음',
+                      mapX: double.parse(_selectedPlace!['x']),
+                      mapY: double.parse(_selectedPlace!['y']),
+                    );
+                    Navigator.pop(context);
+                  },
+                  size_w: width * 0.53,
+                  size_h: height * 0.055,
+                ),
+              ),
         ],
       ),
     );

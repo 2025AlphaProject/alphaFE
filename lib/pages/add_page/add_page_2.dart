@@ -373,8 +373,8 @@ class _AddPage_2State extends State<AddPage_2> {
         description: description,
         mapX: mapX,
         mapY: mapY,
-        width: width * 0.58,
-        height: width * 0.58 * 0.69,
+        width: width * 0.63,
+        height: width * 0.63 * 0.69,
       );
       final entryIndex = _placeWidgets.indexWhere((entry) => entry.key == date);
       if (entryIndex != -1) {
