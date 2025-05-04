@@ -15,6 +15,7 @@ import '../../components/placeinfo_card.dart';
 import '../../components/placeinput_card.dart';
 import '../../components/ai_loading_page.dart';
 import '../../components/date_dropdown.dart';
+import '../../components/custom_alert_dialog.dart';
 
 class AddPage_2 extends StatefulWidget {
   final String title;
@@ -128,8 +129,12 @@ class _AddPage_2State extends State<AddPage_2> {
       // 사용자 ID 또는 여행 날짜 불러오기에 실패한 경우 사용자에게 알리고 이전 페이지로 이동
       if (userId == null || dates == null) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("코스 추천 요청 실패: 사용자 정보 또는 여행 날짜 불러오기 오류")),
+          await showDialog(
+            context: context,
+            builder: (_) => const CustomAlertDialog(
+              title: '오류',
+              contentText: '코스 추천 요청 실패: 사용자 정보 또는 여행 날짜 불러오기 오류',
+            ),
           );
           Navigator.pop(context);
         }
@@ -153,13 +158,21 @@ class _AddPage_2State extends State<AddPage_2> {
         try {
           final data = jsonDecode(message);
           if (_receivedDataOnce || data["result"] == null || data["result"].isEmpty) return;
-          if (data["status"] != "SUCCESS") throw Exception("추천 실패");
+          if (data["status"] != "SUCCESS")
+            throw await showDialog(
+            context: context,
+            builder: (_) => const CustomAlertDialog(
+              title: '오류',
+              contentText: 'AI 코스생성 오류',
+            ),
+          );
 
           _receivedDataOnce = true;
           await subscription.cancel();
           channel.sink.close();
 
           if (mounted) {
+            print('웹소켓 연결 성공..');
             await processWebSocketData(data);
           }
         } catch (_) {
@@ -169,8 +182,12 @@ class _AddPage_2State extends State<AddPage_2> {
             await Future.delayed(const Duration(seconds: 8));
             connectWebSocket(retryCount: retryCount + 1);
           } else if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("코스 추천 실패: 서버 응답 오류")),
+            await showDialog(
+              context: context,
+              builder: (_) => const CustomAlertDialog(
+                title: '오류',
+                contentText: '코스 추천 실패: 서버 응답 오류',
+              ),
             );
             Navigator.pop(context);
           }
@@ -184,8 +201,12 @@ class _AddPage_2State extends State<AddPage_2> {
           await Future.delayed(const Duration(seconds: 8));
           connectWebSocket(retryCount: retryCount + 1);
         } else if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("코스 추천 실패: 서버 연결 오류")),
+          await showDialog(
+            context: context,
+            builder: (_) => const CustomAlertDialog(
+              title: '오류',
+              contentText: '코스 추천 실패: 서버 연결 오류',
+            ),
           );
           Navigator.pop(context);
         }
@@ -196,8 +217,12 @@ class _AddPage_2State extends State<AddPage_2> {
         await Future.delayed(const Duration(seconds: 8));
         connectWebSocket(retryCount: retryCount + 1);
       } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("코스 추천 연결 실패")),
+        await showDialog(
+          context: context,
+          builder: (_) => const CustomAlertDialog(
+            title: '오류',
+            contentText: '코스 추천 연결 실패',
+          ),
         );
         Navigator.pop(context);
       }

@@ -3,6 +3,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:alpha_fe/components/proceed_button.dart';
+import 'package:alpha_fe/components/custom_alert_dialog.dart';
 import 'package:logger/logger.dart';
 
 // 로거 사용을 위한 전역변수 선언
@@ -78,9 +79,12 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
       // 마커 업데이트 수행
       await _updateMarkers();
     } catch (e) {
-      // 검색 실패 시 안내 스낵바 표시
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('연결이 불안정합니다')),
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomAlertDialog(
+          title: '오류',
+          contentText: '연결이 불안정합니다',
+        ),
       );
     }
   }
@@ -136,8 +140,12 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
       }
       if (!initialized && mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('연결이 불안정합니다')),
+        await showDialog(
+          context: context,
+          builder: (context) => const CustomAlertDialog(
+            title: '오류',
+            contentText: '연결이 불안정합니다',
+          ),
         );
       } else if (initialized) {
         await _updateMarkers();
@@ -282,9 +290,11 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                             }
                             if (!success && mounted) {
                               Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('연결이 불안정합니다'),
+                              await showDialog(
+                                context: context,
+                                builder: (context) => const CustomAlertDialog(
+                                  title: '오류',
+                                  contentText: '연결이 불안정합니다',
                                 ),
                               );
                             }
