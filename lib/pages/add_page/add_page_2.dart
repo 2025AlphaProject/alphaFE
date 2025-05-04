@@ -364,6 +364,32 @@ class _AddPage_2State extends State<AddPage_2> {
 
   // 사용자가 새 장소를 추가 완료하면 해당 날짜 그룹에 PlaceInfoBlock을 추가하고 입력폼 닫기
   void addNewPlace(String date, String imageUrl, String title, String description, double mapX, double mapY) {
+    // 동일한 날짜 그룹 내에 이미 같은 정보의 장소가 있는지 확인
+    final entryIndex = _placeWidgets.indexWhere((entry) => entry.key == date);
+    final existingList = entryIndex != -1 ? _placeWidgets[entryIndex].value : [];
+    final isDuplicate = existingList.any((place) =>
+      place.title == title &&
+      place.description == description &&
+      place.mapX == mapX &&
+      place.mapY == mapY
+    );
+    if (isDuplicate) {
+      // 중복될 경우 안내 다이얼로그 표시 후 추가 중단
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: const Text('이미 추가된 장소입니다'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('확인'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
     setState(() {
       final width = MediaQuery.of(context).size.width;
       final height = MediaQuery.of(context).size.width;
@@ -376,7 +402,6 @@ class _AddPage_2State extends State<AddPage_2> {
         width: width * 0.63,
         height: width * 0.63 * 0.69,
       );
-      final entryIndex = _placeWidgets.indexWhere((entry) => entry.key == date);
       if (entryIndex != -1) {
         _placeWidgets[entryIndex].value.add(newPlace);
       } else {
