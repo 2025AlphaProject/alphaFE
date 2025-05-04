@@ -7,6 +7,7 @@ import 'package:alpha_fe/pages/my_page/mission_page_2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/custom_alert_dialog.dart';
 import '../../components/auth_token_handler.dart';
+import 'mission_success_page.dart';
 
 class Mission_Page extends StatefulWidget {
   final todayPlaces;
@@ -227,12 +228,23 @@ Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double w
       ),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MissionPage_2(mission: mission,), //상세페이지 넘어가기
-            ),
-          );
+          if (mission['isCompleted'] == true) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MissionSuccessPage(
+                  tdp_id: mission['tdp_id'],
+                ),
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MissionPage_2(mission: mission),
+              ),
+            );
+          }
         },
         child: Container(
           decoration: BoxDecoration(

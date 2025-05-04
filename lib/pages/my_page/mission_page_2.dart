@@ -254,9 +254,11 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                       await showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
+                          backgroundColor: const Color(0xFFF9F9F9),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
+                          insetPadding: EdgeInsets.all(24),
                           title: const Text(
                             "미션을 진행하시겠습니까?",
                             style: TextStyle(fontWeight: FontWeight.bold),
