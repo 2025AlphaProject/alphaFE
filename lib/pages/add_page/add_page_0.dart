@@ -49,8 +49,8 @@ class _AddPage_0State extends State<AddPage_0> {
       context: context,
       locale: const Locale('ko', 'KR'),
       // 날짜 범위 제한
-      firstDate: DateTime.now().subtract(Duration(days: 365 * 100)),
-      lastDate: DateTime.now().add(Duration(days: 365 * 100)),
+      firstDate: now,
+      lastDate: now.add(Duration(days: 365 * 5)),
       builder: (context, child) {
         return Theme(
           data: ThemeData(
