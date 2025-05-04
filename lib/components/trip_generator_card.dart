@@ -21,11 +21,11 @@ class GeneratorItem extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Container(
-      margin: EdgeInsets.symmetric(vertical: height * 0.09),
+      margin: EdgeInsets.symmetric(vertical: height * 0.009),
       decoration: BoxDecoration(
         border: Border.all(color: const Color(0xFFD9D9D9), width: width * 0.0035),
-        borderRadius: BorderRadius.circular(width * 11.25),
-        //color: const Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.circular(11.25),
+        color: const Color(0xFFF5F5F5),
       ),
       child: ElevatedButton(
           onPressed: () {
