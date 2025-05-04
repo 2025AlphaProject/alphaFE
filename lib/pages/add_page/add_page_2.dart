@@ -379,20 +379,27 @@ class _AddPage_2State extends State<AddPage_2> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
           children: [
-            Text("📍${widget.title}", style: TextStyle(fontSize: width * 0.06, fontWeight: FontWeight.bold)),
-            SizedBox(width: width * 0.038),
-            Text('근처 코스를 알려드릴게요', style: TextStyle(fontSize: width * 0.035, color: const Color(0xFF757575))),
+            Text("📍${widget.title}", style: TextStyle(fontSize: width * 0.08, fontWeight: FontWeight.w900)),
+            SizedBox(width: width * 0.025),
+            Text('근처 코스를 알려드릴게요', style: TextStyle(fontSize: width * 0.04, color: const Color(0xFF757575))),
           ],
         ),
         SizedBox(height: height * 0.0138),
-        Row(
-          children: [
-            Text('최근 업데이트', style: TextStyle(fontSize: width * 0.027, fontWeight: FontWeight.bold, color: const Color(0xFF7F7F7F))),
-            SizedBox(height: height * 0.00831),
-            // 오늘 날짜를 yyyy-MM-dd 형식으로 표시
-            Text('${DateTime.now().toLocal().toString().substring(0, 10)}', style: TextStyle(fontSize: width * 0.027, color: const Color(0xFF7F7F7F))),
-          ],
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: width * 0.02),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text('최근 업데이트: ', style: TextStyle(fontSize: width * 0.03, fontWeight: FontWeight.bold, color: const Color(0xFF7F7F7F))),
+              SizedBox(width: width * 0.01),
+              // 오늘 날짜를 yyyy-MM-dd 형식으로 표시
+              Text(DateTime.now().toLocal().toString().substring(0, 10), style: TextStyle(fontSize: width * 0.03, color: const Color(0xFF7F7F7F))),
+            ],
+          ),
         ),
       ],
     );
@@ -423,7 +430,7 @@ class _AddPage_2State extends State<AddPage_2> {
     }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const DefaultAppBar(title: "추가페이지_2nd"),
+      appBar: const DefaultAppBar(title: "새 여행지 추가"),
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -451,7 +458,7 @@ class _AddPage_2State extends State<AddPage_2> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: width * 0.063),
+                      SizedBox(height: height * 0.028),
                       _buildTitleBlock(),
                       SizedBox(height: height * 0.0267),
 
@@ -497,14 +504,14 @@ class _AddPage_2State extends State<AddPage_2> {
                                         color: Colors.red.withOpacity(0.8),
                                         shape: BoxShape.circle,
                                       ),
-                                      padding: EdgeInsets.all(4),
+                                      padding: EdgeInsets.symmetric(vertical: height * .004, horizontal: width * 0.01),
                                       child: Icon(Icons.close, size: width * 0.045, color: Colors.white),
                                     ),
                                   ),
                                 ),
                             ],
                           ),
-                          SizedBox(height: width * 0.058),
+                          SizedBox(height: height * 0.0268),
                         ],
                         // 날짜별로 추가된 코스 아래에 위치하는 '+ 장소 추가' 버튼
                         // 버튼을 누르면 해당 날짜에 새로운 장소 입력폼(PlaceInputCard) 표시됨
@@ -535,9 +542,9 @@ class _AddPage_2State extends State<AddPage_2> {
                                   ),
                                 ),
                               ),
-                        SizedBox(height: width * 0.04),
+                        SizedBox(height: height * 0.0184),
                       ],
-                      SizedBox(height: width * 0.2835),
+                      SizedBox(height: height * 0.13),
                     ],
                   ),
                 ),
@@ -592,8 +599,4 @@ class _AddPage_2State extends State<AddPage_2> {
       ),
     );
   }
-
-
-
-
 }

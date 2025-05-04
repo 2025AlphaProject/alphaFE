@@ -2,6 +2,7 @@ import 'package:alpha_fe/pages/add_page/add_page_1.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import '../../components/auth_token_handler.dart';
 import '../../components/proceed_button.dart';
 import '../../components/app_bar.dart';
 import '../../components/token_controller.dart';
@@ -47,30 +48,30 @@ class _AddPage_0State extends State<AddPage_0> {
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
       locale: const Locale('ko', 'KR'),
-
       // 날짜 범위 제한
       firstDate: DateTime.now().subtract(Duration(days: 365 * 100)),
       lastDate: DateTime.now().add(Duration(days: 365 * 100)),
-
       builder: (context, child) {
         return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: const Color(0xFF2C2C2C),
+          data: ThemeData(
+            brightness: Brightness.light,
+            dialogTheme: const DialogTheme(
+              backgroundColor: Colors.white,
+            ),
             colorScheme: const ColorScheme.light(
               primary: Color(0xFF2C2C2C),
               onPrimary: Colors.white,
               onSurface: Colors.black,
+              secondary: Color(0xFFFFF176), // 연노랑 (light yellow)
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                 foregroundColor: const Color(0xFF2C2C2C),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
                 ),
               ),
             ),
-            dialogBackgroundColor: Colors.white,
-            hintColor: const Color(0xFFB5B5B5),
           ),
           child: child!,
         );
@@ -157,6 +158,13 @@ class _AddPage_0State extends State<AddPage_0> {
         );
       }
     } catch (e) {
+
+      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+      if (e is DioException && e.response?.statusCode == 403) {
+        await getAccessTokenFromRefreshToken();
+        await _registerTour();
+        return;
+      }
       // 요청 에러 발생 시
       _tourRegistered = false;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -314,14 +322,17 @@ class _AddPage_0State extends State<AddPage_0> {
               ),
               SizedBox(height: height * 0.073,),
               // 새 여행 만들기 버튼 - 여행 id 발급 및 행정구역 선택 페이지로 이동
-              Center(
-                child: ProceedButton(
-                  size_w: width * 0.8,
-                  size_h: height * 0.06,
-                  text: "새 여행 만들기",
-                  fontSize_: width * 0.045,
-                  fontWeight_: FontWeight.bold,
-                  onTap: _registerTour,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.106, vertical: height * 0.086),
+                child: Center(
+                  child: ProceedButton(
+                    size_w: width * 0.8,
+                    size_h: height * 0.06,
+                    text: "새 여행 만들기",
+                    fontSize_: width * 0.045,
+                    fontWeight_: FontWeight.bold,
+                    onTap: _registerTour,
+                  ),
                 ),
               ),
             ],

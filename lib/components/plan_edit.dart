@@ -29,18 +29,20 @@ class TravelEditMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.066,
-          vertical: MediaQuery.of(context).size.height * 0.029
+          horizontal: width * 0.066,
+          vertical: height * 0.029
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("편집", style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width * 0.04)),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.029),
+            Text("편집", style: TextStyle(fontWeight: FontWeight.bold, fontSize: width * 0.04)),
+            SizedBox(height: height * 0.029),
             _EditMenu( //여행경로 삭제(코스 다 삭제 하기)
               text: "여행경로 삭제",
               onTap: () {
@@ -97,7 +99,7 @@ class TravelEditMenu extends StatelessWidget {
                 );
               },
             ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+            SizedBox(height: height * 0.02),
           ],
         ),
       ),
@@ -120,19 +122,21 @@ class _EditMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return InkWell(
       onTap: () {
         onTap();
       },
         child: Container(
           padding: EdgeInsets.symmetric(
-            vertical: MediaQuery.of(context).size.height * 0.025,
-            horizontal: MediaQuery.of(context).size.width * 0.02,
+            vertical: height * 0.025,
+            horizontal: width * 0.02,
           ),
           child: Text(
             text,
             style: TextStyle(
-              fontSize: MediaQuery.of(context).size.width * 0.044,
+              fontSize: width * 0.044,
               color: isDestructive ? Colors.red : Colors.black,
             ),
           ),
@@ -177,12 +181,14 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return MediaQuery.removeViewInsets(
       removeBottom: true,
       context: context,
       child: SingleChildScrollView(
         child: AlertDialog(
-          title: Text("여행제목 수정", style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+          title: Text("여행제목 수정", style: TextStyle(fontSize: width * 0.04)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -190,13 +196,13 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                 controller: _nameController,
                 decoration: InputDecoration(
                   hintText: "새 여행제목 입력",
-                  hintStyle: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                  hintStyle: TextStyle(fontSize: width * 0.04),
                 ),
               ),
               if (_isLoading)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: Center(child: CircularProgressIndicator()),
+                  padding: EdgeInsets.symmetric(vertical: height * 0.014),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
             ],
           ),
@@ -205,7 +211,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
               onPressed: () {
                 Navigator.pop(context); // 취소
               },
-              child: Text("취소", style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+              child: Text("취소", style: TextStyle(fontSize: width * 0.04)),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -246,12 +252,49 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                       SnackBar(
                         content: Text(
                           '수정 실패: ${response.statusCode}',
-                          style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                          style: TextStyle(fontSize: width * 0.04),
                         ),
                       ),
                     );
                   }
                 } catch (e) {
+                  if (e is DioException && e.response?.statusCode == 403) {
+                    await getAccessTokenFromRefreshToken();
+                    // Retry the request after refreshing the token
+                    final dio = Dio();
+                    final accessToken = await getAccessToken();
+                    final retryResponse = await dio.put(
+                      'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
+                      data: {
+                        'tour_name': _nameController.text,
+                      },
+                      options: Options(
+                        headers: {
+                          'Authorization': 'Bearer $accessToken',
+                          'Content-Type': 'application/json',
+                        },
+                      ),
+                    );
+
+                    if (!mounted) return;
+                    setState(() {
+                      _isLoading = false;
+                    });
+
+                    if (retryResponse.statusCode == 200) {
+                      Navigator.of(context).pop();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '재시도 실패: ${retryResponse.statusCode}',
+                            style: TextStyle(fontSize: width * 0.04),
+                          ),
+                        ),
+                      );
+                    }
+                    return;
+                  }
                   if (!mounted) return;
                   setState(() {
                     _isLoading = false;
@@ -261,13 +304,13 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                     SnackBar(
                       content: Text(
                         '오류 발생: $e',
-                        style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                        style: TextStyle(fontSize: width * 0.04),
                       ),
                     ),
                   );
                 }
               },
-              child: Text("확인", style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+              child: Text("확인", style: TextStyle(fontSize: width * 0.04)),
             ),
           ],
         ),
@@ -299,17 +342,18 @@ class _DeleteTourState extends State<DeleteTour> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return MediaQuery.removeViewInsets(
       removeBottom: true,
       context: context,
       child: SingleChildScrollView(
         child: AlertDialog(
-          title: Text('여행 삭제', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
-          content: Text('이 여행을 삭제하시겠습니까?', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+          title: Text('여행 삭제', style: TextStyle(fontSize: width * 0.04)),
+          content: Text('이 여행을 삭제하시겠습니까?', style: TextStyle(fontSize: width * 0.04)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('취소', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+              child: Text('취소', style: TextStyle(fontSize: width * 0.04)),
             ),
             ElevatedButton(
               onPressed: () async { //내 여행 삭제하기
@@ -330,7 +374,7 @@ class _DeleteTourState extends State<DeleteTour> {
                     if (!mounted) return; // 안전 체크 추가
                     Navigator.of(context).pop(); // 다이얼로그 닫기
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => MainScreen()), //처음으로 되돌아감
+                      MaterialPageRoute(builder: (context) => const MainScreen()), //처음으로 되돌아감
                     );
                   }
 
@@ -343,7 +387,7 @@ class _DeleteTourState extends State<DeleteTour> {
                       SnackBar(
                         content: Text(
                           '수정 실패: ${response.statusCode}',
-                          style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                          style: TextStyle(fontSize: width * 0.04),
                         ),
                       ),
                     );
@@ -353,13 +397,13 @@ class _DeleteTourState extends State<DeleteTour> {
                     SnackBar(
                       content: Text(
                         '오류 발생: $e',
-                        style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                        style: TextStyle(fontSize: width * 0.04),
                       ),
                     ),
                   );
                 }
               },
-              child: Text('삭제',style: TextStyle(color: Colors.red, fontSize: MediaQuery.of(context).size.width * 0.04)),
+              child: Text('삭제',style: TextStyle(color: Colors.red, fontSize: width * 0.04)),
             ),
           ],
         ),
@@ -395,17 +439,18 @@ class _DeleteCourseState extends State<DeleteCourse> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return MediaQuery.removeViewInsets(
       removeBottom: true,
       context: context,
       child: SingleChildScrollView(
         child: AlertDialog(
-          title: Text('여행 경로 삭제', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
-          content: Text('"${widget.target_date}"의 경로를 삭제하시겠습니까?', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+          title: Text('여행 경로 삭제', style: TextStyle(fontSize: width * 0.04)),
+          content: Text('"${widget.target_date}"의 경로를 삭제하시겠습니까?', style: TextStyle(fontSize: width * 0.04)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('취소', style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+              child: Text('취소', style: TextStyle(fontSize: width * 0.04)),
             ),
             ElevatedButton(
               onPressed: () async { //여행경로 삭제하기
@@ -440,7 +485,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
                       SnackBar(
                         content: Text(
                           '수정 실패: ${response.statusCode}',
-                          style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                          style: TextStyle(fontSize: width * 0.04),
                         ),
                       ),
                     );
@@ -450,13 +495,13 @@ class _DeleteCourseState extends State<DeleteCourse> {
                     SnackBar(
                       content: Text(
                         '오류 발생: $e',
-                        style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                        style: TextStyle(fontSize: width * 0.04),
                       ),
                     ),
                   );
                 }
               },
-              child: Text('삭제',style: TextStyle(color: Colors.red, fontSize: MediaQuery.of(context).size.width * 0.04)),
+              child: Text('삭제',style: TextStyle(color: Colors.red, fontSize: width * 0.04)),
             ),
           ],
         ),
@@ -507,12 +552,14 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return MediaQuery.removeViewInsets(
       removeBottom: true,
       context: context,
       child: SingleChildScrollView(
         child: AlertDialog(
-          title: Text("여행날짜 수정", style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+          title: Text("여행날짜 수정", style: TextStyle(fontSize: width * 0.04)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -520,18 +567,18 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                 controller: _startDateController,
                 decoration: InputDecoration(
                   hintText: "시작 날짜 (YYYY-MM-DD)",
-                  hintStyle: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                  hintStyle: TextStyle(fontSize: width * 0.04),
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: height * 0.014),
               TextField(
                 controller: _endDateController,
                 decoration: InputDecoration(
                   hintText: "종료 날짜 (YYYY-MM-DD)",
-                  hintStyle: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                  hintStyle: TextStyle(fontSize: width * 0.04),
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: height * 0.014),
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
@@ -560,14 +607,14 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                       }
                     });
                   },
-                  icon: Icon(Icons.calendar_month),
-                  label: Text("달력으로 선택"),
+                  icon: const Icon(Icons.calendar_month),
+                  label: const Text("달력으로 선택"),
                 ),
               ),
               if (_isLoading)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: Center(child: CircularProgressIndicator()),
+                  padding: EdgeInsets.symmetric(vertical: height * 0.014),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
             ],
           ),
@@ -576,7 +623,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
               onPressed: () {
                 Navigator.pop(context); // 취소
               },
-              child: Text("취소", style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+              child: Text("취소", style: TextStyle(fontSize: width * 0.04)),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -619,7 +666,7 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                       SnackBar(
                         content: Text(
                           '수정 실패: ${response.statusCode}',
-                          style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                          style: TextStyle(fontSize: width * 0.04),
                         ),
                       ),
                     );
@@ -634,13 +681,13 @@ class _EditTourDateDialogState extends State<EditTourDateDialog> {
                     SnackBar(
                       content: Text(
                         '오류 발생: $e',
-                        style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+                        style: TextStyle(fontSize: width * 0.04),
                       ),
                     ),
                   );
                 }
               },
-              child: Text("확인", style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04)),
+              child: Text("확인", style: TextStyle(fontSize: width * 0.04)),
             ),
           ],
         ),

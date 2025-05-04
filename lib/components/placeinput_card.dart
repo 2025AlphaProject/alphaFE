@@ -30,9 +30,11 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
   // 검색 버튼, 텍스트 필드, 취소/완료 버튼
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Container(
-      width: MediaQuery.of(context).size.width * 0.63,
-      padding: const EdgeInsets.all(16),
+      width: width * 0.63,
+      padding: EdgeInsets.symmetric(horizontal: width * 0.016, vertical: height * .03),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(20),
@@ -40,76 +42,97 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
       child: Column(
         children: [
           // 🔹 '장소 찾아보기' 버튼: 외부 검색 화면으로 이동
-          ElevatedButton(
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => SearchPlacePage(
-                    onPlaceSelected: ({
-                      required String title,
-                      required String address,
-                      required String imageUrl,
-                      required double mapX,
-                      required double mapY,
-                    }) {
-                      if (mounted) {
-                        setPlaceInfo({
-                          'title': title,
-                          'address': address,
-                          'imageUrl': imageUrl,
-                          'mapX': mapX,
-                          'mapY': mapY,
-                        });
-                      }
-                    },
+          SizedBox(
+            width: width * 0.45,
+            child: ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SearchPlacePage(
+                      onPlaceSelected: ({
+                        required String title,
+                        required String address,
+                        required String imageUrl,
+                        required double mapX,
+                        required double mapY,
+                      }) {
+                        if (mounted) {
+                          setPlaceInfo({
+                            'title': title,
+                            'address': address,
+                            'imageUrl': imageUrl,
+                            'mapX': mapX,
+                            'mapY': mapY,
+                          });
+                        }
+                      },
+                    ),
                   ),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey.shade700,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("🔍 장소 찾아보기", style: TextStyle(color: Colors.white)),
-              ],
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey.shade700,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("🔍 장소 찾아보기", style: TextStyle(color: Colors.white)),
+                ],
+              ),
             ),
           ),
-          SizedBox(height: MediaQuery.of(context).size.width * 0.63 * 0.045),
+          SizedBox(height: height * 0.012),
 
           // 장소 정보를 입력하는 필드들, 검색을 통해 장소를 선택하면 자동으로 채워짐
           // 이미지 URL, 장소명, 설명, 위도(mapX), 경도(mapY)
-          TextField(
-            controller: _imageUrlController,
-            decoration: const InputDecoration(labelText: '이미지 URL'),
+          SizedBox(
+            width: width * 0.55,
+            child: TextField(
+              controller: _imageUrlController,
+              decoration: const InputDecoration(labelText: '이미지 URL'),
+            ),
           ),
-          TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(labelText: '장소명'),
+          SizedBox(
+            width: width * 0.55,
+            child: TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(labelText: '장소명'),
+            ),
           ),
-          TextField(
-            controller: _descriptionController,
-            decoration: const InputDecoration(labelText: '설명'),
+          SizedBox(
+            width: width * 0.55,
+            child: TextField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(labelText: '설명'),
+            ),
           ),
-          TextField(
-            controller: _mapXController,
-            decoration: const InputDecoration(labelText: 'mapX'),
+          SizedBox(
+            width: width * 0.55,
+            child: TextField(
+              controller: _mapXController,
+              decoration: const InputDecoration(labelText: 'mapX'),
+            ),
           ),
-          TextField(
-            controller: _mapYController,
-            decoration: const InputDecoration(labelText: 'mapY'),
+          SizedBox(
+            width: width * 0.55,
+            child: TextField(
+              controller: _mapYController,
+              decoration: const InputDecoration(labelText: 'mapY'),
+            ),
           ),
-          SizedBox(height: MediaQuery.of(context).size.width * 0.63 * 0.045),
+          SizedBox(height: height * 0.012),
 
           // 완료, 취소 버튼
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              TextButton(onPressed: widget.onCancel, child: const Text("취소")),
+              TextButton(onPressed: widget.onCancel, child: const Text("취소", style: TextStyle(color: Colors.black),)),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade700
+                ),
                 // 🔹 완료 버튼 클릭 시 현재 입력된 정보로 onComplete 콜백 호출
                 onPressed: () {
                   final mapX = double.tryParse(_mapXController.text) ?? 0.0;
@@ -122,7 +145,7 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
                     mapY,
                   );
                 },
-                child: const Text("완료"),
+                child: const Text("완료", style: TextStyle(color: Colors.white),),
               ),
             ],
           )

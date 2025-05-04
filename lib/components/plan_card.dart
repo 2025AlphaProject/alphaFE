@@ -33,8 +33,8 @@ class PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     final remainingDays = calculateRemainingDays(endDate);
 
     return SizedBox( // 카드 위젯의 크기 명시
@@ -43,7 +43,7 @@ class PlanCard extends StatelessWidget {
       child: Card(
         clipBehavior: Clip.antiAlias, // 카드 외부 영역이 터지되지 않도록 처리함
 
-        color: Color(0xFFF5F5F5),
+        color: const Color(0xFFF5F5F5),
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -61,10 +61,10 @@ class PlanCard extends StatelessWidget {
           },
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              screenWidth * 0.05,
-              screenHeight * 0.05,
-              screenWidth * 0.05,
-              screenHeight * 0.05,
+              width * 0.05,
+              height * 0.05,
+              width * 0.05,
+              height * 0.05,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -77,39 +77,39 @@ class PlanCard extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  margin: const EdgeInsets.all(5),
+                  margin: EdgeInsets.symmetric(vertical: height * .006, horizontal:  width * .013),
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.03,
-                      vertical: screenHeight * 0.0015,
+                      horizontal: width * 0.03,
+                      vertical: height * 0.0015,
                     ),
                     child: Text(
                       "D-$remainingDays",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: screenWidth * 0.022,
+                        fontSize: width * 0.022,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: height * 0.01),
                 // 여행 제목
                 Text(
                   title,
-                  style: TextStyle(fontSize: screenWidth * 0.085, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: width * 0.085, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: height * 0.01),
                 // 여행 날짜 범위 (달력 아이콘 + 텍스트)
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.calendar_today, size: screenWidth * 0.034, color: Colors.grey),
-                    const SizedBox(width: 5),
+                    Icon(Icons.calendar_today, size: width * 0.034, color: Colors.grey),
+                    SizedBox(width: width * 0.013),
                     Text(
                       dateRange,
-                      style: TextStyle(fontSize: screenWidth * 0.032, color: Colors.grey),
+                      style: TextStyle(fontSize: width * 0.032, color: Colors.grey),
                     ),
                   ],
                 ),
