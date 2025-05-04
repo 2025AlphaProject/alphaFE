@@ -133,53 +133,77 @@ class _missionTestState extends State<missionTest> {
       body: _isLoading
           ? const MissionLoadingView() //그 완료될 떄까지 로딩페이지 띄우기
           : Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(vertical: 30.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      if (widget.mission['isCompleted']) ...[ //성공시
-                        Icon(Icons.check_circle, color: Colors.green, size: 20),
-                        SizedBox(width: 4),
-                        Text(
-                          "미션 성공",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (widget.mission['isCompleted']) ...[ //성공시
+                          const Icon(Icons.check_circle, color: Colors.green, size: 30),
+                          const SizedBox(width: 4),
+                          const Text(
+                            "미션 성공!",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                          ),
+                        ],
+                        if (!widget.mission['isCompleted']) ...[ //실패시
+                          const Icon(Icons.cancel, color: Colors.red, size: 30),
+                          const SizedBox(width: 4),
+                          const Text(
+                            "미션 실패!",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                          ),
+                        ],
                       ],
-                      if (!widget.mission['isCompleted']) ...[ //실패시
-                        Icon(Icons.cancel, color: Colors.red, size: 20),
-                        SizedBox(width: 4),
-                        Text(
-                          "미션실패",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(widget.mission['image_url'].toString().isNotEmpty //미션 내용
                       ? "• 예시 사진과 유사하게 촬영하기"
-                      : "• 원하는 미션을 골라보세요",
-                    // style: TextStyle(),
+                      : (widget.mission['mission_id'] == 1
+                      ? "브이 포즈로 사진을 찍어보세요"
+                      : (widget.mission['mission_id']  == 2
+                      ? "손가락 하트를 하고 사진을 찍어보세요"
+                      : '여러분이 사진에 꼭 등장해야 해요!'
+                  )),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  SizedBox(height: 16),
-                  Container( //찍은 사진 띄우기
-                    height: 150,
-                    width: 200,
+                  SizedBox(height: 30),
+                  Container(
+                    width: 300,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
                     ),
                     child: Image.file(widget.image, fit: BoxFit.cover),
                   ),
-                  ElevatedButton( //홈으로 버튼
+
+                  SizedBox(height: 50,),
+
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black, // 배경색
+                      foregroundColor: Colors.white, // 글자색
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
+                    ),
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => const MainScreen()),
                       );
                     },
-                    child: const Text("홈으로"),
+                    child: const Text(
+                      "홈으로",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   )
                 ],
               ),

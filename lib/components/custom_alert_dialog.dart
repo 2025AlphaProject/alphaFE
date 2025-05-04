@@ -37,20 +37,24 @@ class CustomAlertDialog extends StatelessWidget {
         ),
       ),
       actions: [
-        TextButton(
+        ElevatedButton(
           onPressed: () {
             Navigator.of(context).pop();
             if (onConfirm != null) {
               onConfirm!();
             }
           },
-          child: Text(
-            '확인',
-            style: TextStyle(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+            textStyle: TextStyle(
               fontSize: width * 0.04,
-              color: Colors.black,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
+          child: const Text('확인'),
         ),
       ],
     );
