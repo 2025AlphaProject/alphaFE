@@ -382,21 +382,22 @@ class _AddPage_2State extends State<AddPage_2> {
     final baseUrl = 'http://conever.duckdns.org:8000';
     final int useTourId = tourId ?? widget.tourId;
 
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const SaveLoadingView(),
-      );
+    // Show loading dialog before starting to save
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const SaveLoadingView(),
+    );
 
+    try {
       // tour_id값을 이용해 여행 시작 날짜 불러옴
       final startDateResponse = await dio.get(
-          '$baseUrl/tour/$useTourId/',
-          options: Options(
-              headers: {
-                'Authorization': 'Bearer $accessToken'
-              }
-          )
+        '$baseUrl/tour/$useTourId/',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken'
+          }
+        )
       );
 
       // 날짜별로 장소 데이터를 묶어 개별 POST 요청 수행 (모든 날짜를 저장)
@@ -434,7 +435,10 @@ class _AddPage_2State extends State<AddPage_2> {
 
       if (!mounted) return;
 
-      Navigator.pop(context); // Remove SaveLoadingView
+      // Close the loading view if possible
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context); // Close the loading view
+      }
 
       Navigator.push(
         context,
@@ -445,7 +449,6 @@ class _AddPage_2State extends State<AddPage_2> {
         ),
       );
     } catch (e) {
-      Navigator.pop(context); // Remove SaveLoadingView on error
       print(e);
     }
   }

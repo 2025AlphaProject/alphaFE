@@ -1,31 +1,45 @@
 import 'package:flutter/material.dart';
 
-class SaveLoadingView extends StatelessWidget {
-  const SaveLoadingView({super.key});
+class SaveLoadingView extends StatefulWidget {
+  const SaveLoadingView({Key? key}) : super(key: key);
+
+  @override
+  State<SaveLoadingView> createState() => _SaveLoadingViewState();
+}
+
+class _SaveLoadingViewState extends State<SaveLoadingView> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) Navigator.pop(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-    return Scaffold(
+    final width = MediaQuery.of(context).size.width;
+    return Dialog(
       backgroundColor: Colors.white,
-      body: Center(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: width * .085, vertical: height * .0391),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "경로를 저장 중...\n잠시만 기다려주세요",
-              style: TextStyle(
-                fontSize: width * 0.064,
-                fontWeight: FontWeight.bold,
-              ),
+              '여행 경로 저장중...\n잠시만 기다려주세요',
+              style: TextStyle(fontSize: width * 0.055, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.start,
             ),
-            SizedBox(height: height * 0.024),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.133),
-              child: const LinearProgressIndicator(
-                color: Colors.black,
-                backgroundColor: Colors.grey,
+            SizedBox(height: height * 0.029),
+            const Center(
+              child: LinearProgressIndicator(
+                value: null,
+                minHeight: 8,
+                backgroundColor: Color(0xFFE0E0E0), // light gray
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
               ),
             ),
           ],
