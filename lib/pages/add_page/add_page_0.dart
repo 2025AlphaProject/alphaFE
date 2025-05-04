@@ -168,35 +168,6 @@ class _AddPage_0State extends State<AddPage_0> {
   @override
   void dispose() {
     super.dispose();
-
-    // 싱글모드 또는 멀티모드 모두에서 여행이 생성됐으나 중단된 경우 삭제 처리
-    if (_tourRegistered && _tourId != 0) {
-      _deleteUnfinishedTour(_tourId);
-    }
-  }
-
-  Future<void> _deleteUnfinishedTour(int tourId) async {
-    try {
-      final accessToken = await getAccessToken();
-      final dio = Dio();
-      final url = 'http://conever.duckdns.org:8000/tour/$tourId/';
-      final response = await dio.delete(
-        url,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
-      );
-
-      if (response.statusCode == 204) {
-        print("임시 생성된 여행이 삭제되었습니다.");
-      } else {
-        print("여행 삭제 실패: 상태 코드 ${response.statusCode}");
-      }
-    } catch (e) {
-      print("여행 삭제 중 오류 발생: $e");
-    }
   }
 
   @override
