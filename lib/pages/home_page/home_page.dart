@@ -14,6 +14,7 @@ import '../add_page/add_page_0.dart';
 import '../add_page/add_page_2.dart';
 import '../add_page/add_page_3.dart';
 import '../../components/token_controller.dart'; // 버튼 컴포넌트
+import '../../components/custom_alert_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -166,73 +167,108 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _fetchRecommendedPlace() async {
+  Future<void> _fetchRecommendedPlace({int retryCount = 0}) async {
     final accessToken = await getAccessToken();
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
 
-    // 사용자 ID 불러오기
-    final userResponse = await dio.get(
-      '$baseUrl/user/me/',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Accept': 'application/json',
-        },
-      ),
-    );
+    try {
+      final userResponse = await dio.get(
+        '$baseUrl/user/me/',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Accept': 'application/json',
+          },
+        ),
+      );
 
-    final userId = userResponse.data['sub'];
-    final uniqueCode = Random().nextInt(1 << 31); // 랜덤 정수 생성
+      final userId = userResponse.data['sub'];
+      final uniqueCode = Random().nextInt(1 << 31);
 
-    final channel = WebSocketChannel.connect(
-      Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode&days=1'),
-    );
+      final channel = WebSocketChannel.connect(
+        Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode&days=1'),
+      );
 
-    late StreamSubscription subscription;
+      late StreamSubscription subscription;
 
-    subscription = channel.stream.listen((message) async {
-      final data = jsonDecode(message);
-      dynamic result = data["result"];
+      subscription = channel.stream.listen((message) async {
+        final data = jsonDecode(message);
+        dynamic result = data["result"];
 
-      // 응답 형식이 문자열이면 JSON 파싱 시도
-      if (result is String) {
+        if (result is String) {
+          try {
+            result = jsonDecode(result);
+          } catch (e) {
+            return;
+          }
+        }
+
+        if (data["status"] != "SUCCESS" || result == null || result.isEmpty) {
+          await subscription.cancel();
+          channel.sink.close();
+          return;
+        }
+
+        final List<dynamic> flatPlaces = result.expand((course) => course is List ? course : []).toList();
+        final filteredPlaces = flatPlaces.where((place) => (place['image1'] ?? '').isNotEmpty).toList();
+
+        if (filteredPlaces.isEmpty) {
+          await subscription.cancel();
+          channel.sink.close();
+          return;
+        }
+
+        final selectedPlace = filteredPlaces[Random().nextInt(filteredPlaces.length)];
+
         try {
-          result = jsonDecode(result);
+          await precacheImage(NetworkImage(selectedPlace['image1']), context);
         } catch (e) {
-          return; // 파싱 실패 시 무시
+          print("이미지 프리캐싱 실패: $e");
+        }
+
+        if (mounted) {
+          setState(() {
+            _recommendedPlace = selectedPlace;
+          });
+        }
+
+        await subscription.cancel();
+        channel.sink.close();
+      }, onError: (error) async {
+        await subscription.cancel();
+        channel.sink.close();
+        if (retryCount < 5) {
+          await Future.delayed(const Duration(seconds: 8));
+          await _fetchRecommendedPlace(retryCount: retryCount + 1);
+        } else {
+          if (mounted) {
+            await showDialog(
+              context: context,
+              builder: (_) => const CustomAlertDialog(
+                title: "오류",
+                contentText: "추천 장소를 가져오는 데 실패했습니다.",
+              ),
+            );
+          }
+        }
+      });
+    } catch (e) {
+      if (retryCount < 5) {
+        await Future.delayed(const Duration(seconds: 8));
+        await _fetchRecommendedPlace(retryCount: retryCount + 1);
+      } else {
+        if (mounted) {
+          await showDialog(
+            context: context,
+            builder: (_) => const CustomAlertDialog(
+              title: "오류",
+              contentText: "추천 장소를 가져오는 데 실패했습니다.",
+            ),
+          );
         }
       }
-
-      if (data["status"] != "SUCCESS" || result == null || result.isEmpty) return;
-
-      // 이미지 있는 장소만 필터링
-      final List<dynamic> flatPlaces = result.expand((course) {
-        if (course is List) return course;
-        return [];
-      }).toList();
-      final filteredPlaces = flatPlaces.where((place) => (place['image1'] ?? '').isNotEmpty).toList();
-
-      if (filteredPlaces.isEmpty) return;
-
-      final random = Random();
-      final selectedPlace = filteredPlaces[random.nextInt(filteredPlaces.length)];
-
-      try {
-        await precacheImage(NetworkImage(selectedPlace['image1']), context);
-      } catch (e) {
-        print("이미지 프리캐싱 실패: $e");
-      }
-
-      if (mounted) {
-        setState(() {
-          _recommendedPlace = selectedPlace;
-        });
-      }
-
-      await subscription.cancel();
-      channel.sink.close();
-    });
+    }
   }
 
   // AddPage_0에서 여행 생성 완료 후 전달된 tourId와 AddPage_2에서 선택한 장소 정보들을 함께 받아 서버에 POST 요청

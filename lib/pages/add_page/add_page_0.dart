@@ -2,6 +2,7 @@ import 'package:alpha_fe/pages/add_page/add_page_1.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import '../../components/custom_alert_dialog.dart';
 import '../../components/auth_token_handler.dart';
 import '../../components/proceed_button.dart';
 import '../../components/app_bar.dart';
@@ -81,15 +82,23 @@ class _AddPage_0State extends State<AddPage_0> {
     if (picked != null) {
       // _isSingleMode일 때 1일 이상 선택 불가
       if (_isSingleMode && picked.duration.inDays > 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('지금은 1일만 선택할 수 있습니다.')),
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) => CustomAlertDialog(
+            title: '안내',
+            contentText: '지금은 1일만 선택할 수 있습니다.',
+          ),
         );
         return;
       }
       // _isSingleMode가 아닐 때 15일 이상 선택 불가
-      if (!_isSingleMode && picked.duration.inDays > 14) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('최대 15일까지 선택할 수 있습니다.')),
+      if (!_isSingleMode && picked.duration.inDays > 2) {
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) => CustomAlertDialog(
+            title: '안내',
+            contentText: '최대 3일까지 선택할 수 있습니다.',
+          ),
         );
         return;
       }
@@ -154,17 +163,9 @@ class _AddPage_0State extends State<AddPage_0> {
         // 이미 존재하는 여행인 경우 알림 후 종료
         await showDialog(
           context: context,
-          builder: (BuildContext dialogContext) => AlertDialog(
-            title: const Text('이미 존재하는 여행입니다'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  // 다이얼로그만 닫고 페이지 이동 방지
-                  Navigator.of(dialogContext).pop();
-                },
-                child: const Text('확인'),
-              ),
-            ],
+          builder: (BuildContext dialogContext) => CustomAlertDialog(
+            title: '이미 존재하는 여행입니다',
+            contentText: '',
           ),
         );
         return;
@@ -177,8 +178,12 @@ class _AddPage_0State extends State<AddPage_0> {
     if (_titleController.text.isEmpty ||
         _titleController.text.length > 10 ||
         _selectedDateRange == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('여행 이름(10자 이내)과 날짜를 모두 입력해주세요')),
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) => CustomAlertDialog(
+          title: '입력 오류',
+          contentText: '여행 이름(10자 이내)과 날짜를 모두 입력해주세요',
+        ),
       );
       return;
     }
@@ -221,8 +226,12 @@ class _AddPage_0State extends State<AddPage_0> {
       } else {
         // 등록 실패 시
         _tourRegistered = false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('여행 등록에 실패했습니다')),
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) => CustomAlertDialog(
+            title: '등록 실패',
+            contentText: '여행 등록에 실패했습니다',
+          ),
         );
       }
     } catch (e) {
@@ -234,8 +243,12 @@ class _AddPage_0State extends State<AddPage_0> {
       }
       // 요청 에러 발생 시
       _tourRegistered = false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('오류 발생: $e')),
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) => CustomAlertDialog(
+          title: '예외 발생',
+          contentText: '오류 발생: $e',
+        ),
       );
     }
   }
@@ -254,6 +267,7 @@ class _AddPage_0State extends State<AddPage_0> {
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "새 여행지 추가"),
       body: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: width * 0.08,
@@ -262,7 +276,7 @@ class _AddPage_0State extends State<AddPage_0> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-        
+
               // 페이지 제목
               Center(
                 child: Text(
@@ -273,9 +287,9 @@ class _AddPage_0State extends State<AddPage_0> {
                   ),
                 ),
               ),
-        
+
               SizedBox(height: height * 0.05),
-        
+
               // 여행 제목 입력 - 10글자 제한
               Text("✏️ 여행 제목",
                   style: TextStyle(
@@ -312,9 +326,9 @@ class _AddPage_0State extends State<AddPage_0> {
                   style: TextStyle(fontSize: width * 0.035, color: Colors.grey)),
               Text("• 결정 후 수정할 수 없으니 신중히 정해주세요",
                   style: TextStyle(fontSize: width * 0.035, color: Colors.grey)),
-        
+
               SizedBox(height: height * 0.05),
-        
+
               // 여행 날짜 입력 - material.dart의 DateRangePicker 사용
               Text("✏️ 여행 날짜",
                   style: TextStyle(
@@ -326,7 +340,7 @@ class _AddPage_0State extends State<AddPage_0> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-        
+
                   // 날짜 표시 필드
                   Expanded(
                     child: SizedBox(
@@ -359,9 +373,9 @@ class _AddPage_0State extends State<AddPage_0> {
                       ),
                     ),
                   ),
-        
+
                   SizedBox(width: width * 0.02),
-        
+
                   // 날짜 선택 버튼 - showDateRangePicker 호출
                   SizedBox(
                     height: height * 0.058,
@@ -388,10 +402,14 @@ class _AddPage_0State extends State<AddPage_0> {
                 ],
               ),
               SizedBox(height: height * 0.005),
+
+              // 접속 경로에 따라 경고 메세지 다르게
               _isSingleMode
                   ? Text("• 지금은 1일만 선택할 수 있습니다",
-                  style: TextStyle(fontSize: width * 0.035, color: Colors.grey))
-              :
+                  style: TextStyle(fontSize: width * 0.035, color: Colors.red.shade500))
+                  : Text("• 지금은 3일만 선택할 수 있습니다",
+                  style: TextStyle(fontSize: width * 0.035, color: Colors.red.shade500)),
+
               SizedBox(height: height * 0.073,),
               // 새 여행 만들기 버튼 - 여행 id 발급 및 행정구역 선택 페이지로 이동
               Padding(
