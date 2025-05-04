@@ -5,6 +5,8 @@ import '../../components/app_bar.dart';
 import 'package:alpha_fe/pages/my_page/mission_page_2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../components/auth_token_handler.dart';
+
 class Mission_Page extends StatefulWidget {
   const Mission_Page({super.key});
 
@@ -82,6 +84,14 @@ class _Mission_PageState extends State<Mission_Page> {
       setState(() {
         _isLoading = false;
       });
+
+      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+      if (e is DioException && e.response?.statusCode == 403) {
+        await getAccessTokenFromRefreshToken();
+        await _fetchMissions();
+        return;
+      }
+
       print("에러 발생: $e");
     }
   }
