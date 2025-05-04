@@ -3,7 +3,7 @@ import '../../components/app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import '../../components/logout_by_user.dart';
 import '../../components/token_controller.dart';
-import '../../components/mission_manager.dart';
+import '../../components/mission_loading_page.dart';
 import 'mission_page.dart';
 import 'my_page_Q&A.dart';
 import 'package:dio/dio.dart';
@@ -100,7 +100,7 @@ class _MyPageBodyState extends State<MyPageBody> {
       print('여행 리스트 불러오기 실패: $e');
     }
   }
-
+  // 내여행 가져오기
   Future<void> todayTours(String username) async {
     final accessToken = await getAccessToken();
     final dio = Dio();
@@ -151,6 +151,7 @@ class _MyPageBodyState extends State<MyPageBody> {
     }
   }
 
+  //오늘의 미션 개수 가져오기
   Future<void> loadTodayPlaces() async {
     final accessToken = await getAccessToken();
     final dio = Dio();
@@ -158,8 +159,9 @@ class _MyPageBodyState extends State<MyPageBody> {
     final todayDateString = DateTime.now().toIso8601String().substring(0, 10);
 
     try {
-      List<Map<String, dynamic>> results = [];
+      Map<int, Map<String, dynamic>> placeMap = {};
 
+      //여행에서 경로 불러와서 장소 수에 따라 미션 개수
       for (var tour in _cardData) {
         final tourId = tour['tour_id'];
         final response = await dio.get(
@@ -185,37 +187,36 @@ class _MyPageBodyState extends State<MyPageBody> {
           }
 
           final todayCourse = courseData.firstWhere(
-                (day) => day['date'] == todayDateString,
-                orElse: () => null,
+            (day) => day['date'] == todayDateString,
+            orElse: () => null,
           );
 
+          //오늘 여행의 경로에 포함된 장소들 정보 넣기(중복 없이) - 미션을 위해
           if (todayCourse != null) {
             final List<dynamic> places = todayCourse['places'];
             for (var place in places) {
               final placeId = place['place_id'];
-              if (!results.any((existing) => existing['place_id'] == placeId)) {
-                results.add({
+              if (!placeMap.containsKey(placeId)) {
+                placeMap[placeId] = {
                   'place_id': placeId,
+                  'tdp_id': place['tdp_id'],
                   'image_url': place['image_url'] ?? '',
                   'date': todayDateString,
-                  'name': place['name']
-                });
+                  'name': place['name'],
+                  'mapX': place['mapX'],
+                  'mapY': place['mapY'],
+                  'tour_id': tourId,
+                };
               }
             }
           }
         }
       }
+      // 값 다 반영해서 띄우기 위해
       setState(() {
-        todayPlaces = results;
-        formattedTodayPlaces = {
-          "places": results.map((e) => {
-            "place_id": e["place_id"],
-            "image_url": e["image_url"],
-            "date": e["date"]
-          }).toList(),
-        };
-        print(formattedTodayPlaces);
-        missionCount = results.map((e) => e['place_id']).toSet().length;
+        todayPlaces = placeMap.values.toList();
+        print(todayPlaces);
+        missionCount = placeMap.length;
       });
     } catch (e) {
       print('Fetch today places error: $e');
@@ -276,7 +277,7 @@ class _MyPageBodyState extends State<MyPageBody> {
           SizedBox(height: width * 0.12),
           Column( //미션진행도랑 자주묻는 질문
             children: [
-              _menuItem(context, Icons.trending_up, "미션 진행도", const Mission_Page(), width),
+              _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page(todayPlaces: todayPlaces), width),
               _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width),
               _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, onTap: () {LogoutByUser(context);}),
             ],
