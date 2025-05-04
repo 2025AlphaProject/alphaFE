@@ -2,10 +2,8 @@ import 'package:alpha_fe/components/plan_card.dart';
 import 'package:alpha_fe/components/token_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import '../../components/app_bar.dart';
 import '../../components/auth_token_handler.dart';
-import '../../components/plan_loading_page.dart';
 
 
 // 전역 상태 관리 클래스
@@ -69,7 +67,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
       String? currentUsername;
       try {
         final userResponse = await dio.get(
-          'http://conever.duckdns.org:8000/user/me/',
+          'http://conever.duckdns.org:8000/user/me',
           options: Options(
             headers: {
               'Authorization': 'Bearer $accessToken',
@@ -238,7 +236,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     final cards = sortedCardData;
 
     return _isLoading
-        ? const PlanLoadingView()
+        ? const Center(child: CircularProgressIndicator())
         : _cardData.isEmpty
             ? Center(
                 child: Column(
@@ -260,22 +258,22 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
         SizedBox(height: height * 0.12),
 
         // 정렬 기준 드롭다운
-        DropdownButtonHideUnderline(
-          child: DropdownButton2<SortType>(
-            isExpanded: true,
-            hint: Text(
-              '정렬 기준 선택',
-              style: TextStyle(fontSize: width * 0.035),
-            ),
-            items: [
-              DropdownMenuItem(value: SortType.dDayAsc,
-                  child: Text("날짜순", style: TextStyle(fontSize: width * 0.04))),
-              DropdownMenuItem(value: SortType.dDayDesc,
-                  child: Text("날짜역순", style: TextStyle(fontSize: width * 0.04))),
-              DropdownMenuItem(value: SortType.title,
-                  child: Text("제목순", style: TextStyle(fontSize: width * 0.04))),
-            ],
+        Container(
+          height: height * 0.06,
+          width: width * 0.35,
+          padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFFFFF),
+            borderRadius: BorderRadius.circular(width * 0.03),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: DropdownButton<SortType>(
             value: _sortType,
+            isExpanded: true,
+            underline: const SizedBox(),
+            icon: Icon(Icons.keyboard_arrow_down, color: const Color(0xFF000000),
+                size: width * 0.05),
+            dropdownColor: Colors.white,
             onChanged: (value) {
               if (value != null) {
                 setState(() {
@@ -284,26 +282,17 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
                 });
               }
             },
-            buttonStyleData: ButtonStyleData(
-              height: height * 0.06,
-              width: width * 0.8,
-              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFFFFF),
-                borderRadius: BorderRadius.circular(width * 0.03),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-            ),
-            iconStyleData: IconStyleData(
-              icon: Icon(Icons.keyboard_arrow_down,
-                  color: const Color(0xFF000000), size: width * 0.05),
-            ),
-            dropdownStyleData: DropdownStyleData(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
+            items: [
+              DropdownMenuItem(value: SortType.dDayAsc,
+                  child: Text(
+                      "날짜순", style: TextStyle(fontSize: width * 0.035))),
+              DropdownMenuItem(value: SortType.dDayDesc,
+                  child: Text(
+                      "날짜역순", style: TextStyle(fontSize: width * 0.035))),
+              DropdownMenuItem(value: SortType.title,
+                  child: Text(
+                      "제목순", style: TextStyle(fontSize: width * 0.035))),
+            ],
           ),
         ),
 
