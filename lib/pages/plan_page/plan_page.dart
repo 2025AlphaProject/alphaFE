@@ -108,8 +108,65 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           'endDate': item['end_date'],
         }).toList();
 
+        // 불필요한 여행 삭제: 코스가 없는 경우
+        final List<int> deletedTourIds = [];
+
+        for (final plan in parsedData) {
+          final dynamic tourIdRaw = plan['tour_id'];
+          final int? tourId = tourIdRaw is int ? tourIdRaw : int.tryParse(tourIdRaw.toString());
+
+          if (tourId == null) {
+            print('Invalid tour_id: $tourIdRaw');
+            continue;
+          }
+
+          try {
+            final courseResponse = await dio.get(
+              'http://conever.duckdns.org:8000/tour/course/$tourId/',
+              options: Options(
+                headers: {
+                  'Authorization': 'Bearer $accessToken',
+                  'Content-Type': 'application/json',
+                },
+              ),
+            );
+
+            if (courseResponse.statusCode == 200 &&
+                courseResponse.data is Map &&
+                courseResponse.data['courses'] is List &&
+                (courseResponse.data['courses'] as List).isEmpty) {
+              await dio.delete(
+                'http://conever.duckdns.org:8000/tour/$tourId/',
+                options: Options(
+                  headers: {
+                    'Authorization': 'Bearer $accessToken',
+                    'Content-Type': 'application/json',
+                  },
+                ),
+              );
+              deletedTourIds.add(tourId);
+            }
+          } catch (e) {
+            print('Error checking or deleting tour $tourIdRaw: $e');
+          }
+        }
+
+        // 삭제된 여행 제외
+        final filteredData = parsedData.where((plan) {
+          final tourId = int.tryParse(plan['tour_id'].toString()) ?? -1;
+          return !deletedTourIds.contains(tourId);
+        }).toList();
+
         setState(() {
-          _cardData = parsedData;
+          _cardData = filteredData;
+          _isLoading = false;
+          if (_cardData.isNotEmpty) {
+            _initController();
+          }
+        });
+
+        setState(() {
+          _cardData = filteredData;
           _isLoading = false;
           if (_cardData.isNotEmpty) {
             _initController();

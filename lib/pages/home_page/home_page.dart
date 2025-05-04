@@ -52,7 +52,6 @@ class _HomePageState extends State<HomePage> {
     final baseUrl = 'http://conever.duckdns.org:8000';
 
     try {
-
       // /user/me/ API 호출하여 현재 사용자 정보 가져오기
       final userResponse = await dio.get(
         '$baseUrl/user/me/',
@@ -90,23 +89,54 @@ class _HomePageState extends State<HomePage> {
         return users.any((u) => u['username'] == currentUsername);
       }).toList();
 
-      // 여행 계획이 존재하는지 확인
-      if (userPlans.isNotEmpty) {
-        // 현재 시각을 기준으로 가장 가까운 여행 계획을 찾기 위해 현재 시각 저장
-        DateTime now = DateTime.now();
+      // 여행 목록 필터링 후 불완전한 여행(코스 없음)을 제거하는 과정
+      final List<dynamic> validUserPlans = [];
 
-        // 필터링된 여행 계획 리스트를 시작 날짜와 현재 시각 간의 차이 절대값 기준으로 오름차순 정렬
-        userPlans.sort((a, b) {
+      for (final plan in userPlans) {
+        final int tourId = int.tryParse(plan['id'].toString()) ?? -1;
+        try {
+          final courseResponse = await dio.get(
+            '$baseUrl/tour/course/$tourId/',
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer $accessToken',
+                'Accept': 'application/json'
+              },
+            ),
+          );
+
+          if (courseResponse.data is Map &&
+              courseResponse.data['courses'] is List &&
+              (courseResponse.data['courses'] as List).isEmpty) {
+            await dio.delete(
+              '$baseUrl/tour/$tourId/',
+              options: Options(
+                headers: {
+                  'Authorization': 'Bearer $accessToken',
+                },
+              ),
+            );
+            continue; // 삭제된 항목은 추가하지 않음
+          }
+
+          validUserPlans.add(plan); // 유효한 여행만 추가
+        } catch (e) {
+          print('삭제 실패: $e');
+          continue;
+        }
+      }
+
+      // 여행 계획이 존재하는지 확인
+      if (validUserPlans.isNotEmpty) {
+        DateTime now = DateTime.now();
+        validUserPlans.sort((a, b) {
           DateTime aStart = DateTime.parse(a['start_date']);
           DateTime bStart = DateTime.parse(b['start_date']);
           Duration aDiff = aStart.difference(now).abs();
           Duration bDiff = bStart.difference(now).abs();
           return aDiff.compareTo(bDiff);
         });
-
-        // 가장 가까운 여행 계획을 상태에 저장하고 로딩 상태를 false로 변경하여 UI 갱신
-        final nearest = userPlans.first;
-
+        final nearest = validUserPlans.first;
         setState(() {
           _nearestPlan = {
             'id': nearest['id'],
@@ -117,7 +147,6 @@ class _HomePageState extends State<HomePage> {
           _isLoading = false;
         });
       } else {
-        // 여행 계획이 없을 경우, userPlans가 비어있지 않으면 null로 설정
         setState(() {
           _nearestPlan = null;
           _isLoading = false;
@@ -130,8 +159,6 @@ class _HomePageState extends State<HomePage> {
         await fetchPlans();
         return;
       }
-
-      // API 호출 실패 혹은 예외 발생 시, 여행 계획을 null로 설정하고 로딩 상태를 false로 변경
       setState(() {
         _nearestPlan = null;
         _isLoading = false;
