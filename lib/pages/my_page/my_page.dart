@@ -288,7 +288,7 @@ class _MyPageBodyState extends State<MyPageBody> {
           SizedBox(height: height * 0.05),
           Column( //미션진행도랑 자주묻는 질문
             children: [
-              _menuItem(context, Icons.trending_up, "미션 진행도", const Mission_Page(), width, height),
+              _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page(todayPlaces: todayPlaces), width, height),
               _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width, height),
               _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, height, onTap: () {LogoutByUser(context);}),
             ],
