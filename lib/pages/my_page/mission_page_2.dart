@@ -55,6 +55,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
             // ✅ 미션 상태 표시
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
                   widget.mission['isCompleted'] ? Icons.check_circle : Icons.cancel,
@@ -64,7 +65,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                 SizedBox(width: width * 0.02),
                 Text(
                   widget.mission['isCompleted']? "성공한 미션" : "미완료",
-                  style: TextStyle(fontSize: width * 0.045),
+                  style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -72,15 +73,20 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
             SizedBox(height: width * 0.05),
 
             // ✅ 미션 장소
-            Text(
-              widget.mission['name'],
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: width * 0.08,
-                fontWeight: FontWeight.bold,
+            if (!widget.mission['isCompleted'])
+              Column(
+                children: [
+                  Text(
+                    widget.mission['name'],
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: width * 0.08,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: height * 0.023),
+                ],
               ),
-            ),
-            SizedBox(height: height * 0.023),
 
 
             // ✅ 사진 미리보기 - 찍은 사진보기
@@ -125,6 +131,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                       RadioListTile<int>(
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
+                        activeColor: Colors.black,
                         title: Text(
                           "브이 포즈로 사진을 찍어보세요",
                           style: TextStyle(
@@ -144,6 +151,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                       RadioListTile<int>(
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
+                        activeColor: Colors.black,
                         title: Text(
                           "손가락 하트를 하고 사진을 찍어보세요",
                           style: TextStyle(
@@ -163,6 +171,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                       RadioListTile<int>(
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
+                        activeColor: Colors.black,
                         title: Text(
                           "여러분이 사진에 꼭 등장해야 해요!",
                           style: TextStyle(
@@ -226,9 +235,8 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                         });
                       }
                     },
-                    child: Text("재촬영", style: TextStyle(fontSize: width * 0.04)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[200],
+                      backgroundColor: const Color(0xFFF9F9F9),
                       foregroundColor: Colors.black,
                       padding: EdgeInsets.symmetric(
                         horizontal: width * 0.07,
@@ -238,6 +246,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                         borderRadius: BorderRadius.circular(width * 0.025),
                       ),
                     ),
+                    child: Text("재촬영", style: TextStyle(fontSize: width * 0.04, fontWeight: FontWeight.bold)),
                   ),
                   SizedBox(width: width * 0.08),
                   ElevatedButton( //미션 수행 버튼
@@ -245,19 +254,33 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                       await showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text("미션을 진행하시겠습니까?"),
-                          content: const Text("이 사진으로 미션을 진행하게됩니다."),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          title: const Text(
+                            "미션을 진행하시겠습니까?",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          content: const Text(
+                            "이 사진으로 미션을 진행하게 됩니다.",
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          actionsPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           actions: [
-                            TextButton( //취소시 창 닫기
-                              onPressed: () => Navigator.of(context).pop(), // 닫기
-                              child: const Text("취소"),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text("취소", style: TextStyle(color: Colors.black)),
                             ),
-                            TextButton( //확인 버튼 누르면 미션 테스트 페이지로 이
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                foregroundColor: Colors.white,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   widget.mission['mission_id'] = _selectedMissionId;
                                 });
-                                Navigator.of(context).pop(); // 다이얼로그 닫기
+                                Navigator.of(context).pop();
                                 if (_selectedMissionId != null) {
                                   Navigator.push(
                                     context,
@@ -270,16 +293,15 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                                   );
                                 }
                               },
-                              child: const Text("확인"),
+                              child: const Text("확인", style: TextStyle(fontWeight: FontWeight.bold),),
                             ),
                           ],
                         ),
                       );
                     },
-                    child: Text("사진 업로드", style: TextStyle(fontSize: width * 0.04)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[100],
-                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(
                         horizontal: width * 0.07,
                         vertical: height * 0.013,
@@ -288,6 +310,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                         borderRadius: BorderRadius.circular(width * 0.025),
                       ),
                     ),
+                    child: Text("사진 업로드", style: TextStyle(fontSize: width * 0.04, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
