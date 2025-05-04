@@ -165,7 +165,7 @@ class _AddPage_2State extends State<AddPage_2> {
               title: '오류',
               contentText: 'AI 코스생성 오류',
             ),
-          );;
+          );
 
           _receivedDataOnce = true;
           await subscription.cancel();

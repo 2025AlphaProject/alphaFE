@@ -5,7 +5,7 @@ import 'dart:convert';
 import '../../components/app_bar.dart';
 import 'package:alpha_fe/pages/my_page/mission_page_2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../../components/custom_alert_dialog.dart';
 import '../../components/auth_token_handler.dart';
 
 class Mission_Page extends StatefulWidget {
@@ -110,10 +110,11 @@ class _Mission_PageState extends State<Mission_Page> {
         ),
       );
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('미션 생성이 완료되었습니다!'),
-            duration: Duration(seconds: 2),
+        await showDialog(
+          context: context,
+          builder: (_) => const CustomAlertDialog(
+            title: '알림',
+            contentText: '미션 생성이 완료되었습니다!',
           ),
         );
         setState(() {
