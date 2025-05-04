@@ -401,7 +401,7 @@ class _EventsState extends State<Events> {
           firstChild: events.isEmpty
               ? Row( //주변행사가 없을때
                   children: [
-                    SizedBox(width: width *0.0166),
+                    SizedBox(width: width * 0.0166),
                     Text(
                       "주변 행사가 없습니다.",
                       style: TextStyle(
@@ -411,48 +411,52 @@ class _EventsState extends State<Events> {
                     ),
                   ],
                 )
-              : Wrap( //주변행사 있을때
-                  spacing: width * 0.0667,
-                  runSpacing: width * 0.0333,
-                  children: events.map((event) {
-                    return ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => nearEvents(eventData: event), //행사정보 상세페이지로 이동
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        side: BorderSide(color: Colors.grey.shade300),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: height *0.0333, horizontal: width*0.0222),
-                      ),
-                      child: Column( //경로 페이지에서는 행사유형과 이름만 표시
-                        children: [
-                          Text(
-                            event['category'],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: width * 0.039),
-                          ),
-                          SizedBox(height: height * 0.0087),
-                          Text(
-                            event['title'] ?? '',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: width * 0.039,
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: events.map((event) {
+                      return Padding(
+                        padding: EdgeInsets.only(right: width * 0.0333),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => nearEvents(eventData: event),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            side: BorderSide(color: Colors.grey.shade300),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
                             ),
+                            padding: EdgeInsets.symmetric(vertical: height * 0.0333, horizontal: width * 0.0222),
                           ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
+                          child: Column(
+                            children: [
+                              SizedBox(height: height * 0.0087),
+                              Text(
+                                event['title'] ?? '',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: width * 0.039,
+                                ),
+                              ),
+                              Text(
+                                event['category'],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: width * 0.039),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
           secondChild: const SizedBox.shrink(),
         ),

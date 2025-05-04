@@ -12,7 +12,8 @@ class nearEvents extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: DefaultAppBar(title: '문화행사'),
+      backgroundColor: Colors.white,
+      appBar: DefaultAppBar(title: '주변문화행사'),
       body: nearEvent(eventData),
     );
   }
@@ -39,11 +40,14 @@ class _nearEventState extends State<nearEvent> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              event['title'],
-              style: TextStyle(
-                fontSize: width * 0.066,
-                fontWeight: FontWeight.bold,
+            Padding(
+              padding: EdgeInsets.only(top: height * 0.05),
+              child: Text(
+                event['title'],
+                style: TextStyle(
+                  fontSize: width * 0.066,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             SizedBox(height: height * 0.035),
@@ -84,6 +88,7 @@ class _nearEventState extends State<nearEvent> {
               isLink: event['homepage_url'] != null && event['homepage_url'].toString().isNotEmpty,
               url: event['homepage_url'],
             ),
+            SizedBox(height: height * 0.03)
           ],
         ),
       ),
@@ -92,39 +97,52 @@ class _nearEventState extends State<nearEvent> {
 
   //행사별 사이트 링크 연결
   Widget infoRow(String label, String value, double width, {bool isLink = false, String? url}) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-        ),
-        Expanded(
-          child: isLink
-              ? GestureDetector(
-                  onTap: () async {
-                    if (url != null && await canLaunchUrl(Uri.parse(url))) {  //성공시 외부 링크로 이동
-                      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-                    } else {//열기 실패시
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("웹사이트를 열 수 없습니다.")),
-                      );
-                    }
-                  },
-                  child: Text(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: width * 0.25,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ),
+          Expanded(
+            child: isLink
+                ? GestureDetector(
+                    onTap: () async {
+                      if (url != null && await canLaunchUrl(Uri.parse(url))) {
+                        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("웹사이트를 열 수 없습니다.")),
+                        );
+                      }
+                    },
+                    child: Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Theme.of(context).colorScheme.primary,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  )
+                : Text(
                     value,
-                    style: TextStyle(
-                      fontSize: width * 0.035,
+                    style: const TextStyle(
+                      fontSize: 15,
                       color: Colors.grey,
                     ),
                   ),
-                )
-              : Text(value, style: TextStyle(
-                fontSize: width * 0.035,
-                color: Colors.grey,
-                decoration: null,
-              )),
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }
