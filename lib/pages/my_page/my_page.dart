@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import '../../components/auth_token_handler.dart';
 import '../../components/logout_by_user.dart';
 import '../../components/token_controller.dart';
-import '../../components/mission_manager.dart';
+import '../../components/mission_loading_page.dart';
 import 'mission_page.dart';
 import 'my_page_Q&A.dart';
 import 'package:dio/dio.dart';
@@ -14,9 +14,9 @@ class MyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
-      appBar: const DefaultAppBar(title: "마이 앱바 영역"),
+      appBar: DefaultAppBar(title: "마이페이지"),
       body: MyPageBody(),
     );
   }
@@ -110,7 +110,7 @@ class _MyPageBodyState extends State<MyPageBody> {
       print('여행 리스트 불러오기 실패: $e');
     }
   }
-
+  // 내여행 가져오기
   Future<void> todayTours(String username) async {
     final accessToken = await getAccessToken();
     final dio = Dio();
@@ -161,6 +161,7 @@ class _MyPageBodyState extends State<MyPageBody> {
     }
   }
 
+  //오늘의 미션 개수 가져오기
   Future<void> loadTodayPlaces() async {
     final accessToken = await getAccessToken();
     final dio = Dio();
@@ -168,8 +169,9 @@ class _MyPageBodyState extends State<MyPageBody> {
     final todayDateString = DateTime.now().toIso8601String().substring(0, 10);
 
     try {
-      List<Map<String, dynamic>> results = [];
+      Map<int, Map<String, dynamic>> placeMap = {};
 
+      //여행에서 경로 불러와서 장소 수에 따라 미션 개수
       for (var tour in _cardData) {
         final tourId = tour['tour_id'];
         final response = await dio.get(
@@ -195,37 +197,36 @@ class _MyPageBodyState extends State<MyPageBody> {
           }
 
           final todayCourse = courseData.firstWhere(
-                (day) => day['date'] == todayDateString,
-                orElse: () => null,
+            (day) => day['date'] == todayDateString,
+            orElse: () => null,
           );
 
+          //오늘 여행의 경로에 포함된 장소들 정보 넣기(중복 없이) - 미션을 위해
           if (todayCourse != null) {
             final List<dynamic> places = todayCourse['places'];
             for (var place in places) {
               final placeId = place['place_id'];
-              if (!results.any((existing) => existing['place_id'] == placeId)) {
-                results.add({
+              if (!placeMap.containsKey(placeId)) {
+                placeMap[placeId] = {
                   'place_id': placeId,
+                  'tdp_id': place['tdp_id'],
                   'image_url': place['image_url'] ?? '',
                   'date': todayDateString,
-                  'name': place['name']
-                });
+                  'name': place['name'],
+                  'mapX': place['mapX'],
+                  'mapY': place['mapY'],
+                  'tour_id': tourId,
+                };
               }
             }
           }
         }
       }
+      // 값 다 반영해서 띄우기 위해
       setState(() {
-        todayPlaces = results;
-        formattedTodayPlaces = {
-          "places": results.map((e) => {
-            "place_id": e["place_id"],
-            "image_url": e["image_url"],
-            "date": e["date"]
-          }).toList(),
-        };
-        print(formattedTodayPlaces);
-        missionCount = results.map((e) => e['place_id']).toSet().length;
+        todayPlaces = placeMap.values.toList();
+        print(todayPlaces);
+        missionCount = placeMap.length;
       });
     } catch (e) {
       print('Fetch today places error: $e');
@@ -253,7 +254,7 @@ class _MyPageBodyState extends State<MyPageBody> {
               SizedBox(height: width * 0.023),
               Container(
                 width: width * 0.25,
-                height: width * 0.115,
+                height: height  * 0.115,
                 alignment: Alignment.center,
                 child: CircleAvatar(
                   radius: width * 0.125,
@@ -261,15 +262,15 @@ class _MyPageBodyState extends State<MyPageBody> {
                   backgroundColor: Colors.transparent,
                 ),
               ),
-              SizedBox(height: height * 0.0046),
+              SizedBox(height: height * 0.03),
               Text(
                 username ?? '',
                 style: TextStyle(
-                  color: Color(0xFF757575),
-                  fontSize: width * 0.045,
+                  color: const Color(0xFF757575),
+                  fontSize: width * 0.06,
                   fontWeight: FontWeight.bold,
                   shadows: [
-                    Shadow(offset: Offset(2, 2), blurRadius: 10, color: Color(0xFFCCCCCC))
+                    const Shadow(offset: Offset(2, 2), blurRadius: 10, color: Color(0xFFCCCCCC))
                   ],
                 ),
               ),
@@ -284,10 +285,10 @@ class _MyPageBodyState extends State<MyPageBody> {
               _StateItem(missionCount.toString(), "미션", width, height),
             ],
           ),
-          SizedBox(height: height * 0.055),
+          SizedBox(height: height * 0.05),
           Column( //미션진행도랑 자주묻는 질문
             children: [
-              _menuItem(context, Icons.trending_up, "미션 진행도", const Mission_Page(), width, height),
+              _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page(todayPlaces: todayPlaces), width, height),
               _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width, height),
               _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, height, onTap: () {LogoutByUser(context);}),
             ],
@@ -306,16 +307,16 @@ Widget _StateItem(String value, String label, double width, double height) {
       Text(
         value,
         style: TextStyle(
-          color: Color(0xFF000000),
+          color: const Color(0xFF000000),
           fontSize: width * 0.06,
           fontWeight: FontWeight.bold,
         ),
       ),
-      SizedBox(height: height * 0.092),
+      SizedBox(height: height * 0.002),
       Text(
         label,
         style: TextStyle(
-          color: Color(0xFF757575),
+          color: const Color(0xFF757575),
           fontSize: width * 0.03,
         ),
       ),
@@ -336,18 +337,18 @@ Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, 
         style: TextButton.styleFrom(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           alignment: Alignment.centerLeft,
-          foregroundColor: Color(0xFFCCCCCC),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          foregroundColor: const Color(0xFFCCCCCC),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
         child: Row(
           children: [
-            Icon(icon, size: width * 0.045, color: Color(0xFF000000)),
+            Icon(icon, size: width * 0.055, color: const Color(0xFF000000)),
             SizedBox(width: width * 0.02),
             Text(
               menu,
               style: TextStyle(
-                color: Color(0xFF000000),
-                fontSize: width * 0.04,
+                color: const Color(0xFF000000),
+                fontSize: width * 0.05,
                 fontWeight: FontWeight.w600,
               ),
             ),

@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dio/dio.dart';
+import '../../components/save_loading_page.dart';
 import '../../components/token_controller.dart';
 import 'add_page_3.dart';
 import '../../components/app_bar.dart';
@@ -13,6 +14,7 @@ import '../../components/proceed_button.dart';
 import '../../components/placeinfo_card.dart';
 import '../../components/placeinput_card.dart';
 import '../../components/ai_loading_page.dart';
+import '../../components/date_dropdown.dart';
 
 class AddPage_2 extends StatefulWidget {
   final String title;
@@ -416,17 +418,23 @@ class _AddPage_2State extends State<AddPage_2> {
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
     final int useTourId = tourId ?? widget.tourId;
-    // final List<PlaceInfoBlock> usePlaces = places ?? _placeWidgets.expand((entry) => entry.value).toList();
+
+    // Show loading dialog before starting to save
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const SaveLoadingView(),
+    );
 
     try {
       // tour_id값을 이용해 여행 시작 날짜 불러옴
       final startDateResponse = await dio.get(
-          '$baseUrl/tour/$useTourId/',
-          options: Options(
-              headers: {
-                'Authorization': 'Bearer $accessToken'
-              }
-          )
+        '$baseUrl/tour/$useTourId/',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken'
+          }
+        )
       );
 
       // 날짜별로 장소 데이터를 묶어 개별 POST 요청 수행 (모든 날짜를 저장)
@@ -463,6 +471,11 @@ class _AddPage_2State extends State<AddPage_2> {
       }
 
       if (!mounted) return;
+
+      // Close the loading view if possible
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context); // Close the loading view
+      }
 
       Navigator.push(
         context,
@@ -579,7 +592,17 @@ class _AddPage_2State extends State<AddPage_2> {
                       SizedBox(height: height * 0.028),
                       _buildTitleBlock(),
                       SizedBox(height: height * 0.0267),
-                      _buildDateDropdown(),
+                      DateDropdown(
+                        selectedDate: ValueNotifier<String?>(_selectedDate),
+                        dates: _placeWidgets.map((e) => e.key).toList(),
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedDate = value;
+                          });
+                        },
+                      ),
 
 
                       // 장소 목록 표시 - 그룹화된 날짜별 렌더링

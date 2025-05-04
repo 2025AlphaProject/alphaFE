@@ -248,6 +248,11 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                               final result = await showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  backgroundColor: const Color(0xFFF5F5F5),
+                                  elevation: 10,
                                   contentPadding: EdgeInsets.zero,
                                   content: TravelEditMenu(
                                     startDate: startDate,
@@ -266,9 +271,9 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                         ],
                       ),
                       SizedBox(height: height * 0.005),
-                      Traveler_List(),
+                      const Traveler_List(),
                       SizedBox(height: height * 0.02),
-                      DashedLine(),
+                      const DashedLine(),
                       travel_plan(
                         tour_id: widget.tour_id,
                         courseData: courseData,
