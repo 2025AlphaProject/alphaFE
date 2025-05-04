@@ -64,6 +64,7 @@ class _AddPage_2State extends State<AddPage_2> {
     DateTime? startDate;
     DateTime? endDate;
 
+    // 사용자 ID를 요청하고 최대 3회 재시도
     Future<int?> fetchUserId() async {
       for (int i = 0; i < 3; i++) {
         try {
@@ -84,6 +85,7 @@ class _AddPage_2State extends State<AddPage_2> {
       return null;
     }
 
+    // 여행 시작일과 종료일을 요청하고 최대 3회 재시도
     Future<Map<String, DateTime>?> fetchTourDates() async {
       for (int i = 0; i < 3; i++) {
         try {
@@ -108,6 +110,7 @@ class _AddPage_2State extends State<AddPage_2> {
     final dates = await fetchTourDates();
 
     print('userId: $userId, dates: $dates');
+    // 사용자 ID 또는 여행 날짜 불러오기에 실패한 경우 사용자에게 알리고 이전 페이지로 이동
     if (userId == null || dates == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -130,6 +133,7 @@ class _AddPage_2State extends State<AddPage_2> {
       late StreamSubscription subscription;
 
       subscription = channel.stream.listen((message) async {
+        // 웹소켓 응답이 잘못되었거나 예외 발생 시 재시도 (최대 5회)
         try {
           final data = jsonDecode(message);
           if (_receivedDataOnce || data["result"] == null || data["result"].isEmpty) return;
@@ -155,7 +159,9 @@ class _AddPage_2State extends State<AddPage_2> {
             Navigator.pop(context);
           }
         }
-      }, onError: (_) async {
+      },
+      // 웹소켓 연결 자체에서 오류 발생 시 재시도 (최대 5회)
+      onError: (_) async {
         await subscription.cancel();
         channel.sink.close();
         if (retryCount < 5) {
@@ -169,6 +175,7 @@ class _AddPage_2State extends State<AddPage_2> {
         }
       });
     } catch (_) {
+      // 웹소켓 연결 시도 자체가 실패한 경우 재시도 (최대 5회)
       if (retryCount < 5) {
         await Future.delayed(const Duration(seconds: 2));
         connectWebSocket(retryCount: retryCount + 1);
