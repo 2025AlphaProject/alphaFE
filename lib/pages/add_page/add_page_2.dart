@@ -521,7 +521,9 @@ class _AddPage_2State extends State<AddPage_2> {
         value: _selectedDate,
         isExpanded: true,
         dropdownColor: const Color(0xFFF5F5F5),
-        hint: Text("날짜를 선택해주세요", style: TextStyle(fontSize: width * 0.045, color: Colors.black)),
+        hint: widget.isSingleDayMode
+            ? Text("추천 코스입니다", style: TextStyle(fontSize: width * 0.045, color: Colors.black))
+            : Text("날짜를 선택해주세요", style: TextStyle(fontSize: width * 0.045, color: Colors.black)),
         items: _placeWidgets.map((entry) {
           return DropdownMenuItem<String>(
             value: entry.key,
