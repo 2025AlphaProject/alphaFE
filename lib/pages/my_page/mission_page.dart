@@ -17,7 +17,6 @@ class Mission_Page extends StatefulWidget {
 }
 
 class _Mission_PageState extends State<Mission_Page> {
-  List<Map<String, dynamic>> _missions_ex = [];
   static final List<Map<String, dynamic>> _missions = [];
 
   //오늘의 미션 리스트 정보 주기
@@ -47,8 +46,8 @@ class _Mission_PageState extends State<Mission_Page> {
   @override
   void initState() {
     super.initState();
-    _checkAndShowDialog();
     updateMissionsWithTodayPlaces(widget.todayPlaces);
+    missionCreate();
   }
 
   //이건 임의의 미션 생성을 위한 창으로 하루에 한번만 뜬다.
@@ -62,9 +61,10 @@ class _Mission_PageState extends State<Mission_Page> {
       return;
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _hasShownDialogToday = true; // prevent multiple dialogs in same session
-      showDialog(
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      _hasShownDialogToday = true;
+      await showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('오늘의 미션 설명'),
@@ -73,10 +73,8 @@ class _Mission_PageState extends State<Mission_Page> {
             TextButton(
               onPressed: () {
                 prefs.setString('lastMissionDialogDate', today);
-                _hasShownDialogToday = true; // Also prevent re-trigger after pressing 확인
-                print("ok:${_missions}");
-                //missionCreate();
                 Navigator.of(context).pop();
+                missionCreate();
               },
               child: const Text('확인'),
             ),
@@ -118,6 +116,9 @@ class _Mission_PageState extends State<Mission_Page> {
             duration: Duration(seconds: 2),
           ),
         );
+        setState(() {
+          _isLoading = false;
+        });
       }
     } catch (e) {
       setState(() {
