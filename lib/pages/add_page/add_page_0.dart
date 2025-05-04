@@ -49,8 +49,8 @@ class _AddPage_0State extends State<AddPage_0> {
       context: context,
       locale: const Locale('ko', 'KR'),
       // 날짜 범위 제한
-      firstDate: DateTime.now().subtract(Duration(days: 365 * 100)),
-      lastDate: DateTime.now().add(Duration(days: 365 * 100)),
+      firstDate: now,
+      lastDate: now.add(Duration(days: 365 * 5)),
       builder: (context, child) {
         return Theme(
           data: ThemeData(
@@ -387,6 +387,11 @@ class _AddPage_0State extends State<AddPage_0> {
                   ),
                 ],
               ),
+              SizedBox(height: height * 0.005),
+              _isSingleMode
+                  ? Text("• 지금은 1일만 선택할 수 있습니다",
+                  style: TextStyle(fontSize: width * 0.035, color: Colors.grey))
+              :
               SizedBox(height: height * 0.073,),
               // 새 여행 만들기 버튼 - 여행 id 발급 및 행정구역 선택 페이지로 이동
               Padding(

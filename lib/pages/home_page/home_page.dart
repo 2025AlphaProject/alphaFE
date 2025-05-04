@@ -286,6 +286,53 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // PlanCard와 동일 크기의 빈 카드 UI, 탭 시 새 여행 생성 페이지로 이동
+  Widget _buildEmptyPlanCard(double width, double height) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (_) => AddPage_0(),
+          ),
+        );
+      },
+      child: Container(
+        width: width * 0.8,
+        height: height * 0.394,
+        decoration: BoxDecoration(
+          color: Color(0xFFF5F5F5),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add, size: width * 0.1, color: Color(0xFFB5B5B5),),
+              SizedBox(height: height * 0.01),
+              Text(
+                '이런, 여행이 없어요🧐',
+                style: TextStyle(
+                  fontSize: width * 0.05,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFB5B5B5),
+                ),
+              ),
+              Text(
+                '여행을 추가해주세요!',
+                style: TextStyle(
+                  fontSize: width * 0.05,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFB5B5B5),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -349,15 +396,29 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(height: height * 0.012),
                             // ⬇️ PlanCard 위젯: 여행 카드의 크기를 반응형으로 지정, _nearestPlan에서 동적 데이터 사용
                             Center(
+                              // 로딩 중에는 PlanCard와 동일한 디자인의 빈 카드 표시
                               child: _isLoading
-                                  ? Container(
-                                      width: width * 0.8,
-                                      height: height * 0.394,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[300],
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    )
+                                  ? // 로딩 플레이스홀더
+                              SizedBox(
+                                width: width * 0.8,
+                                height: height * 0.394,
+                                child: Card(
+                                  clipBehavior: Clip.antiAlias,
+                                  color: const Color(0xFFF5F5F5),
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(
+                                      width * 0.05,
+                                      height * 0.05,
+                                      width * 0.05,
+                                      height * 0.05,
+                                    ),
+                                  ),
+                                ),
+                              )
                                   : (
                                       _nearestPlan != null
                                           ? PlanCard(
@@ -368,7 +429,7 @@ class _HomePageState extends State<HomePage> {
                                               size_h: height * 0.394,
                                               size_w: width * 0.8,
                                             )
-                                          : const SizedBox.shrink()
+                                          : _buildEmptyPlanCard(width, height)
                                     ),
                             ),
                             SizedBox(height: height * 0.06),
