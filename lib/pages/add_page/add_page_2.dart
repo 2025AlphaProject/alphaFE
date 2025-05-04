@@ -13,6 +13,7 @@ import '../../components/proceed_button.dart';
 import '../../components/placeinfo_card.dart';
 import '../../components/placeinput_card.dart';
 import '../../components/ai_loading_page.dart';
+import '../../components/date_dropdown.dart';
 
 class AddPage_2 extends StatefulWidget {
   final String title;
@@ -474,31 +475,6 @@ class _AddPage_2State extends State<AddPage_2> {
     );
   }
 
-  // 날짜별 섹션 제목을 그리는 위젯
-  Widget _buildDateDropdown() {
-    final width = MediaQuery.of(context).size.width;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-      child: DropdownButton<String>(
-        value: _selectedDate,
-        isExpanded: true,
-        dropdownColor: const Color(0xFFF5F5F5),
-        hint: Text("날짜를 선택해주세요", style: TextStyle(fontSize: width * 0.045, color: Colors.black)),
-        items: _placeWidgets.map((entry) {
-          return DropdownMenuItem<String>(
-            value: entry.key,
-            child: Text(entry.key, style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold)),
-          );
-        }).toList(),
-        onChanged: (value) {
-          setState(() {
-            _selectedDate = value;
-          });
-        },
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -540,7 +516,17 @@ class _AddPage_2State extends State<AddPage_2> {
                       SizedBox(height: height * 0.028),
                       _buildTitleBlock(),
                       SizedBox(height: height * 0.0267),
-                      _buildDateDropdown(),
+                      DateDropdown(
+                        selectedDate: ValueNotifier<String?>(_selectedDate),
+                        dates: _placeWidgets.map((e) => e.key).toList(),
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedDate = value;
+                          });
+                        },
+                      ),
 
 
                       // 장소 목록 표시 - 그룹화된 날짜별 렌더링
