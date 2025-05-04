@@ -222,6 +222,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async => true,
@@ -264,10 +265,12 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                           ),
                         ],
                       ),
+                      SizedBox(height: height * 0.005),
                       Traveler_List(),
+                      SizedBox(height: height * 0.02),
                       DashedLine(),
                       travel_plan(
-                        tour_id: widget.tour_id,
+                        touㅈr_id: widget.tour_id,
                         courseData: courseData,
                         onRefresh: _refreshData,
                       ),
@@ -303,7 +306,7 @@ class Plan_Name extends StatelessWidget {
     final remainingDays = calculateRemainingDays(endDate);
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(width * 0.025,0,0,0),
+      padding: EdgeInsets.only(left: width * 0.025),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -319,21 +322,21 @@ class Plan_Name extends StatelessWidget {
                 "D-$remainingDays", //이거 디데이 인자로 바꿀예정
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: width * 0.02,
+                  fontSize: width * 0.03,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(width * 0.0075, 0, 0, 0),
+            padding: EdgeInsets.only(left: width * 0.0075),
             child: Text(
               tourName,
-              style: TextStyle(fontSize: width * 0.07, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: width * 0.085, fontWeight: FontWeight.bold),
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(width * 0.0075, 0, 0, 0),
+            padding: EdgeInsets.only(left: width * 0.0075),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -375,7 +378,7 @@ class Traveler_List extends StatelessWidget {
             "여행자",
             style: TextStyle(fontSize: width * 0.04, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: height * 0.005),
+          SizedBox(height: height * 0.012),
           SizedBox(
             child: Wrap(
               spacing: width * 0.04,
@@ -465,29 +468,34 @@ class DashedLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = axis == Axis.horizontal
-            ? constraints.maxWidth
-            : constraints.maxHeight;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(width * 0.04, 0, width * 0.04, height * 0.03),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final size = axis == Axis.horizontal
+              ? constraints.maxWidth
+              : constraints.maxHeight;
 
-        final dashCount = (size / (dashLength + dashGap)).floor();
+          final dashCount = (size / (dashLength + dashGap)).floor();
 
-        return Flex(
-          direction: axis,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
-          children: List.generate(dashCount, (_) {
-            return SizedBox(
-              width: axis == Axis.horizontal ? dashLength : thickness,
-              height: axis == Axis.horizontal ? thickness : dashLength,
-              child: DecoratedBox(
-                decoration: BoxDecoration(color: color),
-              ),
-            );
-          }),
-        );
-      },
+          return Flex(
+            direction: axis,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: List.generate(dashCount, (_) {
+              return SizedBox(
+                width: axis == Axis.horizontal ? dashLength : thickness,
+                height: axis == Axis.horizontal ? thickness : dashLength,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: color),
+                ),
+              );
+            }),
+          );
+        },
+      ),
     );
   }
 }
