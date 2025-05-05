@@ -50,12 +50,12 @@
 			<dict>
 				<key>CFBundleURLSchemes</key>
 				<array>
-					<string>kakao6ab453dcb5587da9b04b6dd106ff2bcf</string>
+					<string>kakaodaae6dfd9856adde390465ba3d436694</string>
 				</array>
 			</dict>
 		</array>
 		<key>KAKAO_APP_KEY</key>
-		<string>6ab453dcb5587da9b04b6dd106ff2bcf</string>
+		<string>daae6dfd9856adde390465ba3d436694</string>
 		<key>LSApplicationQueriesSchemes</key>
 		<array>
 			<string>kakaokompassauth</string>
