@@ -44,8 +44,8 @@ class _nearEventState extends State<nearEvent> {
               padding: EdgeInsets.only(top: height * 0.05),
               child: Text(
                 event['title'],
-                style: TextStyle(
-                  fontSize: width * 0.066,
+                style: const TextStyle(
+                  fontSize: 27,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -66,25 +66,25 @@ class _nearEventState extends State<nearEvent> {
                     if (loadingProgress == null) return child;
                     return const Center(child: CircularProgressIndicator());
                   },
-                  errorBuilder: (context, error, stackTrace) => Center(
+                  errorBuilder: (context, error, stackTrace) => const Center(
                     child: Icon(
                       Icons.broken_image,
-                      size: width * 0.13,
+                      size: 53.5,
                     ),
                   ),
                 ),
               ),
             SizedBox(height: height * 0.035),
-            infoRow("유형", event['category'] ?? "-", width), //전시유형
+            infoRow("유형", event['category'] ?? "-", width, height), //전시유형
             SizedBox(height: height * 0.012),
-            infoRow("행사 기간", "${event['start_date'] ?? '-'} ~ ${event['end_date'] ?? '-'}", width),  //기간
+            infoRow("행사 기간", "${event['start_date'] ?? '-'} ~ ${event['end_date'] ?? '-'}", width, height),  //기간
             SizedBox(height: height * 0.012),
             infoRow( //행사별 웹사이트로 이동 가능 링크 연동
               "웹사이트",
               (event['homepage_url'] == null || event['homepage_url'].toString().isEmpty)
                   ? "-"
                   : "웹사이트 보러가기→",
-              width,
+              width, height,
               isLink: event['homepage_url'] != null && event['homepage_url'].toString().isNotEmpty,
               url: event['homepage_url'],
             ),
@@ -96,9 +96,9 @@ class _nearEventState extends State<nearEvent> {
   }
 
   //행사별 사이트 링크 연결
-  Widget infoRow(String label, String value, double width, {bool isLink = false, String? url}) {
+  Widget infoRow(String label, String value, double width, double height, {bool isLink = false, String? url}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: EdgeInsets.symmetric(vertical: height * 0.0066),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

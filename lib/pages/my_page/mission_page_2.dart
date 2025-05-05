@@ -60,12 +60,12 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                 Icon(
                   widget.mission['isCompleted'] ? Icons.check_circle : Icons.cancel,
                   color: widget.mission['isCompleted'] ? const Color(0xFF008000) : const Color(0xFFFF0000),
-                  size: width * 0.06,
+                  size: 24.6,
                 ),
                 SizedBox(width: width * 0.02),
                 Text(
                   widget.mission['isCompleted']? "성공한 미션" : "미완료",
-                  style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 20.5, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -79,8 +79,8 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                   Text(
                     widget.mission['name'],
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: width * 0.08,
+                    style: const TextStyle(
+                      fontSize: 32.8,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -111,10 +111,10 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                     fit: BoxFit.cover,
                   ),
                   SizedBox(height: width * 0.02),
-                  Text(
+                  const Text(
                     "이 사진처럼 촬영해 보세요!",
                     style: TextStyle(
-                      fontSize: width * 0.043,
+                      fontSize: 18.5,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
@@ -123,7 +123,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
               )
                   : Column( //장소 예시 사진이 없는 경우
                 children: [
-                  Icon(Icons.camera_alt, size: width * 0.2, color: Colors.grey),
+                  const Icon(Icons.camera_alt, size: 82.2, color: Colors.grey),
                   SizedBox(height: width * 0.02),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,10 +132,10 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
                         activeColor: Colors.black,
-                        title: Text(
+                        title: const Text(
                           "브이 포즈로 사진을 찍어보세요",
                           style: TextStyle(
-                            fontSize: width * 0.043,
+                            fontSize: 18.5,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -152,10 +152,10 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
                         activeColor: Colors.black,
-                        title: Text(
+                        title: const Text(
                           "손가락 하트를 하고 사진을 찍어보세요",
                           style: TextStyle(
-                            fontSize: width * 0.043,
+                            fontSize: 18.5,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -172,10 +172,10 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
                         activeColor: Colors.black,
-                        title: Text(
+                        title: const Text(
                           "여러분이 사진에 꼭 등장해야 해요!",
                           style: TextStyle(
-                            fontSize: width * 0.043,
+                            fontSize: 18.5,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -202,17 +202,17 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                     });
                   }
                 },
-                icon: Icon(Icons.camera_alt, size: width * 0.06),
-                label: Text(
+                icon: const Icon(Icons.camera_alt, size: 24.6),
+                label: const Text(
                   "사진 촬영",
-                  style: TextStyle(fontSize: width * 0.045),
+                  style: TextStyle(fontSize: 18.5),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
-                  side: BorderSide(color: Colors.black, width: 0.3),
+                  side: const BorderSide(color: Colors.black, width: 0.3),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(width * 0.025),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   padding: EdgeInsets.symmetric(
                     horizontal: width * 0.08,
@@ -246,7 +246,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                         borderRadius: BorderRadius.circular(width * 0.025),
                       ),
                     ),
-                    child: Text("재촬영", style: TextStyle(fontSize: width * 0.04, fontWeight: FontWeight.bold)),
+                    child: const Text("재촬영", style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.bold)),
                   ),
                   SizedBox(width: width * 0.08),
                   ElevatedButton( //미션 수행 버튼
@@ -258,7 +258,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          insetPadding: EdgeInsets.all(24),
+                          insetPadding: EdgeInsets.symmetric(horizontal: width * .0583, vertical: height * .027),
                           title: const Text(
                             "미션을 진행하시겠습니까?",
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -267,7 +267,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                             "이 사진으로 미션을 진행하게 됩니다.",
                             style: TextStyle(fontSize: 15),
                           ),
-                          actionsPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          actionsPadding: EdgeInsets.symmetric(horizontal: width * 0.0243, vertical: height * 0.005),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.of(context).pop(),
@@ -309,10 +309,10 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                         vertical: height * 0.013,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(width * 0.025),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text("사진 업로드", style: TextStyle(fontSize: width * 0.04, fontWeight: FontWeight.bold)),
+                    child: const Text("사진 업로드", style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),

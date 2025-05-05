@@ -95,7 +95,7 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
                         duration: const Duration(milliseconds: 500),
                         child: Text(
                           "어디로 떠날지가 고민이시나요?",
-                          style: TextStyle(fontSize: width*0.064, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold),
                         ),
                       ),
                       AnimatedOpacity(
@@ -103,7 +103,7 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
                         duration: const Duration(milliseconds: 500),
                         child: Text(
                           "AI가 추천하는 일정을 확인하고,",
-                          style: TextStyle(fontSize: width*0.064, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold),
                         ),
                       ),
                       AnimatedOpacity(
@@ -111,7 +111,7 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
                         duration: const Duration(milliseconds: 500),
                         child: Text(
                           "가장 특별한 여행을 떠나보세요!",
-                          style: TextStyle(fontSize: width*0.064, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],

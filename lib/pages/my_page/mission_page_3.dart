@@ -127,13 +127,15 @@ class _missionTestState extends State<missionTest> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "미션 진행도"),
       body: _isLoading
           ? const MissionLoadingView() //그 완료될 떄까지 로딩페이지 띄우기
           : Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30.0),
+              padding: EdgeInsets.symmetric(vertical: height * 0.034),
               child: Column(
                 children: [
                   Center(
@@ -142,7 +144,7 @@ class _missionTestState extends State<missionTest> {
                       children: [
                         if (widget.mission['isCompleted']) ...[ //성공시
                           const Icon(Icons.check_circle, color: Colors.green, size: 30),
-                          const SizedBox(width: 4),
+                          SizedBox(width: width * 0.009),
                           const Text(
                             "미션 성공!",
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
@@ -150,7 +152,7 @@ class _missionTestState extends State<missionTest> {
                         ],
                         if (!widget.mission['isCompleted']) ...[ //실패시
                           const Icon(Icons.cancel, color: Colors.red, size: 30),
-                          const SizedBox(width: 4),
+                          SizedBox(width: width * 0.009),
                           const Text(
                             "미션 실패!",
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
@@ -159,7 +161,7 @@ class _missionTestState extends State<missionTest> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: height * 0.009),
                   Text(widget.mission['image_url'].toString().isNotEmpty //미션 내용
                       ? "• 예시 사진과 유사하게 촬영하기"
                       : (widget.mission['mission_id'] == 1
@@ -168,27 +170,27 @@ class _missionTestState extends State<missionTest> {
                       ? "손가락 하트를 하고 사진을 찍어보세요"
                       : '여러분이 사진에 꼭 등장해야 해요!'
                   )),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: height * 0.036),
                   Container(
-                    width: 300,
+                    width: width * 0.72,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
                     ),
                     child: Image.file(widget.image, fit: BoxFit.cover),
                   ),
 
-                  SizedBox(height: 50,),
+                  SizedBox(height: height * 0.0577,),
 
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black, // 배경색
                       foregroundColor: Colors.white, // 글자색
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: EdgeInsets.symmetric(horizontal: width * 0.0583, vertical: height * 0.013),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

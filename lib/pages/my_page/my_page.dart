@@ -245,19 +245,19 @@ class _MyPageBodyState extends State<MyPageBody> {
     final safeUrl = profileImageUrl?.replaceFirst('http://', 'https://') ?? '';
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: width * 0.09, horizontal: width * 0.06),
+      padding: EdgeInsets.symmetric(vertical: height * 0.042, horizontal: width * 0.06),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Column( //이게 프로필 사진, 이름
             children: [
-              SizedBox(height: width * 0.023),
+              SizedBox(height: height * 0.01),
               Container(
                 width: width * 0.25,
                 height: height  * 0.115,
                 alignment: Alignment.center,
                 child: CircleAvatar(
-                  radius: width * 0.125,
+                  radius: width * 51.3,
                   backgroundImage: NetworkImage(safeUrl),
                   backgroundColor: Colors.transparent,
                 ),
@@ -265,12 +265,12 @@ class _MyPageBodyState extends State<MyPageBody> {
               SizedBox(height: height * 0.03),
               Text(
                 username ?? '',
-                style: TextStyle(
-                  color: const Color(0xFF757575),
-                  fontSize: width * 0.06,
+                style: const TextStyle(
+                  color: Color(0xFF757575),
+                  fontSize: 24.6,
                   fontWeight: FontWeight.bold,
                   shadows: [
-                    const Shadow(offset: Offset(2, 2), blurRadius: 10, color: Color(0xFFCCCCCC))
+                    Shadow(offset: Offset(2, 2), blurRadius: 10, color: Color(0xFFCCCCCC))
                   ],
                 ),
               ),
@@ -306,18 +306,18 @@ Widget _StateItem(String value, String label, double width, double height) {
     children: [
       Text(
         value,
-        style: TextStyle(
-          color: const Color(0xFF000000),
-          fontSize: width * 0.06,
+        style: const TextStyle(
+          color: Color(0xFF000000),
+          fontSize: 24.6,
           fontWeight: FontWeight.bold,
         ),
       ),
       SizedBox(height: height * 0.002),
       Text(
         label,
-        style: TextStyle(
-          color: const Color(0xFF757575),
-          fontSize: width * 0.03,
+        style: const TextStyle(
+          color: Color(0xFF757575),
+          fontSize: 12.3,
         ),
       ),
     ],
@@ -342,13 +342,13 @@ Widget _menuItem(BuildContext context, IconData icon, String menu, Widget page, 
         ),
         child: Row(
           children: [
-            Icon(icon, size: width * 0.055, color: const Color(0xFF000000)),
+            Icon(icon, size: 22.6, color: const Color(0xFF000000)),
             SizedBox(width: width * 0.02),
             Text(
               menu,
-              style: TextStyle(
-                color: const Color(0xFF000000),
-                fontSize: width * 0.05,
+              style: const TextStyle(
+                color: Color(0xFF000000),
+                fontSize: 20.5,
                 fontWeight: FontWeight.w600,
               ),
             ),

@@ -97,13 +97,13 @@ class _ProfileListBodyState extends State<ProfileListBody> {
               controller: _searchController,
               decoration: InputDecoration( //원하는 유저 검색가능
                 hintText: '검색...',
-                hintStyle: TextStyle(fontSize: width * 0.04),
-                prefixIcon: Icon(Icons.search, size: width * 0.06),
+                hintStyle: const TextStyle(fontSize: 16.5),
+                prefixIcon: const Icon(Icons.search, size: 24.6),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              style: TextStyle(fontSize: width * 0.04),
+              style: const TextStyle(fontSize: 16.5),
               onSubmitted: (value) {
                 setState(() {}); // 엔터 누르면 화면 리빌드
               },
@@ -121,7 +121,8 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                   return Padding(
                     padding: EdgeInsets.symmetric(
                         horizontal: width * 0.02,
-                        vertical: height * 0.005),
+                        vertical: height * 0.005
+                    ),
                     child: Row(
                       children: [
                         Expanded(
@@ -131,12 +132,12 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                   ? NetworkImage(profile['profile_image_url'])
                                   : null,
                               child: profile['profile_image_url'] == null || profile['profile_image_url'] == ""
-                                  ? Icon(Icons.person, size: width * 0.06)
+                                  ? const Icon(Icons.person, size: 24.6)
                                   : null,
                             ),
                             title: Text(
                               profile['username'],
-                              style: TextStyle(fontSize: width * 0.045, fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontSize: 18.5, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -155,25 +156,25 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text(
+                                        const Text(
                                           '추가 확인',
-                                          style: TextStyle(fontSize: width * 0.045, fontWeight: FontWeight.bold),
+                                          style: TextStyle(fontSize: 18.5, fontWeight: FontWeight.bold),
                                         ),
-                                        SizedBox(height: width * 0.025),
-                                        Text(
+                                        SizedBox(height: height * 0.011),
+                                        const Text(
                                           '이 유저를 추가하시겠습니까?',
-                                          style: TextStyle(fontSize: width * 0.04),
+                                          style: TextStyle(fontSize: 16.5),
                                           textAlign: TextAlign.center,
                                         ),
-                                        SizedBox(height: width * 0.05),
+                                        SizedBox(height: height * 0.023),
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
                                             TextButton(
                                               onPressed: () => Navigator.pop(context),
-                                              child: Text(
+                                              child: const Text(
                                                 '취소',
-                                                style: TextStyle(fontSize: width * 0.04, color: Colors.black),
+                                                style: TextStyle(fontSize: 18.5, color: Colors.black),
                                               ),
                                             ),
                                             ElevatedButton(
@@ -210,9 +211,9 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                                   print('Error adding user: $e');
                                                 }
                                               },
-                                              child: Text(
+                                              child: const Text(
                                                 '확인',
-                                                style: TextStyle(fontSize: width * 0.04, color: Colors.white),
+                                                style: TextStyle(fontSize: 18.5, color: Colors.white),
                                               ),
                                             ),
                                           ],
@@ -224,7 +225,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                               },
                             );
                           },
-                          icon: Icon(Icons.add, size: width * 0.06),
+                          icon: const Icon(Icons.add, size: 24.6),
                         ),
                       ],
                     ),
