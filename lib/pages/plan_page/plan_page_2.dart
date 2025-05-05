@@ -296,19 +296,27 @@ class Plan_Name extends StatelessWidget {
   final String tourName;
   const Plan_Name({super.key, required this.startDate, required this.endDate, required this.tourName});
 
+  // 날짜 기준으로만 계산, 진행중 - 종료 로직 추가
+  String getRemainingStatus(String startDate, String endDate) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = DateTime.parse(startDate);
+    final end = DateTime.parse(endDate);
+    final startOnly = DateTime(start.year, start.month, start.day);
+    final endOnly = DateTime(end.year, end.month, end.day);
+
+    if (today.isAfter(endOnly)) return '종료';
+    if (!today.isBefore(startOnly)) return '진행중';
+
+    final remaining = startOnly.difference(today).inDays;
+    return 'D-$remaining';
+  }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    int calculateRemainingDays(String endDate) {
-      final today = DateTime.now();
-      final endDateObj = DateTime.parse(endDate);
-      final difference = endDateObj.difference(today);
-      return difference.inDays;
-    }
-
-    final remainingDays = calculateRemainingDays(endDate);
+    final statusText = getRemainingStatus(startDate, endDate);
 
     return Padding(
       padding: EdgeInsets.only(left: width * 0.025),
@@ -324,7 +332,7 @@ class Plan_Name extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.0025),
               child: Text(
-                "D-$remainingDays", //이거 디데이 인자로 바꿀예정
+                statusText,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14.3,
