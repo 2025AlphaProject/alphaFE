@@ -18,7 +18,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     final height = MediaQuery.of(context).size.height;
     return Container(
       // AppBar에 그림자 효과 추가
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         boxShadow: [
           BoxShadow(
             color: Color(0x3F000000),
@@ -31,6 +31,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: AppBar(
         title: Text(title),
         backgroundColor: Color(0xFFFFFFFF),
+        scrolledUnderElevation: 0,
       ),
     );
   }
