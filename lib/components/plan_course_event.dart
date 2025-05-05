@@ -32,7 +32,7 @@ class travel_plan extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.0222, vertical: height * 0.011),
             child:
-                Text("🧭 예정된 코스",style: TextStyle(fontSize:width * 0.08, fontWeight: FontWeight.bold),),
+                Text("🧭 예정된 코스",style: TextStyle(fontSize:width * 0.06, fontWeight: FontWeight.w800),),
           ),
           ValueListenableBuilder<String?>(
             valueListenable: selectedDate,

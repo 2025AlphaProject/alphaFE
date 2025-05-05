@@ -30,6 +30,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       height: height * 0.147,
       child: AppBar(
         title: Text(title),
+        centerTitle: true,
         backgroundColor: Color(0xFFFFFFFF),
         scrolledUnderElevation: 0,
       ),

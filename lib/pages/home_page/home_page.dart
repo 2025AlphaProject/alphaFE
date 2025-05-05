@@ -444,7 +444,7 @@ class _HomePageState extends State<HomePage> {
                                 Text(
                                   '님',
                                   style: TextStyle(
-                                    fontWeight: FontWeight.w900,
+                                    fontWeight: FontWeight.bold,
                                     fontSize: width * 0.05,
                                   ),
                                 ),
@@ -509,9 +509,9 @@ class _HomePageState extends State<HomePage> {
                               child: ProceedButton(
                                 size_w: width * 0.586,
                                 size_h: height * 0.055,
-                                text: "✨새로운 장소 탐험하기",
+                                text: "✨ 새로운 장소 탐험하기",
                                 fontSize_: width * 0.04,
-                                fontWeight_: FontWeight.w900,
+                                fontWeight_: FontWeight.bold,
                                 onTap: _scrollToBottom,
                               ),
                             ),
