@@ -22,10 +22,10 @@ class DateDropdown extends StatelessWidget {
     return DropdownButtonHideUnderline(
       child: DropdownButton2<String>(
         isExpanded: true,
-        hint: Text(
+        hint: const Text(
           "날짜 선택",
           style: TextStyle(
-            fontSize: width * 0.039,
+            fontSize: 16.5,
             color: Colors.black54,
           ),
         ),
@@ -33,8 +33,8 @@ class DateDropdown extends StatelessWidget {
           value: date,
           child: Text(
             date,
-            style: TextStyle(
-              fontSize: width * 0.039,
+            style: const TextStyle(
+              fontSize: 16.5,
             ),
           ),
         )).toList(),

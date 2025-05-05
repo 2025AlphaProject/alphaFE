@@ -12,10 +12,10 @@ class MissionLoadingView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "미션 성공 여부를\n판단하고 있습니다!\n잠시만 기다려주세요",
               style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.064,
+                fontSize: 26.7,
                 fontWeight: FontWeight.bold,
               ),
             ),

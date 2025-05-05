@@ -42,17 +42,17 @@ class MissionSuccessPage extends StatelessWidget {
           final imageUrl = snapshot.data;
 
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: EdgeInsets.symmetric(horizontal: width * 0.048),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 20),
-                const Row(
+                SizedBox(height: height * 0.023),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.check_circle, color: Colors.green, size: 28),
-                    SizedBox(width: 8),
-                    Text(
+                    const Icon(Icons.check_circle, color: Colors.green, size: 28),
+                    SizedBox(width: width * 0.019),
+                    const Text(
                       "성공한 미션",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -62,7 +62,7 @@ class MissionSuccessPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: height * 0.034),
                 if (imageUrl != null && imageUrl.isNotEmpty)
                   Container(
                     width: double.infinity,
@@ -77,7 +77,7 @@ class MissionSuccessPage extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   ),
-                const SizedBox(height: 20),
+                SizedBox(height: height * 0.023),
                 const Text(
                   "🎉 성공한 미션입니다!",
                   style: TextStyle(

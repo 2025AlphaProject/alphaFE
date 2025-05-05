@@ -461,20 +461,20 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.add, size: width * 0.1, color: Color(0xFFB5B5B5),),
+              const Icon(Icons.add, size: 37.5, color: Color(0xFFB5B5B5),),
               SizedBox(height: height * 0.01),
-              Text(
+              const Text(
                 '이런, 여행이 없어요🧐',
                 style: TextStyle(
-                  fontSize: width * 0.05,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFFB5B5B5),
                 ),
               ),
-              Text(
+              const Text(
                 '여행을 추가해주세요!',
                 style: TextStyle(
-                  fontSize: width * 0.05,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFFB5B5B5),
                 ),
@@ -517,32 +517,32 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Text(
                                   _currentUsername ?? '',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.w900,
-                                    fontSize: width * 0.072,
+                                    fontSize: 28,
                                   ),
                                 ),
-                                Text(
+                                const Text(
                                   '님',
                                   style: TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: width * 0.05,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
                                   ),
                                 ),
                               ],
                             ),
-                            Text(
+                            const Text(
                                 "오늘도 좋은 하루에요 👋",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: width * 0.05,
+                                  fontSize: 21,
                                 )
                             ),
                             SizedBox(height: height * 0.024),
-                            Text(
+                            const Text(
                               '⏰ 다가오는 일정',
                               style: TextStyle(
-                                fontSize: width * 0.072,
+                                fontSize: 28,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
@@ -590,9 +590,9 @@ class _HomePageState extends State<HomePage> {
                               child: ProceedButton(
                                 size_w: width * 0.586,
                                 size_h: height * 0.055,
-                                text: "✨새로운 장소 탐험하기",
-                                fontSize_: width * 0.04,
-                                fontWeight_: FontWeight.w900,
+                                text: "✨ 새로운 장소 탐험하기",
+                                fontSize_: 15,
+                                fontWeight_: FontWeight.bold,
                                 onTap: _scrollToBottom,
                               ),
                             ),
@@ -600,10 +600,10 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(height: height * 0.09),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: width * 0.02),
-                              child: Text(
+                              child: const Text(
                                 "오늘\n이런 곳은 어떤가요?",
                                 style: TextStyle(
-                                  fontSize: width * 0.0748,
+                                  fontSize: 27,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
@@ -626,25 +626,28 @@ class _HomePageState extends State<HomePage> {
                                   SizedBox(height: height * 0.015),
                                   Row(
                                     children: [
-                                      Icon(Icons.location_on, size: width * 0.045, color: Colors.black),
+                                      const Icon(Icons.location_on, size: 17, color: Colors.black),
                                       SizedBox(width: width * 0.013),
                                       Text(
                                         _recommendedPlace!['title'],
-                                        style: TextStyle(
-                                          fontSize: width * 0.037,
+                                        style: const TextStyle(
+                                          fontSize: 15,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ],
                                   ),
                                   SizedBox(height: height * 0.007),
-                                  Text(
-                                    (_recommendedPlace?['title'] != null && _recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
-                                        ? "${_recommendedPlace?['title']}은(는) ${(_recommendedPlace?['address'] as String).split(' ')[1]}의 관광지 입니다.\n${_currentUsername ?? ''} 님의 마음에 드셨으면 좋겠네요!"
-                                        : '',
-                                    style: TextStyle(
-                                      fontSize: width * 0.03,
-                                      color: Colors.grey[700],
+                                  Padding(
+                                    padding: EdgeInsets.only(left: width * 0.053),
+                                    child: Text(
+                                      (_recommendedPlace?['title'] != null && _recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
+                                          ? "${_recommendedPlace?['title']}은(는) ${(_recommendedPlace?['address'] as String).split(' ')[1]}의 관광지 입니다.\n${_currentUsername ?? ''} 님의 마음에 드셨으면 좋겠네요!"
+                                          : '',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey[700],
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: height * 0.017),
@@ -655,7 +658,7 @@ class _HomePageState extends State<HomePage> {
                                       text: (_recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
                                           ? "${(_recommendedPlace?['address'] as String).split(' ')[1]} 코스 생성하기"
                                           : "코스 생성하기",
-                                      fontSize_: width * 0.032,
+                                      fontSize_: 13,
                                       fontWeight_: FontWeight.bold,
                                       onTap: () async {
                                         final String sigun = (_recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
@@ -717,7 +720,7 @@ class _HomePageState extends State<HomePage> {
                                       child: Text(
                                         '트렌딩 페이지 정보를 받아오고 있습니다...',
                                         style: TextStyle(
-                                          fontSize: width * 0.032,
+                                          fontSize: 13,
                                           color: Colors.grey[600],
                                         ),
                                       ),
@@ -729,7 +732,7 @@ class _HomePageState extends State<HomePage> {
                                       size_w: width * 0.5,
                                       size_h: height * 0.05,
                                       text: '가져오는 중...',
-                                      fontSize_: width * 0.032,
+                                      fontSize_: 13,
                                       fontWeight_: FontWeight.bold,
                                       onTap: () {},
                                     ),
@@ -755,11 +758,11 @@ class _HomePageState extends State<HomePage> {
                                   color: Colors.grey,
                                   size: width * 0.06,
                                 ),
-                                label: Text(
+                                label: const Text(
                                   '홈으로 이동',
                                   style: TextStyle(
                                     color: Colors.grey,
-                                    fontSize: width * 0.025,
+                                    fontSize: 10.2,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -789,4 +792,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-

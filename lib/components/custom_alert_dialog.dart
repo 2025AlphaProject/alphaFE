@@ -19,20 +19,20 @@ class CustomAlertDialog extends StatelessWidget {
     return AlertDialog(
       backgroundColor: const Color(0xFFF9F9F9),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(12),
       ),
       title: Text(
         title,
-        style: TextStyle(
-          fontSize: width * 0.045,
+        style: const TextStyle(
+          fontSize: 18.5,
           fontWeight: FontWeight.bold,
           color: Colors.black87,
         ),
       ),
       content: Text(
         contentText,
-        style: TextStyle(
-          fontSize: width * 0.04,
+        style: const TextStyle(
+          fontSize: 18.5,
           color: Colors.black,
         ),
       ),
@@ -47,8 +47,8 @@ class CustomAlertDialog extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.black,
             foregroundColor: Colors.white,
-            textStyle: TextStyle(
-              fontSize: width * 0.04,
+            textStyle: const TextStyle(
+              fontSize: 16.5,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),

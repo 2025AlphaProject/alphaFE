@@ -15,7 +15,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     return SafeArea(
       child: Container(
         // 배경 색, 위쪽 둥근 모서리, 그림자 효과 설정
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color(0xFFFFFFFF),
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(30.0),

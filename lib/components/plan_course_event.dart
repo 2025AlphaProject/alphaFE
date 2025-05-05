@@ -32,7 +32,7 @@ class travel_plan extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.0222, vertical: height * 0.011),
             child:
-                Text("🧭 예정된 코스",style: TextStyle(fontSize:width * 0.08, fontWeight: FontWeight.bold),),
+                Text("🧭 예정된 코스",style: TextStyle(fontSize:width * 0.06, fontWeight: FontWeight.w800),),
           ),
           ValueListenableBuilder<String?>(
             valueListenable: selectedDate,
@@ -187,7 +187,7 @@ class place_card extends StatelessWidget {
             child: Row(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                   child: Image.network(
                     imageUrl.isNotEmpty
                         ? imageUrl
@@ -199,7 +199,7 @@ class place_card extends StatelessWidget {
                       width: width * 0.333,
                       height: height * 0.145,
                       color: Colors.grey[300],
-                      child: Icon(Icons.image_not_supported, size: width * 0.055),
+                      child: const Icon(Icons.image_not_supported, size: 22.6),
                     ),
                   ),
                 ),
@@ -211,18 +211,18 @@ class place_card extends StatelessWidget {
                     children: [
                       Row( //여행명
                         children: [
-                          Icon(Icons.pin_drop, size: width * 0.055),
+                          const Icon(Icons.pin_drop, size: 22.6),
                           SizedBox(width: width * 0.011),
                           Wrap( //장소명
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              Container( //장소명
+                              SizedBox( //장소명
                                 width: width * 0.416,
                                 child: Text(
                                   placeName.replaceAll(RegExp(r'[<>]'), ''),
                                   softWrap: true,
                                   overflow: TextOverflow.visible,
-                                  style: TextStyle(fontSize: width * 0.039, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontSize: 16.5, fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ],
@@ -245,19 +245,19 @@ class place_card extends StatelessWidget {
                                   Container( //도로명 설명
                                     padding: EdgeInsets.symmetric(horizontal:  width * 0.0083, vertical:  width * 0.0055),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
+                                      borderRadius: BorderRadius.circular(12),
                                       border: Border.all(color: Colors.grey.shade400),
                                     ),
-                                    child: Text("도로명", style: TextStyle(fontSize: width * 0.033)),
+                                    child: const Text("도로명", style: TextStyle(fontSize: 14.3)),
                                   ),
                                   SizedBox(width: width * 0.016),
-                                  Container( //도로명 데이터
+                                  SizedBox( //도로명 데이터
                                     width: width * 0.361,
                                     child: Text(
                                       roadAddress.replaceAll(RegExp(r'[<>]'), ''),
                                       softWrap: true,
                                       overflow: TextOverflow.visible,
-                                      style: TextStyle(fontSize: width * 0.033),
+                                      style: const TextStyle(fontSize: 14.3),
                                     ),
                                   ),
                                 ],
@@ -269,19 +269,19 @@ class place_card extends StatelessWidget {
                                   Container( //지번 설명
                                     padding: EdgeInsets.symmetric(horizontal:  width * 0.0083, vertical:  width * 0.0055),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
+                                      borderRadius: BorderRadius.circular(12),
                                       border: Border.all(color: Colors.grey.shade400),
                                     ),
-                                    child: Text("지번", style: TextStyle(fontSize: width * 0.033)),
+                                    child: const Text("지번", style: TextStyle(fontSize: 14.3)),
                                   ),
                                   SizedBox(width: width* 0.0416),
-                                  Container( //지번 데이터
+                                  SizedBox( //지번 데이터
                                     width: width * 0.361,
                                     child: Text(
                                       numberAddress.replaceAll(RegExp(r'[<>]'), ''),
                                       softWrap: true,
                                       overflow: TextOverflow.visible,
-                                      style: TextStyle(fontSize: width * 0.033),
+                                      style: const TextStyle(fontSize: 14.3),
                                     ),
                                   ),
                                 ],
@@ -384,7 +384,7 @@ class _EventsState extends State<Events> {
               SizedBox(width: width * 0.011),
               Text(
                 _isExpanded ? "주변 행사 닫기" : "주변 행사 보기",
-                style: TextStyle(color: Colors.grey, fontSize: width * 0.039),
+                style: const TextStyle(color: Colors.grey, fontSize: 16.5),
               ),
             ],
           ),
@@ -402,11 +402,11 @@ class _EventsState extends State<Events> {
               ? Row( //주변행사가 없을때
                   children: [
                     SizedBox(width: width * 0.0166),
-                    Text(
+                    const Text(
                       "주변 행사가 없습니다.",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: width * 0.039,
+                        fontSize: 16.5,
                       ),
                     ),
                   ],
@@ -441,15 +441,15 @@ class _EventsState extends State<Events> {
                               Text(
                                 event['title'] ?? '',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: width * 0.039,
+                                  fontSize: 16.5,
                                 ),
                               ),
                               Text(
                                 event['category'],
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: width * 0.039),
+                                style: const TextStyle(fontSize: 16.5),
                               ),
                             ],
                           ),

@@ -49,7 +49,7 @@ class _LoadingPage2State extends State<LoadingPage2> {
                     TextSpan(
                       text: 'CON',
                       style: TextStyle(
-                        fontSize: width * 0.12,
+                        fontSize: 35,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.shade400,
                         shadows: const [
@@ -61,13 +61,13 @@ class _LoadingPage2State extends State<LoadingPage2> {
                         ],
                       ),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: 'EVER?',
                       style: TextStyle(
-                        fontSize: width * 0.12,
+                        fontSize: 35,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
-                        shadows: const [
+                        shadows: [
                           Shadow(
                             offset: Offset(2, 2),
                             blurRadius: 2,
@@ -80,29 +80,34 @@ class _LoadingPage2State extends State<LoadingPage2> {
                 ),
               ),
             ),
-            SizedBox(height: height * 0.0492),
-            _buildAnimatedIconText(
-              index: 0,
-              iconPath: 'assets/loading2_1.png',
-              text: 'AI 추천 여행 경로 생성',
-              width: width,
-              height: height,
-            ),
-            SizedBox(height: height * 0.0246),
-            _buildAnimatedIconText(
-              index: 1,
-              iconPath: 'assets/loading2_2.png',
-              text: '여행지 별 사진 미션 진행',
-              width: width,
-              height: height,
-            ),
-            SizedBox(height: height * 0.0246),
-            _buildAnimatedIconText(
-              index: 2,
-              iconPath: 'assets/loading2_3.png',
-              text: '일정 및 주변행사 모아보기',
-              width: width,
-              height: height,
+            SizedBox(height: height * 0.1),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildAnimatedIconText(
+                  index: 0,
+                  iconPath: 'assets/loading2_1.png',
+                  text: 'AI 추천 여행 경로 생성',
+                  width: width,
+                  height: height,
+                ),
+                SizedBox(height: height * 0.0246),
+                _buildAnimatedIconText(
+                  index: 1,
+                  iconPath: 'assets/loading2_2.png',
+                  text: '여행지 별 사진 미션 진행',
+                  width: width,
+                  height: height,
+                ),
+                SizedBox(height: height * 0.0246),
+                _buildAnimatedIconText(
+                  index: 2,
+                  iconPath: 'assets/loading2_3.png',
+                  text: '일정 및 주변행사 모아보기',
+                  width: width,
+                  height: height,
+                ),
+              ],
             ),
           ],
         ),
@@ -123,12 +128,12 @@ class _LoadingPage2State extends State<LoadingPage2> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(iconPath, width: width * 0.25),
+          Image.asset(iconPath, width: 82.2),
           SizedBox(height: height * 0.018),
           Text(
             text,
-            style: TextStyle(
-              fontSize: width * 0.06,
+            style: const TextStyle(
+              fontSize: 22.6,
               fontWeight: FontWeight.bold,
             ),
           ),

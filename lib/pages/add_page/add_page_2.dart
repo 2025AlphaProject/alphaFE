@@ -537,14 +537,10 @@ class _AddPage_2State extends State<AddPage_2> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text("📍${widget.title}", style: TextStyle(fontSize: width * 0.08, fontWeight: FontWeight.w900)),
-            SizedBox(width: width * 0.025),
-            Text('근처 코스를 알려드릴게요', style: TextStyle(fontSize: width * 0.04, color: const Color(0xFF757575))),
-          ],
+        Text("📍${widget.title}", style: const TextStyle(fontSize: 26.7, fontWeight: FontWeight.w900)),
+        const Padding(
+          padding: EdgeInsets.only(left: 37.5),
+          child: Text('근처 코스를 알려드릴게요', style: TextStyle(fontSize: 14.3, color: Color(0xFF757575))),
         ),
         SizedBox(height: height * 0.0138),
         Padding(
@@ -553,7 +549,7 @@ class _AddPage_2State extends State<AddPage_2> {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text('최근 업데이트: ', style: TextStyle(fontSize: width * 0.03, fontWeight: FontWeight.bold, color: const Color(0xFF7F7F7F))),
+              const Text('최근 업데이트: ', style: TextStyle(fontSize: 14.3, fontWeight: FontWeight.bold, color: Color(0xFF7F7F7F))),
               SizedBox(width: width * 0.01),
               // 오늘 날짜를 yyyy-MM-dd 형식으로 표시
               Text(DateTime.now().toLocal().toString().substring(0, 10), style: TextStyle(fontSize: width * 0.03, color: const Color(0xFF7F7F7F))),
@@ -575,12 +571,12 @@ class _AddPage_2State extends State<AddPage_2> {
         isExpanded: true,
         dropdownColor: const Color(0xFFF5F5F5),
         hint: widget.isSingleDayMode
-            ? Text("추천 코스입니다", style: TextStyle(fontSize: width * 0.045, color: Colors.black))
-            : Text("날짜를 선택해주세요", style: TextStyle(fontSize: width * 0.045, color: Colors.black)),
+            ? const Text("추천 코스입니다", style: TextStyle(fontSize: 18.5, color: Colors.black))
+            : const Text("날짜를 선택해주세요", style: TextStyle(fontSize: 18.5, color: Colors.black)),
         items: _placeWidgets.map((entry) {
           return DropdownMenuItem<String>(
             value: entry.key,
-            child: Text(entry.key, style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold)),
+            child: Text(entry.key, style: const TextStyle(fontSize: 20.5, fontWeight: FontWeight.bold)),
           );
         }).toList(),
         onChanged: (value) {
@@ -688,7 +684,7 @@ class _AddPage_2State extends State<AddPage_2> {
                                         shape: BoxShape.circle,
                                       ),
                                       padding: EdgeInsets.symmetric(vertical: height * .004, horizontal: width * 0.01),
-                                      child: Icon(Icons.close, size: width * 0.045, color: Colors.white),
+                                      child: const Icon(Icons.close, size: 18.5, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -715,12 +711,12 @@ class _AddPage_2State extends State<AddPage_2> {
                                   height: width * 0.63 * 0.69,
                                   decoration: BoxDecoration(
                                     border: Border.all(color: Colors.grey.shade400),
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: Center(
+                                  child: const Center(
                                     child: Text(
                                       '+ 장소 추가',
-                                      style: TextStyle(fontSize: width * 0.04),
+                                      style: TextStyle(fontSize: 16.5),
                                     ),
                                   ),
                                 ),
@@ -756,7 +752,7 @@ class _AddPage_2State extends State<AddPage_2> {
                         size_w: width * 0.53,
                         size_h: height * 0.055,
                         text: "이 코스로 할게요!",
-                        fontSize_: width * 0.037,
+                        fontSize_: 14.3,
                         fontWeight_: FontWeight.bold,
                         onTap: () {
 

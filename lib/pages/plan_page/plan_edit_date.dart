@@ -138,11 +138,11 @@ class _planEditDateState extends State<planEditDate> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
+                        const Text(
                           '오늘',
                           style: TextStyle(
                             color: Colors.blue,
-                            fontSize: width * 0.0266,
+                            fontSize: 10.5,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -175,7 +175,7 @@ class _planEditDateState extends State<planEditDate> {
                     },
                     child: Text(
                       "${_rangeStart!.year}.${_rangeStart!.month}.${_rangeStart!.day} - ${_rangeEnd!.month}.${_rangeEnd!.day} / 수정",
-                      style: TextStyle(fontSize: width * 0.042, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 17.2, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

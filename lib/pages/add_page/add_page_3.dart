@@ -77,15 +77,15 @@ class _AddPage_3State extends State<AddPage_3> {
           SizedBox(height: height * 0.075),
 
           // 축하 이모지
-          Text('🥳', style: TextStyle(fontSize: width * 0.12)),
+          const Text('🥳', style: TextStyle(fontSize: 49.3)),
 
           SizedBox(height: height * 0.015),
 
           // 상단 텍스트
-          Text(
+          const Text(
             "새 여행이 추가됐어요!",
             style: TextStyle(
-              fontSize: width * 0.06,
+              fontSize: 24.6,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -115,7 +115,7 @@ class _AddPage_3State extends State<AddPage_3> {
               size_w: width * 0.7,
               size_h: height * 0.055,
               text: '나의 계획에서 보기',
-              fontSize_: width * 0.04,
+              fontSize_: 16.5,
               fontWeight_: FontWeight.bold,
               onTap: () {
                   Navigator.push(

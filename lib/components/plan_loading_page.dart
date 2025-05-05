@@ -13,10 +13,10 @@ class PlanLoadingView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "계획을 불러오는 중입니다!\n잠시만 기다려주세요",
               style: TextStyle(
-                fontSize: width * 0.064,
+                fontSize: 26.7,
                 fontWeight: FontWeight.bold,
               ),
             ),

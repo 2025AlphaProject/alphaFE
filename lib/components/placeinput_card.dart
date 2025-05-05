@@ -80,12 +80,12 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey.shade700,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(width * 0.02)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("🔍 장소 찾아보기", style: TextStyle(color: Colors.white, fontSize: width * 0.03)),
+                  Text("🔍 장소 찾아보기", style: TextStyle(color: Colors.white, fontSize: 12.3)),
                 ],
               ),
             ),
@@ -99,20 +99,20 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
             height: height * 0.045,
             decoration: BoxDecoration(
               color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(width * 0.015),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.grey.shade400),
             ),
             padding: EdgeInsets.symmetric(horizontal: width * 0.04),
             alignment: Alignment.centerLeft,
             child: Row(
               children: [
-                Text('🏠', style: TextStyle(fontSize: width * 0.025)),
+                const Text('🏠', style: TextStyle(fontSize: 10.2)),
                 SizedBox(width: width * 0.02),
                 Expanded(
                   child: Text(
                     _title,
-                    style: TextStyle(
-                        fontSize: width * 0.028,
+                    style: const TextStyle(
+                        fontSize: 12.3,
                         color: Color(0xFFB3B3B3),
                     ),
                     // 긴 텍스트일 경우 말줄임 표시
@@ -132,20 +132,20 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
             height: height * 0.045,
             decoration: BoxDecoration(
               color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(width * 0.015),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.grey.shade400),
             ),
             padding: EdgeInsets.symmetric(horizontal: width * 0.04),
             alignment: Alignment.centerLeft,
             child: Row(
               children: [
-                Text('📍', style: TextStyle(fontSize: width * 0.028)),
+                const Text('📍', style: TextStyle(fontSize: 10.2)),
                 SizedBox(width: width * 0.02),
                 Expanded(
                   child: Text(
                     _description,
-                    style: TextStyle(
-                      fontSize: width * 0.028,
+                    style: const TextStyle(
+                      fontSize: 10.2,
                       color: Color(0xFFB3B3B3),
                     ),
                     // 긴 텍스트일 경우 말줄임 표시
@@ -170,7 +170,7 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey.shade700,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(width * 0.02)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 // 입력 값 유효성 검사: 타이틀, 설명, 좌표가 올바른지 확인
                 onPressed: () {

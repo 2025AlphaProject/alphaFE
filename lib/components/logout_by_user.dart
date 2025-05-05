@@ -9,10 +9,10 @@ Future<void> LogoutByUser(BuildContext context) async {
     builder: (BuildContext context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
         ),
         backgroundColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+        contentPadding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width*0.0583, vertical: MediaQuery.of(context).size.height * 0.0369),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

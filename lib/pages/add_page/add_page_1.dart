@@ -40,16 +40,16 @@ class AddPage_1 extends StatelessWidget {
               SizedBox(height: height * 0.0461),
 
               // 안내 문구 (가운데 정렬)
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     "✈️ 어디로 떠나볼까요?",
-                    style: TextStyle(fontSize: width * 0.06, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 24.6, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     "나머지는 저희에게 맡겨두세요!",
-                    style: TextStyle(fontSize: width * 0.032, fontWeight: FontWeight.normal, color: const Color(0xFF757575)),
+                    style: TextStyle(fontSize: 14.3, fontWeight: FontWeight.normal, color: Color(0xFF757575)),
                   ),
                 ]
               ),

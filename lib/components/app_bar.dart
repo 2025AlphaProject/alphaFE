@@ -30,6 +30,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       height: height * 0.147,
       child: AppBar(
         title: Text(title),
+        centerTitle: true,
         backgroundColor: Color(0xFFFFFFFF),
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
@@ -239,11 +240,11 @@ class _SearchAppBarState extends State<SearchAppBar> {
                 hintText: '궁금한 여행지를 구 단위로 검색하세요!',
                 hintStyle: const TextStyle(fontSize: 16, color: Colors.grey),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(width * 0.07),
+                  borderRadius: BorderRadius.circular(28.7),
                   borderSide: const BorderSide(color: Color(0xFFD9D9D9)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(width * 0.07),
+                  borderRadius: BorderRadius.circular(28.7),
                   borderSide: const BorderSide(color: Color(0xFFD9D9D9)),
                 ),
                 contentPadding: EdgeInsets.symmetric(

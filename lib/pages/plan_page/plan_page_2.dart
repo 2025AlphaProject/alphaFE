@@ -325,9 +325,9 @@ class Plan_Name extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.0025),
               child: Text(
                 "D-$remainingDays", //이거 디데이 인자로 바꿀예정
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
-                  fontSize: width * 0.03,
+                  fontSize: 14.3,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -337,7 +337,7 @@ class Plan_Name extends StatelessWidget {
             padding: EdgeInsets.only(left: width * 0.0075),
             child: Text(
               tourName,
-              style: TextStyle(fontSize: width * 0.085, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
             ),
           ),
           Padding(
@@ -346,11 +346,11 @@ class Plan_Name extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.calendar_today, size: width * 0.035, color: Colors.grey),
+                const Icon(Icons.calendar_today, size: 14.3, color: Colors.grey),
                 SizedBox(width: width * 0.0125),
                 Text(
                   "$startDate ~ $endDate",
-                  style: TextStyle(fontSize: width * 0.032, color: Colors.grey),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),
@@ -379,9 +379,9 @@ class Traveler_List extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: height * 0.01),
-          Text(
+          const Text(
             "여행자",
-            style: TextStyle(fontSize: width * 0.04, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: height * 0.012),
           SizedBox(
@@ -393,7 +393,7 @@ class Traveler_List extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     CircleAvatar(
-                      radius: width * 0.06,
+                      radius: 24.6,
                       backgroundImage: NetworkImage(traveler["imageUrl"]!),
                     ),
                     SizedBox(height: height * 0.002),
@@ -402,7 +402,7 @@ class Traveler_List extends StatelessWidget {
                         fit: BoxFit.scaleDown,
                         child: Text(
                           traveler["name"]!,
-                          style: TextStyle(fontSize: width * 0.035),
+                          style: const TextStyle(fontSize: 14.3),
                         ),
                       ),
                     ),
@@ -430,12 +430,12 @@ class Traveler_List extends StatelessWidget {
                         child: Icon(Icons.add, color: Colors.grey, size: width * 0.05),
                       ),
                       SizedBox(height: height * 0.002),
-                      SizedBox(
+                      const SizedBox(
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
                             "초대",
-                            style: TextStyle(fontSize: width * 0.035),
+                            style: TextStyle(fontSize: 14.3),
                           ),
                         ),
                       ),

@@ -51,7 +51,7 @@ class _AddPage_0State extends State<AddPage_0> {
       locale: const Locale('ko', 'KR'),
       // 날짜 범위 제한
       firstDate: now,
-      lastDate: now.add(Duration(days: 365 * 5)),
+      lastDate: now.add(const Duration(days: 365 * 5)),
       builder: (context, child) {
         return Theme(
           data: ThemeData(
@@ -84,7 +84,7 @@ class _AddPage_0State extends State<AddPage_0> {
       if (_isSingleMode && picked.duration.inDays > 0) {
         await showDialog(
           context: context,
-          builder: (BuildContext context) => CustomAlertDialog(
+          builder: (BuildContext context) => const CustomAlertDialog(
             title: '안내',
             contentText: '지금은 1일만 선택할 수 있습니다.',
           ),
@@ -95,7 +95,7 @@ class _AddPage_0State extends State<AddPage_0> {
       if (!_isSingleMode && picked.duration.inDays > 2) {
         await showDialog(
           context: context,
-          builder: (BuildContext context) => CustomAlertDialog(
+          builder: (BuildContext context) => const CustomAlertDialog(
             title: '안내',
             contentText: '최대 3일까지 선택할 수 있습니다.',
           ),
@@ -163,7 +163,7 @@ class _AddPage_0State extends State<AddPage_0> {
         // 이미 존재하는 여행인 경우 알림 후 종료
         await showDialog(
           context: context,
-          builder: (BuildContext dialogContext) => CustomAlertDialog(
+          builder: (BuildContext dialogContext) => const CustomAlertDialog(
             title: '이미 존재하는 여행입니다',
             contentText: '',
           ),
@@ -180,7 +180,7 @@ class _AddPage_0State extends State<AddPage_0> {
         _selectedDateRange == null) {
       await showDialog(
         context: context,
-        builder: (BuildContext context) => CustomAlertDialog(
+        builder: (BuildContext context) => const CustomAlertDialog(
           title: '입력 오류',
           contentText: '여행 이름(10자 이내)과 날짜를 모두 입력해주세요',
         ),
@@ -228,7 +228,7 @@ class _AddPage_0State extends State<AddPage_0> {
         _tourRegistered = false;
         await showDialog(
           context: context,
-          builder: (BuildContext context) => CustomAlertDialog(
+          builder: (BuildContext context) => const CustomAlertDialog(
             title: '등록 실패',
             contentText: '여행 등록에 실패했습니다',
           ),
@@ -278,11 +278,11 @@ class _AddPage_0State extends State<AddPage_0> {
             children: [
 
               // 페이지 제목
-              Center(
+              const Center(
                 child: Text(
                   "여행 추가하기",
                   style: TextStyle(
-                    fontSize: width * 0.065,
+                    fontSize: 26.7,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -291,9 +291,9 @@ class _AddPage_0State extends State<AddPage_0> {
               SizedBox(height: height * 0.05),
 
               // 여행 제목 입력 - 10글자 제한
-              Text("✏️ 여행 제목",
+              const Text("✏️ 여행 제목",
                   style: TextStyle(
-                    fontSize: width * 0.05,
+                    fontSize: 20.5,
                     fontWeight: FontWeight.bold,
                   )),
               SizedBox(height: height * 0.01),
@@ -305,13 +305,13 @@ class _AddPage_0State extends State<AddPage_0> {
                   decoration: InputDecoration(
                     isDense: true,
                     hintText: "여행에 대한 정보를 간단한 제목으로 지어보세요",
-                    hintStyle: TextStyle(
-                      fontSize: width * 0.035,
+                    hintStyle: const TextStyle(
+                      fontSize: 14.3,
                       color: Colors.grey,
                       fontWeight: FontWeight.w400,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(width * 0.03),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     counterText: "",
                     contentPadding: EdgeInsets.symmetric(
@@ -322,17 +322,17 @@ class _AddPage_0State extends State<AddPage_0> {
                 ),
               ),
               SizedBox(height: height * 0.005),
-              Text("• 한글, 영문, 특수기호 구분없이 10자 이내로 입력",
-                  style: TextStyle(fontSize: width * 0.035, color: Colors.grey)),
-              Text("• 결정 후 수정할 수 없으니 신중히 정해주세요",
-                  style: TextStyle(fontSize: width * 0.035, color: Colors.grey)),
+              const Text("• 한글, 영문, 특수기호 구분없이 10자 이내로 입력",
+                  style: TextStyle(fontSize: 12.3, color: Colors.grey)),
+              const Text("• 결정 후 수정할 수 없으니 신중히 정해주세요",
+                  style: TextStyle(fontSize: 12.3, color: Colors.grey)),
 
               SizedBox(height: height * 0.05),
 
               // 여행 날짜 입력 - material.dart의 DateRangePicker 사용
-              Text("✏️ 여행 날짜",
+              const Text("✏️ 여행 날짜",
                   style: TextStyle(
-                    fontSize: width * 0.05,
+                    fontSize: 20.5,
                     fontWeight: FontWeight.bold,
                   )),
               SizedBox(height: height * 0.01),
@@ -354,15 +354,15 @@ class _AddPage_0State extends State<AddPage_0> {
                               ? ""
                               : "${_selectedDateRange!.start.year}.${_selectedDateRange!.start.month.toString().padLeft(2, '0')}.${_selectedDateRange!.start.day.toString().padLeft(2, '0')} ~ "
                                 "${_selectedDateRange!.end.year}.${_selectedDateRange!.end.month.toString().padLeft(2, '0')}.${_selectedDateRange!.end.day.toString().padLeft(2, '0')}",
-                          hintStyle: TextStyle(
-                            fontSize: width * 0.035,
+                          hintStyle: const TextStyle(
+                            fontSize: 12.3,
                             color: Colors.grey,
                             fontWeight: FontWeight.w400,
                           ),
                           filled: true,
                           fillColor: const Color(0xFFF5F5F5),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(width * 0.03),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           counterText: "",
                           contentPadding: EdgeInsets.symmetric(
@@ -387,13 +387,13 @@ class _AddPage_0State extends State<AddPage_0> {
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(width * 0.03),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         "🗓️",
                         style: TextStyle(
-                          fontSize: width * 0.045,
+                          fontSize: 18.5,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -406,9 +406,9 @@ class _AddPage_0State extends State<AddPage_0> {
               // 접속 경로에 따라 경고 메세지 다르게
               _isSingleMode
                   ? Text("• 지금은 1일만 선택할 수 있습니다",
-                  style: TextStyle(fontSize: width * 0.035, color: Colors.red.shade500))
+                  style: TextStyle(fontSize: 12.3, color: Colors.red.shade500))
                   : Text("• 지금은 3일만 선택할 수 있습니다",
-                  style: TextStyle(fontSize: width * 0.035, color: Colors.red.shade500)),
+                  style: TextStyle(fontSize: 12.3, color: Colors.red.shade500)),
 
               SizedBox(height: height * 0.073,),
               // 새 여행 만들기 버튼 - 여행 id 발급 및 행정구역 선택 페이지로 이동
@@ -419,7 +419,7 @@ class _AddPage_0State extends State<AddPage_0> {
                     size_w: width * 0.8,
                     size_h: height * 0.06,
                     text: "새 여행 만들기",
-                    fontSize_: width * 0.045,
+                    fontSize_: 18.5,
                     fontWeight_: FontWeight.bold,
                     onTap: _registerTour,
                   ),

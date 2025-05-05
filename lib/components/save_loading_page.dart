@@ -28,9 +28,9 @@ class _SaveLoadingViewState extends State<SaveLoadingView> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               '여행 경로 저장중...\n잠시만 기다려주세요',
-              style: TextStyle(fontSize: width * 0.055, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 22.6, fontWeight: FontWeight.bold),
               textAlign: TextAlign.start,
             ),
             SizedBox(height: height * 0.029),
