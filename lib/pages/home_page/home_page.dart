@@ -169,6 +169,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _fetchRecommendedPlace({int retryCount = 0}) async {
     print('트렌딩 장소 가져오기 시작...');
+    print('[DEBUG] 사용자 ID 요청 시작');
     final accessToken = await getAccessToken();
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
@@ -186,8 +187,10 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           );
+          print('[DEBUG] 사용자 ID 요청 성공: ${response.data['sub']}');
           return response.data['sub'];
         } catch (_) {
+          print('[DEBUG] 사용자 ID 요청 실패 - 재시도 중 (${i + 1}/3)');
           await Future.delayed(const Duration(seconds: 2));
         }
       }
@@ -200,7 +203,7 @@ class _HomePageState extends State<HomePage> {
         await showDialog(
           context: context,
           builder: (_) => const CustomAlertDialog(
-            title: '오류',
+            title: '트렌딩 페이지 오류',
             contentText: '사용자 정보를 불러오는 데 실패했습니다.',
           ),
         );
@@ -208,28 +211,89 @@ class _HomePageState extends State<HomePage> {
       return;
     }
 
+    // 서울시 행정구역 목록
+    const List<String> districts = [
+      "강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구",
+      "도봉구", "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구",
+      "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구"
+    ];
+    final String randomDistrict = districts[Random().nextInt(districts.length)];
+    print('[DEBUG] 랜덤 행정구역 선택: $randomDistrict');
+
     final uniqueCode = Random().nextInt(1 << 31);
 
     try {
       final channel = WebSocketChannel.connect(
-        Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode&days=1'),
+        Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode&days=1&sigunguName=$randomDistrict'),
       );
-      print('웹소켓 연결 성공');
+      print('[DEBUG] 웹소켓 채널 연결 완료: $uniqueCode');
 
       late StreamSubscription subscription;
 
       subscription = channel.stream.listen((message) async {
         try {
           final data = jsonDecode(message);
+          print('[DEBUG] 웹소켓 메시지 수신: $message');
 
-          // 중간 메시지 (state: OK)는 무시
-          if (data['status'] != 'SUCCESS' || data['result'] == null) {
-            print('중간 메시지 수신: $data');
+          // "state": "OK"인 중간 응답은 무시
+          if (data['state'] == 'OK') {
+            print('[DEBUG] 중간 응답(OK) 수신 - 무시');
             return;
           }
 
-          // 실제 추천 결과 처리
-          dynamic result = data['result'];
+          // 새 조건 분기
+          if (_recommendedPlace != null) {
+            print('[DEBUG] 이미 추천 장소 있음 - 무시');
+            return;
+          }
+
+          // status == SUCCESS 형태의 응답 처리
+          if (data['status'] == 'SUCCESS' && data['result'] != null) {
+            dynamic result = data['result'];
+            if (result is String) {
+              result = jsonDecode(result);
+            }
+
+            final List<dynamic> flatPlaces = result.expand((course) => course is List ? course : []).toList();
+            final filteredPlaces = flatPlaces.where((place) => (place['image1'] ?? '').isNotEmpty).toList();
+
+            if (filteredPlaces.isEmpty) {
+              print('[DEBUG] 유효한 장소 없음');
+              throw '유효한 장소 없음';
+            }
+
+            final selectedPlace = filteredPlaces[Random().nextInt(filteredPlaces.length)];
+
+            try {
+              await precacheImage(NetworkImage(selectedPlace['image1']), context);
+            } catch (e) {
+              print("이미지 프리캐싱 실패: $e");
+            }
+
+            if (!mounted) return;
+
+            print('[DEBUG] 추천 장소 선택 완료: ${selectedPlace['title']}');
+            setState(() {
+              _recommendedPlace = selectedPlace;
+            });
+
+            try {
+              await subscription.cancel();
+            } catch (_) {}
+            try {
+              channel.sink.close();
+            } catch (_) {}
+            return;
+          }
+
+          // 기존 Message/result 방식(예전 서버 구조)도 fallback 가능하게 남겨둠
+          final dynamic messageContent = data['Message'];
+          if (messageContent == null || messageContent['result'] == null) {
+            print('[DEBUG] 응답 오류 또는 result 없음 - 재시도 조건 확인');
+            throw '추천 실패';
+          }
+
+          dynamic result = messageContent['result'];
           if (result is String) {
             result = jsonDecode(result);
           }
@@ -238,9 +302,8 @@ class _HomePageState extends State<HomePage> {
           final filteredPlaces = flatPlaces.where((place) => (place['image1'] ?? '').isNotEmpty).toList();
 
           if (filteredPlaces.isEmpty) {
-            await subscription.cancel();
-            channel.sink.close();
-            return;
+            print('[DEBUG] 유효한 장소 없음');
+            throw '유효한 장소 없음';
           }
 
           final selectedPlace = filteredPlaces[Random().nextInt(filteredPlaces.length)];
@@ -251,17 +314,28 @@ class _HomePageState extends State<HomePage> {
             print("이미지 프리캐싱 실패: $e");
           }
 
-          if (mounted) {
-            setState(() {
-              _recommendedPlace = selectedPlace;
-            });
-          }
+          if (!mounted) return;
 
-          await subscription.cancel();
-          channel.sink.close();
-        } catch (_) {
-          await subscription.cancel();
-          channel.sink.close();
+          print('[DEBUG] 추천 장소 선택 완료: ${selectedPlace['title']}');
+          setState(() {
+            _recommendedPlace = selectedPlace;
+          });
+
+          try {
+            await subscription.cancel();
+          } catch (_) {}
+          try {
+            channel.sink.close();
+          } catch (_) {}
+        } catch (e) {
+          print('[DEBUG] 웹소켓 오류 발생 또는 종료 - 재시도 여부 확인 중');
+          try {
+            await subscription.cancel();
+          } catch (_) {}
+          try {
+            channel.sink.close();
+          } catch (_) {}
+
           if (retryCount < 5) {
             await Future.delayed(const Duration(seconds: 8));
             _fetchRecommendedPlace(retryCount: retryCount + 1);
@@ -269,15 +343,21 @@ class _HomePageState extends State<HomePage> {
             await showDialog(
               context: context,
               builder: (_) => const CustomAlertDialog(
-                title: '오류',
+                title: '트렌딩 페이지 오류',
                 contentText: '추천 장소를 가져오는 데 실패했습니다.',
               ),
             );
           }
         }
       }, onError: (_) async {
-        await subscription.cancel();
-        channel.sink.close();
+        print('[DEBUG] 웹소켓 오류 발생 또는 종료 - 재시도 여부 확인 중');
+        try {
+          await subscription.cancel();
+        } catch (_) {}
+        try {
+          channel.sink.close();
+        } catch (_) {}
+
         if (retryCount < 5) {
           await Future.delayed(const Duration(seconds: 8));
           _fetchRecommendedPlace(retryCount: retryCount + 1);
@@ -285,13 +365,14 @@ class _HomePageState extends State<HomePage> {
           await showDialog(
             context: context,
             builder: (_) => const CustomAlertDialog(
-              title: '오류',
+              title: '트렌딩 페이지 오류',
               contentText: '추천 장소를 가져오는 데 실패했습니다.',
             ),
           );
         }
       });
     } catch (_) {
+      print('[DEBUG] 웹소켓 오류 발생 또는 종료 - 재시도 여부 확인 중');
       if (retryCount < 5) {
         await Future.delayed(const Duration(seconds: 8));
         _fetchRecommendedPlace(retryCount: retryCount + 1);
@@ -299,7 +380,7 @@ class _HomePageState extends State<HomePage> {
         await showDialog(
           context: context,
           builder: (_) => const CustomAlertDialog(
-            title: '오류',
+            title: '트렌딩 페이지 오류',
             contentText: '추천 장소를 가져오는 데 실패했습니다.',
           ),
         );

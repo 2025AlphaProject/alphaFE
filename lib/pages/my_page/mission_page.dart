@@ -122,13 +122,7 @@ class _Mission_PageState extends State<Mission_Page> {
         ),
       );
       if (response.statusCode == 201) {
-        await showDialog(
-          context: context,
-          builder: (_) => const CustomAlertDialog(
-            title: '알림',
-            contentText: '미션 생성이 완료되었습니다!',
-          ),
-        );
+        print('[DEBUG]: 미션 로드 성공');
         setState(() {
           _isLoading = false;
         });
@@ -204,12 +198,36 @@ class _Mission_PageState extends State<Mission_Page> {
 
             SizedBox(height: height * 0.0461),
 
-            // ✅ 미션 카드 리스트
-            Column(
-              children: _missions.map((mission) {
-                return _missionItem(context, mission, width, height);
-              }).toList(),
-            ),
+            // ✅ 미션 카드 리스트 또는 "미션 없음" 안내
+            _missions.isEmpty
+                ? Padding(
+                    padding: EdgeInsets.only(top: height * 0.1),
+                    child: Column(
+                      children: [
+                      Text(
+                        '😯',
+                        style: TextStyle(
+                          fontSize: width * 0.1,
+                          color: Colors.black54,
+                        ),
+                      ),
+                        SizedBox(height: height * 0.02),
+                        Text(
+                          '현재 수행 가능한 미션이 없어요!',
+                          style: TextStyle(
+                            fontSize: width * 0.045,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Column(
+                    children: _missions.map((mission) {
+                      return _missionItem(context, mission, width, height);
+                    }).toList(),
+                  ),
           ],
         ),
       ),

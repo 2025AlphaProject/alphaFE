@@ -42,10 +42,18 @@ class CustomBottomNavigationBar extends StatelessWidget {
             onTap: onTap,
             type: BottomNavigationBarType.fixed,
             backgroundColor: Color(0xFFFFFFFF),
-            selectedItemColor: Colors.black,
-            unselectedItemColor: Colors.grey,
-            selectedLabelStyle: const TextStyle(color: Colors.black),
-            unselectedLabelStyle: const TextStyle(color: Colors.grey),
+
+            // 네비게이션 탭 시 ui 변화 없도록 수정
+            selectedItemColor: Colors.grey.shade600,
+            unselectedItemColor: Colors.grey.shade600,
+            selectedLabelStyle: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: MediaQuery.of(context).size.width * 0.031
+            ),
+            unselectedLabelStyle: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: MediaQuery.of(context).size.width * 0.031
+            ),
       
             // 하단 탭 항목 정의
             items: const [

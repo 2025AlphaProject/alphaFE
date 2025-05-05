@@ -61,7 +61,7 @@ class _AddPage_2State extends State<AddPage_2> {
   }
 
   // 웹소켓 연결 후 요청된 행정구역에 대한 코스 데이터를 받아 UI에 반영
-  void connectWebSocket({int retryCount = 0}) async {
+  void connectWebSocket({int connectionRetry = 0, int responseRetry = 0}) async {
     final accessToken = await getAccessToken();
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
@@ -70,7 +70,7 @@ class _AddPage_2State extends State<AddPage_2> {
     DateTime? endDate;
     int numberOfDays = 1;
 
-    // 사용자 ID를 요청하고 최대 3회 재시도
+    // 사용자 ID 요청 (최대 3회 재시도)
     Future<int?> fetchUserId() async {
       for (int i = 0; i < 3; i++) {
         try {
@@ -91,7 +91,7 @@ class _AddPage_2State extends State<AddPage_2> {
       return null;
     }
 
-    // 여행 시작일과 종료일을 요청하고 최대 3회 재시도
+    // 여행 날짜 요청 (최대 3회 재시도)
     Future<Map<String, DateTime>?> fetchTourDates() async {
       for (int i = 0; i < 3; i++) {
         try {
@@ -113,75 +113,88 @@ class _AddPage_2State extends State<AddPage_2> {
     }
 
     userId = await fetchUserId();
+    print('[DEBUG] 사용자 ID: $userId');
 
-    // 싱글 모드일 때와 멀티 모드일 때 분기 처리
     if (widget.isSingleDayMode) {
-      // 싱글 모드: 여행 날짜 조회 없이 오늘 날짜를 사용하고, 일수는 1로 고정
-      // 한국어 주석: 싱글 모드에서는 여행 날짜 조회 없이 현재 날짜를 startDate로 설정합니다.
       startDate = DateTime.now();
       endDate = startDate;
       numberOfDays = 1;
     } else {
-      // 멀티 모드: 기존과 같이 여행 날짜를 조회하여 사용
-      // 한국어 주석: 멀티 모드에서는 여행 시작일과 종료일을 조회합니다.
       final dates = await fetchTourDates();
-      print('userId: $userId, dates: $dates');
-      // 사용자 ID 또는 여행 날짜 불러오기에 실패한 경우 사용자에게 알리고 이전 페이지로 이동
       if (userId == null || dates == null) {
-        if (mounted) {
-          await showDialog(
-            context: context,
-            builder: (_) => const CustomAlertDialog(
-              title: '오류',
-              contentText: '코스 추천 요청 실패: 사용자 정보 또는 여행 날짜 불러오기 오류',
-            ),
-          );
-          Navigator.pop(context);
-        }
+        if (!mounted) return;
+        await showDialog(
+          context: context,
+          builder: (_) => const CustomAlertDialog(
+            title: '오류',
+            contentText: '코스 추천 요청 실패: 사용자 정보 또는 여행 날짜 불러오기 오류',
+          ),
+        );
+        if (mounted) Navigator.pop(context);
         return;
       }
       startDate = dates['start'];
       endDate = dates['end'];
       numberOfDays = endDate!.difference(startDate!).inDays + 1;
     }
+    print('[DEBUG] 여행 날짜: $startDate ~ $endDate, days: $numberOfDays');
 
-    // wsUri 생성 시 days 파라미터를 numberOfDays로 설정
     final uniqueCode = Random().nextInt(1 << 31);
-    final wsUri = 'ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=${widget.title}&unique_code=$uniqueCode&days=$numberOfDays';
+    final wsUri =
+        'ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=${widget.title}&unique_code=$uniqueCode&days=$numberOfDays';
+    print('[DEBUG] WebSocket URI: $wsUri');
 
     try {
       final channel = WebSocketChannel.connect(Uri.parse(wsUri));
       late StreamSubscription subscription;
 
       subscription = channel.stream.listen((message) async {
-        // 웹소켓 응답이 잘못되었거나 예외 발생 시 재시도 (최대 5회)
         try {
+          print('[DEBUG] 수신 메시지: $message');
           final data = jsonDecode(message);
+
+          // 중간 메시지 "OK"는 무시
+          if (data["status"] == "OK") {
+            print('[DEBUG] 중간 응답: OK');
+            return;
+          }
+
+          // result 없거나 이미 수신한 경우 무시
           if (_receivedDataOnce || data["result"] == null || data["result"].isEmpty) return;
+
+          // 실패 메시지 처리
           if (data["status"] != "SUCCESS") {
-            throw await showDialog(
-            context: context,
-            builder: (_) => const CustomAlertDialog(
-              title: '오류',
-              contentText: 'AI 코스생성 오류',
-            ),
-          );
+            throw 'AI 코스생성 오류';
           }
 
           _receivedDataOnce = true;
-          await subscription.cancel();
-          channel.sink.close();
 
-          if (mounted) {
-            print('웹소켓 연결 성공..');
-            await processWebSocketData(data);
-          }
+          // 웹소켓 종료 처리
+          try {
+            await subscription.cancel();
+          } catch (_) {}
+          try {
+            channel.sink.close();
+          } catch (_) {}
+
+          if (!mounted) return;
+
+          // 성공 시 데이터 처리
+          print('[DEBUG] 최종 응답 수신 및 처리 시작');
+          await processWebSocketData(data);
         } catch (_) {
-          await subscription.cancel();
-          channel.sink.close();
-          if (retryCount < 5) {
+          print('[DEBUG] 예외 발생 - 재시도 횟수: $responseRetry');
+          try {
+            await subscription.cancel();
+          } catch (_) {}
+          try {
+            channel.sink.close();
+          } catch (_) {}
+
+          // 응답 오류 5회 초과 시 종료
+          if (responseRetry < 5) {
             await Future.delayed(const Duration(seconds: 8));
-            connectWebSocket(retryCount: retryCount + 1);
+            connectWebSocket(connectionRetry: connectionRetry, responseRetry: responseRetry + 1);
           } else if (mounted) {
             await showDialog(
               context: context,
@@ -190,17 +203,22 @@ class _AddPage_2State extends State<AddPage_2> {
                 contentText: '코스 추천 실패: 서버 응답 오류',
               ),
             );
-            Navigator.pop(context);
+            if (mounted) Navigator.pop(context);
           }
         }
-      },
-      // 웹소켓 연결 자체에서 오류 발생 시 재시도 (최대 5회)
-      onError: (_) async {
-        await subscription.cancel();
-        channel.sink.close();
-        if (retryCount < 5) {
+      }, onError: (_) async {
+        print('[DEBUG] 연결 예외 발생 - 재시도 횟수: $connectionRetry');
+        try {
+          await subscription.cancel();
+        } catch (_) {}
+        try {
+          channel.sink.close();
+        } catch (_) {}
+
+        // 연결 오류 5회 초과 시 종료
+        if (connectionRetry < 5) {
           await Future.delayed(const Duration(seconds: 8));
-          connectWebSocket(retryCount: retryCount + 1);
+          connectWebSocket(connectionRetry: connectionRetry + 1, responseRetry: responseRetry);
         } else if (mounted) {
           await showDialog(
             context: context,
@@ -209,14 +227,15 @@ class _AddPage_2State extends State<AddPage_2> {
               contentText: '코스 추천 실패: 서버 연결 오류',
             ),
           );
-          Navigator.pop(context);
+          if (mounted) Navigator.pop(context);
         }
       });
     } catch (_) {
-      // 웹소켓 연결 시도 자체가 실패한 경우 재시도 (최대 5회)
-      if (retryCount < 5) {
+      // 연결 시도 자체 실패
+      print('[DEBUG] 연결 예외 발생 - 재시도 횟수: $connectionRetry');
+      if (connectionRetry < 5) {
         await Future.delayed(const Duration(seconds: 8));
-        connectWebSocket(retryCount: retryCount + 1);
+        connectWebSocket(connectionRetry: connectionRetry + 1, responseRetry: responseRetry);
       } else if (mounted) {
         await showDialog(
           context: context,
@@ -225,7 +244,7 @@ class _AddPage_2State extends State<AddPage_2> {
             contentText: '코스 추천 연결 실패',
           ),
         );
-        Navigator.pop(context);
+        if (mounted) Navigator.pop(context);
       }
     }
   }
@@ -405,14 +424,9 @@ class _AddPage_2State extends State<AddPage_2> {
       // 중복될 경우 안내 다이얼로그 표시 후 추가 중단
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          content: const Text('이미 추가된 장소입니다'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('확인'),
-            ),
-          ],
+        builder: (context) => const CustomAlertDialog(
+          title: '안내',
+          contentText: '이미 추가된 장소입니다',
         ),
       );
       return;

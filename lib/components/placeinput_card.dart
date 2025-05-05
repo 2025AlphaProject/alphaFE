@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../pages/add_page/searchplace_page.dart';
+import 'custom_alert_dialog.dart';
 
 // 사용자가 장소를 입력하거나 검색하여 정보를 입력할 수 있는 카드
 class PlaceInputCard extends StatefulWidget {
@@ -177,16 +178,9 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
                     // 유효하지 않은 경우 경고 다이얼로그 표시 후 함수 종료
                     showDialog(
                       context: context,
-                      builder: (BuildContext dialogContext) => AlertDialog(
-                        title: const Text('올바르지 않은 장소입니다'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(dialogContext).pop();
-                            },
-                            child: const Text('확인'),
-                          ),
-                        ],
+                      builder: (BuildContext dialogContext) => const CustomAlertDialog(
+                        title: '안내',
+                        contentText: '올바르지 않은 장소입니다',
                       ),
                     );
                     return;
