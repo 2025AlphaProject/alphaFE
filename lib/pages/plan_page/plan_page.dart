@@ -238,16 +238,16 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     return _isLoading
         ? const Center(child: CircularProgressIndicator())
         : _cardData.isEmpty
-            ? Center(
+            ? const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text('등록된 여행이 없습니다.',
                         style: TextStyle(
-                            fontSize: width * 0.045)),
+                            fontSize: 18.5)),
                     Text('여행을 추가해주세요!',
                         style: TextStyle(
-                            fontSize: width * 0.06,
+                            fontSize: 24.6,
                           fontWeight: FontWeight.bold
                         ),
                     ),
@@ -264,15 +264,15 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           padding: EdgeInsets.symmetric(horizontal: width * 0.04),
           decoration: BoxDecoration(
             color: const Color(0xFFFFFFFF),
-            borderRadius: BorderRadius.circular(width * 0.03),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey.shade300),
           ),
           child: DropdownButton<SortType>(
             value: _sortType,
             isExpanded: true,
             underline: const SizedBox(),
-            icon: Icon(Icons.keyboard_arrow_down, color: const Color(0xFF000000),
-                size: width * 0.05),
+            icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF000000),
+                size: 20.5),
             dropdownColor: Colors.white,
             onChanged: (value) {
               if (value != null) {
@@ -282,16 +282,16 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
                 });
               }
             },
-            items: [
+            items: const [
               DropdownMenuItem(value: SortType.dDayAsc,
                   child: Text(
-                      "날짜순", style: TextStyle(fontSize: width * 0.035))),
+                      "날짜순", style: TextStyle(fontSize: 14.3))),
               DropdownMenuItem(value: SortType.dDayDesc,
                   child: Text(
-                      "날짜역순", style: TextStyle(fontSize: width * 0.035))),
+                      "날짜역순", style: TextStyle(fontSize: 14.3))),
               DropdownMenuItem(value: SortType.title,
                   child: Text(
-                      "제목순", style: TextStyle(fontSize: width * 0.035))),
+                      "제목순", style: TextStyle(fontSize: 14.3))),
             ],
           ),
         ),

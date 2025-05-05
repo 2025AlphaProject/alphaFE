@@ -189,8 +189,8 @@ class _Mission_PageState extends State<Mission_Page> {
                         Center(
                           child: Text(
                             '$completed/$total',
-                            style: TextStyle(
-                              fontSize: size * 0.15,
+                            style: const TextStyle(
+                              fontSize: 32.8,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -269,15 +269,15 @@ Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double w
                     Icon(
                       isCompleted ? Icons.check_circle : Icons.cancel,
                       color: isCompleted ? const Color(0xFF008000) : const Color(0xFFFF0000),
-                      size: width * 0.06,
+                      size: 24.6,
                     ),
                     SizedBox(width: width * 0.02),
                     SizedBox(//미션 관련 장소명
                       width: width * 0.65,
                       child: Text(
                         "${mission['name']}",
-                        style: TextStyle(
-                          fontSize: width * 0.05,
+                        style: const TextStyle(
+                          fontSize: 20.5,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -290,7 +290,7 @@ Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double w
                     mission['image_url'].toString().isNotEmpty
                         ? "• 예시 사진과 유사하게 촬영하기"  //사진 O
                         : "• 원하는 미션을 골라보세요",     //사진 X
-                    style: TextStyle(fontSize: width * 0.04),
+                    style: const TextStyle(fontSize: 16.5),
                   ),
                 ),
               ],

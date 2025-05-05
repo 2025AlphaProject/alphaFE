@@ -120,11 +120,11 @@ class _EditMenu extends StatelessWidget {
             if (icon != null)
               Icon(icon, color: isDestructive ? Colors.red : Colors.black),
             if (icon != null)
-              SizedBox(width: 8),
+              SizedBox(width: width * 0.019),
             Text(
               text,
               style: TextStyle(
-                fontSize: width * 0.044,
+                fontSize: 18.5,
                 fontWeight: isDestructive ? FontWeight.bold : FontWeight.w500,
                 color: isDestructive ? Colors.red : Colors.black,
               ),
@@ -178,12 +178,12 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
         child: AlertDialog(
           backgroundColor: const Color(0xFFF9F9F9),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(12),
           ),
-          title: Text(
+          title: const Text(
             "여행제목 수정",
             style: TextStyle(
-              fontSize: width * 0.045,
+              fontSize: 18.5,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
@@ -193,9 +193,9 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
             children: [
               TextField(
                 controller: _nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "새 여행제목 입력",
-                  hintStyle: TextStyle(fontSize: width * 0.04, color: Colors.grey),
+                  hintStyle: TextStyle(fontSize: 16.5, color: Colors.grey),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey),
                   ),
@@ -219,14 +219,14 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
               onPressed: () {
                 Navigator.pop(context); // 취소
               },
-              child: Text("취소", style: TextStyle(fontSize: width * 0.04, color: Colors.black)),
+              child: const Text("취소", style: TextStyle(fontSize: 16.5, color: Colors.black)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(horizontal: width * 0.06, vertical: height * 0.014),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               onPressed: () async {
@@ -267,7 +267,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                       SnackBar(
                         content: Text(
                           '수정 실패: ${response.statusCode}',
-                          style: TextStyle(fontSize: width * 0.04),
+                          style: const TextStyle(fontSize: 16.5),
                         ),
                       ),
                     );
@@ -303,7 +303,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                         SnackBar(
                           content: Text(
                             '재시도 실패: ${retryResponse.statusCode}',
-                            style: TextStyle(fontSize: width * 0.04),
+                            style: const TextStyle(fontSize: 16.5),
                           ),
                         ),
                       );
@@ -319,16 +319,16 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                     SnackBar(
                       content: Text(
                         '오류 발생: $e',
-                        style: TextStyle(fontSize: width * 0.04),
+                        style: const TextStyle(fontSize: 16.5),
                       ),
                     ),
                   );
                 }
               },
-              child: Text(
+              child: const Text(
                 "확인",
                 style: TextStyle(
-                  fontSize: width * 0.04,
+                  fontSize: 16.5,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
@@ -372,19 +372,19 @@ class _DeleteTourState extends State<DeleteTour> {
         child: AlertDialog(
           backgroundColor: const Color(0xFFF9F9F9),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(12),
           ),
-          title: Text(
+          title: const Text(
             '여행 삭제',
             style: TextStyle(
-              fontSize: width * 0.045,
+              fontSize: 18.5,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
           ),
-          content: Text(
+          content: const Text(
             '이 여행을 삭제하시겠습니까?',
-            style: TextStyle(fontSize: width * 0.04, color: Colors.black),
+            style: TextStyle(fontSize: 16.5, color: Colors.black),
           ),
           actions: [
             TextButton(
@@ -392,14 +392,14 @@ class _DeleteTourState extends State<DeleteTour> {
                 backgroundColor: const Color(0xFFF9F9F9),
               ),
               onPressed: () => Navigator.pop(context),
-              child: Text('취소', style: TextStyle(fontSize: width * 0.04, color: Colors.black)),
+              child: const Text('취소', style: TextStyle(fontSize: 16.5, color: Colors.black)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(horizontal: width * 0.06),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               onPressed: () async {
@@ -429,7 +429,7 @@ class _DeleteTourState extends State<DeleteTour> {
                       SnackBar(
                         content: Text(
                           '수정 실패: ${response.statusCode}',
-                          style: TextStyle(fontSize: width * 0.04),
+                          style: const TextStyle(fontSize: 16.5),
                         ),
                       ),
                     );
@@ -439,17 +439,17 @@ class _DeleteTourState extends State<DeleteTour> {
                     SnackBar(
                       content: Text(
                         '오류 발생: $e',
-                        style: TextStyle(fontSize: width * 0.04),
+                        style: const TextStyle(fontSize: 16.5),
                       ),
                     ),
                   );
                 }
               },
-              child: Text(
+              child: const Text(
                 '삭제',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: width * 0.04,
+                  fontSize: 16.5,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -496,12 +496,12 @@ class _DeleteCourseState extends State<DeleteCourse> {
         child: AlertDialog(
           backgroundColor: const Color(0xFFF9F9F9),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(12),
           ),
-          title: Text(
+          title: const Text(
             '여행 경로 삭제',
             style: TextStyle(
-              fontSize: width * 0.045,
+              fontSize: 18.5,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
@@ -511,11 +511,11 @@ class _DeleteCourseState extends State<DeleteCourse> {
             children: [
               Text(
                 widget.target_date,
-                style: TextStyle(fontSize: width * 0.06, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 24.6, fontWeight: FontWeight.bold),
               ),
-              Text(
+              const Text(
                   "의 경로를 삭제하겠습니까?", style: TextStyle(
-                fontSize: width * 0.04
+                fontSize: 16.5
               ),
               )
             ],
@@ -526,7 +526,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
                 backgroundColor: const Color(0xFFF9F9F9),
               ),
               onPressed: () => Navigator.pop(context),
-              child: Text('취소', style: TextStyle(fontSize: width * 0.04, color: Colors.black)),
+              child: const Text('취소', style: TextStyle(fontSize: 16.5, color: Colors.black)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -568,7 +568,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
                       SnackBar(
                         content: Text(
                           '수정 실패: ${response.statusCode}',
-                          style: TextStyle(fontSize: width * 0.04),
+                          style: const TextStyle(fontSize: 16.5),
                         ),
                       ),
                     );
@@ -578,17 +578,17 @@ class _DeleteCourseState extends State<DeleteCourse> {
                     SnackBar(
                       content: Text(
                         '오류 발생: $e',
-                        style: TextStyle(fontSize: width * 0.04),
+                        style: const TextStyle(fontSize: 16.5),
                       ),
                     ),
                   );
                 }
               },
-              child: Text(
+              child: const Text(
                 '삭제',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: width * 0.04,
+                  fontSize: 16.5,
                   fontWeight: FontWeight.bold,
                 ),
               ),

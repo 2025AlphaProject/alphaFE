@@ -35,7 +35,7 @@ class PlaceInfoBlock extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(20), // 이미지 모서리 둥글게 처리
+            borderRadius: BorderRadius.circular(12), // 이미지 모서리 둥글게 처리
             // 네트워크 이미지가 로딩되지 않을 경우 대체 UI를 표시
             child: Image.network(
               imageUrl,
@@ -63,7 +63,7 @@ class PlaceInfoBlock extends StatelessWidget {
           // 장소명 표시
           Row(
             children: [
-              Icon(Icons.location_on, size: width * 0.1, color: Color(0xFF000000)),
+              Icon(Icons.location_on, size: width * 0.1, color: const Color(0xFF000000)),
               SizedBox(width: width * 0.03),
               Expanded(
                 child: Text(
@@ -71,7 +71,7 @@ class PlaceInfoBlock extends StatelessWidget {
                   style: TextStyle(
                     fontSize: width * 0.055,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF000000),
+                    color: const Color(0xFF000000),
                   ),
                 ),
               ),
@@ -84,7 +84,7 @@ class PlaceInfoBlock extends StatelessWidget {
             description,
             style: TextStyle(
               fontSize: width * 0.052,
-              color: Color(0xFF7A7A7A),
+              color: const Color(0xFF7A7A7A),
             ),
           ),
         ],

@@ -172,7 +172,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
         // 검색창
         title: TextField(
           controller: _searchController,
-          style: TextStyle(fontSize: width * 0.04),
+          style: const TextStyle(fontSize: 16.5),
           decoration: InputDecoration(
             hintText: '서울 내의 장소를 입력하세요',
             suffixIcon: IconButton(
@@ -239,7 +239,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                         title: Text(
                           place['place_name'] ?? '',
                           style: TextStyle(
-                            fontSize: width * 0.035,
+                            fontSize: 14.3,
                             color: titleColor,
                             fontWeight: FontWeight.bold,
                           ),
@@ -247,7 +247,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                         subtitle: Text(
                           place['address_name'] ?? '',
                           style: TextStyle(
-                            fontSize: width * 0.03,
+                            fontSize: 14.3,
                             color: subtitleColor,
                           ),
                         ),
@@ -316,7 +316,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
               width: width * 0.53,
               height: height * 0.055,
               child: ProceedButton(
-                fontSize_: width * 0.037,
+                fontSize_: 14.3,
                 fontWeight_: FontWeight.bold,
                 text: "이 장소 추가하기",
                 onTap: () {

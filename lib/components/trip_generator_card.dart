@@ -24,7 +24,7 @@ class GeneratorItem extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: height * 0.009),
       decoration: BoxDecoration(
         border: Border.all(color: const Color(0xFFD9D9D9), width: width * 0.0035),
-        borderRadius: BorderRadius.circular(11.25),
+        borderRadius: BorderRadius.circular(12),
         color: const Color(0xFFF5F5F5),
       ),
       child: ElevatedButton(
@@ -56,10 +56,10 @@ class GeneratorItem extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: width * 0.04,
-                    color: const Color(0xFF000000)
+                    fontSize: 16.5,
+                    color: Color(0xFF000000)
                 ),
               ),
               Icon(
