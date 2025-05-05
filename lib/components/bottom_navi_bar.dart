@@ -44,14 +44,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
             backgroundColor: Color(0xFFFFFFFF),
 
             // 네비게이션 탭 시 ui 변화 없도록 수정
-            selectedItemColor: Colors.black,
-            unselectedItemColor: Colors.black,
+            selectedItemColor: Colors.grey.shade600,
+            unselectedItemColor: Colors.grey.shade600,
             selectedLabelStyle: TextStyle(
-              color: Colors.black,
+              color: Colors.grey.shade600,
               fontSize: MediaQuery.of(context).size.width * 0.031
             ),
             unselectedLabelStyle: TextStyle(
-              color: Colors.black,
+              color: Colors.grey.shade600,
               fontSize: MediaQuery.of(context).size.width * 0.031
             ),
       

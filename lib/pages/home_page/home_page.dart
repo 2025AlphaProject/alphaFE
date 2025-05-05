@@ -211,11 +211,20 @@ class _HomePageState extends State<HomePage> {
       return;
     }
 
+    // 서울시 행정구역 목록
+    const List<String> districts = [
+      "강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구",
+      "도봉구", "동대문구", "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구",
+      "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구"
+    ];
+    final String randomDistrict = districts[Random().nextInt(districts.length)];
+    print('[DEBUG] 랜덤 행정구역 선택: $randomDistrict');
+
     final uniqueCode = Random().nextInt(1 << 31);
 
     try {
       final channel = WebSocketChannel.connect(
-        Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode&days=1'),
+        Uri.parse('ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode&days=1&sigunguName=$randomDistrict'),
       );
       print('[DEBUG] 웹소켓 채널 연결 완료: $uniqueCode');
 
