@@ -7,6 +7,7 @@ import '../../components/token_controller.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import '../../components/gps.dart';
+import '../../components/mission_gps.dart';
 
 class missionTest extends StatefulWidget {
   final Map<String, dynamic> mission;
@@ -24,6 +25,15 @@ class missionTest extends StatefulWidget {
 class _missionTestState extends State<missionTest> {
   final LocationService _locationService = LocationService();
   bool _isLoading = true;
+  bool mission_success = false;
+
+  //200m 이내이면 성공
+  bool isUserNearPlace(double place_mapY, double place_mapX, double user_mapY, double user_mapX) {
+    double distance = LocationUtils.haversine(place_mapY, place_mapX, user_mapY, user_mapX);
+    print('계산된 거리: ${distance.toStringAsFixed(2)} km');
+    return distance <= 0.2;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -36,20 +46,11 @@ class _missionTestState extends State<missionTest> {
     final dio = Dio();
 
     try {
-      final currentLocation = await _locationService.getCurrentLocation(); // "위도,경도" 형태 문자열
-      final parts = currentLocation.split(',');
-      final mapY = parts[0].replaceAll('위도:', '').trim();
-      final mapX = parts[1].replaceAll('경도:', '').trim();
 
       final requestData = {
         "travel_id": widget.mission['tour_id'],
         "place_id": widget.mission['place_id'],
         "mission_id": widget.mission['mission_id'],
-        "mapX": mapX.toString(),
-        "mapY": mapY.toString()
-        //미션 장소 성공용 테스트에 사용
-        // "mapX": widget.mission['mapX'].toString(),
-        // "mapY": widget.mission['mapY'].toString()
       };
 
       print('📤 미션 체크 요청 데이터: $requestData'); //확인용 코드
@@ -72,9 +73,7 @@ class _missionTestState extends State<missionTest> {
         if(data['result']=="success"){
           widget.mission['isCompleted']= true;
         }
-        setState(() {
-          _isLoading = false;
-        });
+        finalMission(); //미션최종 저장 실행
       } else {
         print('❌ 미션 진입 API 실패: ${response.statusCode}');
         final data = response.data;
@@ -122,6 +121,50 @@ class _missionTestState extends State<missionTest> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  //미션 최종 저장
+  Future<void> finalMission() async{
+    final accessToken = await getAccessToken();
+    final dio = Dio();
+    final currentLocation = await _locationService.getCurrentLocation(); // "위도,경도" 형태 문자열
+    final parts = currentLocation.split(',');
+    final user_mapY = parts[0].replaceAll('위도:', '').trim(); //사용자
+    final user_mapX = parts[1].replaceAll('경도:', '').trim();
+    final place_mapX = double.parse(widget.mission['mapX'].toString());  //여행장소
+    final place_mapY = double.parse(widget.mission['mapY'].toString());
+    final isNear = isUserNearPlace(place_mapY, place_mapX, double.parse(user_mapY), double.parse(user_mapX)); //성공 계산 함수 호출
+    //둘다 true면 성공
+    if(isNear == true && widget.mission['isCompleted']== true){
+      mission_success = true;
+    }
+
+    try{
+      final requestData = {
+        "tdp_id": widget.mission['tdp_id'],
+        "is_success": mission_success
+      };
+
+      final response = await dio.post(
+        'http://conever.duckdns.org:8000/mission/save_mission_complete/',
+        data: requestData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      if (response.statusCode == 201) {
+        print('미션 최종결과 저장 성공');
+        print(response.data);
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }catch (e){
+      print('$e');
     }
   }
 
