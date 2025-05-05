@@ -65,11 +65,21 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
 
       final docs = response.data['documents'] as List<dynamic>;
 
-      // 서울 지역 주소만 필터링하여 Map<String, dynamic>으로 변환
       final seoulDocs = docs.where((doc) {
-        final addr = doc['address_name'] ?? doc['road_address_name'] ?? '';
+        final addr = doc['road_address_name'] ?? '';
         return addr.startsWith('서울');
-      }).map((e) => e as Map<String, dynamic>).toList();
+      }).map((e) {
+        final modified = Map<String, dynamic>.from(e);
+
+        // '서울 ...' 형식을 '서울특별시 ...' 형식으로 변경
+        // if (modified['address_name'] != null && modified['address_name'].startsWith('서울')) {
+        //   modified['address_name'] = modified['address_name'].replaceFirst('서울', '서울특별시');
+        // }
+        if (modified['road_address_name'] != null && modified['road_address_name'].startsWith('서울')) {
+          modified['road_address_name'] = modified['road_address_name'].replaceFirst('서울', '서울특별시');
+        }
+        return modified;
+      }).toList();
 
       setState(() {
         _places = seoulDocs;
@@ -248,7 +258,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                           ),
                         ),
                         subtitle: Text(
-                          place['address_name'] ?? '',
+                          place['road_address_name'] ?? '',
                           style: TextStyle(
                             fontSize: 14.3,
                             color: subtitleColor,
@@ -326,7 +336,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                   widget.onPlaceSelected(
                     imageUrl: _selectedPlace!['thumbnail'] ?? '',
                     title: _selectedPlace!['place_name'] ?? '제목 없음',
-                    address: _selectedPlace!['address_name'] ?? '주소 없음',
+                    address: _selectedPlace!['road_address_name'] ?? '주소 없음',
                     mapX: double.parse(_selectedPlace!['x']),
                     mapY: double.parse(_selectedPlace!['y']),
                   );

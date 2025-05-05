@@ -411,15 +411,36 @@ class _AddPage_2State extends State<AddPage_2> {
 
   // 사용자가 새 장소를 추가 완료하면 해당 날짜 그룹에 PlaceInfoBlock을 추가하고 입력폼 닫기
   void addNewPlace(String date, String imageUrl, String title, String description, double mapX, double mapY) {
-    // 동일한 날짜 그룹 내에 이미 같은 정보의 장소가 있는지 확인
+
     final entryIndex = _placeWidgets.indexWhere((entry) => entry.key == date);
     final existingList = entryIndex != -1 ? _placeWidgets[entryIndex].value : [];
-    final isDuplicate = existingList.any((place) =>
-      place.title == title &&
-      place.description == description &&
-      place.mapX == mapX &&
-      place.mapY == mapY
-    );
+
+    // 동일한 날짜 그룹 내에 이미 같은 정보의 장소가 있는지 확인 (좌표 근접 + 텍스트 유사)
+    final isDuplicate = existingList.any((place) {
+      // 정확한 장소명 비교
+      if (place.title == title) {
+        return true;
+      }
+
+      // 괄호 제거 함수
+      String stripParentheses(String input) {
+        return input.replaceAll(RegExp(r'\s*\([^)]*\)'), '');
+      }
+
+      // 기존 및 새 주소에서 괄호 포함된 부분 제거
+      final strippedExistingAddress = stripParentheses(place.description);
+      final strippedNewAddress = stripParentheses(description);
+
+      // 주소가 같을 경우 공백 제거 후 비교
+      if (strippedExistingAddress == strippedNewAddress) {
+        final normalize = (String s) => s.replaceAll(RegExp(r'\s+'), '');
+        if (normalize(strippedExistingAddress) == normalize(strippedNewAddress)) {
+          return true;
+        }
+      }
+
+      return false;
+    });
     if (isDuplicate) {
       // 중복될 경우 안내 다이얼로그 표시 후 추가 중단
       showDialog(
