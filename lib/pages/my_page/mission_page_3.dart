@@ -185,7 +185,7 @@ class _missionTestState extends State<missionTest> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (widget.mission['isCompleted']) ...[ //성공시
+                        if (mission_success) ...[ //성공시
                           const Icon(Icons.check_circle, color: Colors.green, size: 30),
                           SizedBox(width: width * 0.009),
                           const Text(
@@ -193,7 +193,7 @@ class _missionTestState extends State<missionTest> {
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
                           ),
                         ],
-                        if (!widget.mission['isCompleted']) ...[ //실패시
+                        if (!mission_success) ...[ //실패시
                           const Icon(Icons.cancel, color: Colors.red, size: 30),
                           SizedBox(width: width * 0.009),
                           const Text(
