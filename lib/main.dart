@@ -72,7 +72,7 @@ Future<void> main() async {
   ]);
 
   // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
-  // await initNaverMapSdk();
+  await initNaverMapSdk();
 
   final accessToken = await getAccessToken();
 
@@ -90,6 +90,28 @@ Future<void> main() async {
           GlobalWidgetsLocalizations.delegate,    //  일반 위젯 한글화
           GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
         ],
+        theme: ThemeData(
+          // 색상 전반 설정: primary는 기본 색상, secondary는 보조 색상
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.black,       // 색상 조합 시 기준이 되는 색
+            primary: Colors.black,         // 버튼, 로딩바 등 주요 요소 색상
+            secondary: Colors.white,       // 보조 색상 (예: 강조 배경 등)
+          ),
+
+          // 로딩 인디케이터 색상 설정 (CircularProgressIndicator 등)
+          progressIndicatorTheme: const ProgressIndicatorThemeData(
+            color: Colors.black,
+          ),
+
+          // 터치 시 잔상(물결 효과) 제거
+          splashColor: Colors.transparent,
+
+          // 길게 누를 때 하이라이트 색상 제거
+          highlightColor: Colors.transparent,
+
+          // 스플래시 효과 완전히 비활성화
+          splashFactory: NoSplash.splashFactory,
+        ),
         home: (accessToken?.isNotEmpty == true)
             ? MainScreen()
             : LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey),
