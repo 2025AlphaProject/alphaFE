@@ -108,7 +108,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           'endDate': item['end_date'],
         }).toList();
 
-        // 불필요한 여행 삭제: 코스가 없는 경우
+        // 불필요한 여행 삭제: 코스가 없는 경우 또는 종료된 여행(endDate 지난 경우)
         final List<int> deletedTourIds = [];
 
         for (final plan in parsedData) {
@@ -119,6 +119,12 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
             print('Invalid tour_id: $tourIdRaw');
             continue;
           }
+
+          // endDate를 가져와 오늘보다 이전인지 검사
+          final endDateStr = plan['endDate'];
+          final endDate = DateTime.tryParse(endDateStr.replaceAll('.', '-'));
+          final today = DateTime.now();
+          final isExpired = endDate != null && today.isAfter(DateTime(endDate.year, endDate.month, endDate.day));
 
           try {
             final courseResponse = await dio.get(
@@ -131,10 +137,10 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
               ),
             );
 
-            if (courseResponse.statusCode == 200 &&
+            if ((courseResponse.statusCode == 200 &&
                 courseResponse.data is Map &&
                 courseResponse.data['courses'] is List &&
-                (courseResponse.data['courses'] as List).isEmpty) {
+                (courseResponse.data['courses'] as List).isEmpty) || isExpired) {
               await dio.delete(
                 'http://conever.duckdns.org:8000/tour/$tourId/',
                 options: Options(

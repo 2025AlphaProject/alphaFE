@@ -90,11 +90,15 @@ class _HomePageState extends State<HomePage> {
         return users.any((u) => u['username'] == currentUsername);
       }).toList();
 
-      // 여행 목록 필터링 후 불완전한 여행(코스 없음)을 제거하는 과정
+      // 여행 목록 필터링 후 불완전한 여행(코스 없음) 및 종료된 여행(만료일 지난 경우)을 제거하는 과정
       final List<dynamic> validUserPlans = [];
 
       for (final plan in userPlans) {
         final int tourId = int.tryParse(plan['id'].toString()) ?? -1;
+        final endDateStr = plan['end_date'];
+        final endDate = DateTime.tryParse(endDateStr.replaceAll('.', '-'));
+        final today = DateTime.now();
+        final isExpired = endDate != null && today.isAfter(DateTime(endDate.year, endDate.month, endDate.day));
         try {
           final courseResponse = await dio.get(
             '$baseUrl/tour/course/$tourId/',
@@ -106,9 +110,9 @@ class _HomePageState extends State<HomePage> {
             ),
           );
 
-          if (courseResponse.data is Map &&
+          if ((courseResponse.data is Map &&
               courseResponse.data['courses'] is List &&
-              (courseResponse.data['courses'] as List).isEmpty) {
+              (courseResponse.data['courses'] as List).isEmpty) || isExpired) {
             await dio.delete(
               '$baseUrl/tour/$tourId/',
               options: Options(

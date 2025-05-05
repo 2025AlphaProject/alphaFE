@@ -2,12 +2,19 @@ import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
 import 'package:alpha_fe/components/auth_token_handler.dart';
 import 'package:flutter/material.dart';
 
-// 종료일까지 남은 일 수 계산
-int calculateRemainingDays(String endDate) {
+// 종료일까지 남은 일 수 계산 및 상태 반환
+String getRemainingStatus(String startDate, String endDate) {
   final today = DateTime.now();
-  final endDateObj = DateTime.parse(endDate.replaceAll('.', '-'));
-  final difference = endDateObj.difference(today);
-  return difference.inDays;
+  final start = DateTime.parse(startDate.replaceAll('.', '-'));
+  final end = DateTime.parse(endDate.replaceAll('.', '-'));
+
+  if (today.isAfter(end)) return '종료';
+  if (!today.isBefore(start)) return '진행중';
+
+  final todayDate = DateTime(today.year, today.month, today.day);
+  final startDateOnly = DateTime(start.year, start.month, start.day);
+  final remaining = startDateOnly.difference(todayDate).inDays;
+  return 'D-$remaining';
 }
 
 class PlanCard extends StatelessWidget {
@@ -35,7 +42,7 @@ class PlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-    final remainingDays = calculateRemainingDays(endDate);
+    final statusText = getRemainingStatus(startDate, endDate);
 
     return SizedBox( // 카드 위젯의 크기 명시
       height: size_h,
@@ -84,7 +91,7 @@ class PlanCard extends StatelessWidget {
                       vertical: height * 0.0015,
                     ),
                     child: Text(
-                      "D-$remainingDays",
+                      statusText,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 9,
