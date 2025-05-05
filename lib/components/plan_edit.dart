@@ -50,7 +50,7 @@ class TravelEditMenu extends StatelessWidget {
                 Navigator.pop(context);
                 showDialog(
                   context: context,
-                  builder: (context) => Center(child: EditTourNameDialog(tourName: tourName, tour_id: tour_id,)),
+                  builder: (context) => Center(child: EditTourNameDialog(tourName: tourName, tour_id: tour_id, onRefresh: onRefresh,)),
                 );
               },
             ),
@@ -140,11 +140,12 @@ class _EditMenu extends StatelessWidget {
 class EditTourNameDialog extends StatefulWidget {
   final String tourName;
   final int tour_id;
+  final VoidCallback? onRefresh;
 
 
   const EditTourNameDialog({Key? key,
     required this.tourName,
-    required this.tour_id
+    required this.tour_id, this.onRefresh
   }) : super(key: key);
 
   @override
@@ -255,7 +256,10 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                   });
 
                   if (response.statusCode == 200) {
-                    Navigator.of(context).pop();
+                    if (!mounted) return; // 안전 체크 추가
+                    EditState.showEditButton = false;
+                    widget.onRefresh?.call();
+                    Navigator.pop(context,true); // 다이얼로그 닫기
                   }
 
                   else if (response.statusCode == 401) {
