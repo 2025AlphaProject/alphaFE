@@ -37,6 +37,7 @@ import 'package:logger/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:alpha_fe/components/custom_alert_dialog.dart';
 
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
@@ -61,11 +62,33 @@ Future<void> main() async {
   // 비동기 초기화 <- await 관련 코드 오류 방지하기 위해 사용
   WidgetsFlutterBinding.ensureInitialized();
 
-  // dotenv 사용을 위한 초기화
   await dotenv.load();
   final kakaoNativeAppKey = dotenv.env['KAKAO_NATIVE_APP_KEY'];
   logger.d('🔑 Kakao Native App Key: $kakaoNativeAppKey');
-  WidgetsFlutterBinding.ensureInitialized();
+
+  if (kakaoNativeAppKey == null || kakaoNativeAppKey.isEmpty) {
+    runApp(const MaterialApp(
+      color: Color(0xFFFFFFFF),
+      home: CustomAlertDialog(
+        title: 'kakao sdk 오류',
+        contentText: '앱을 다시 실행해 주세요',
+      ),
+    ));
+    return;
+  }
+
+  try {
+    await initNaverMapSdk();
+  } catch (e) {
+    runApp(const MaterialApp(
+      color: Color(0xFFFFFFFF),
+      home: CustomAlertDialog(
+        title: 'NaverMap sdk 오류',
+        contentText: '앱을 다시 실행해 주세요',
+      ),
+    ));
+    return;
+  }
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

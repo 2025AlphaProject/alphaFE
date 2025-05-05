@@ -177,7 +177,6 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
             hintText: '서울 내의 장소를 입력하세요',
             suffixIcon: IconButton(
               icon: const Icon(Icons.search),
-
               // 검색 버튼 탭 시 키보드 닫고 검색 실행
               onPressed: () {
                 FocusScope.of(context).unfocus();
@@ -185,6 +184,10 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
               },
             ),
           ),
+          onSubmitted: (value) {
+            FocusScope.of(context).unfocus();
+            _searchPlace(value);
+          },
         ),
       ),
       body: Stack(

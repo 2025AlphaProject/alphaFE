@@ -424,14 +424,9 @@ class _AddPage_2State extends State<AddPage_2> {
       // 중복될 경우 안내 다이얼로그 표시 후 추가 중단
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          content: const Text('이미 추가된 장소입니다'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('확인'),
-            ),
-          ],
+        builder: (context) => const CustomAlertDialog(
+          title: '안내',
+          contentText: '이미 추가된 장소입니다',
         ),
       );
       return;
