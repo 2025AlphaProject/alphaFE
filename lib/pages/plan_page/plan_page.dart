@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
 import '../../components/auth_token_handler.dart';
+import '../../components/logout_by_expiration.dart';
 
 
 // 전역 상태 관리 클래스
@@ -81,7 +82,10 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
       } catch (e) {
         // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
         if (e is DioException && e.response?.statusCode == 403) {
-          await getAccessTokenFromRefreshToken();
+          final bool? result = await getAccessTokenFromRefreshToken();
+          if (result == false) {
+            LogoutByExpiration(context);
+          }
           await _fetchTourData();
           return;
         }

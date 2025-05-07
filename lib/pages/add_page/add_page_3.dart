@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
+import '../../components/logout_by_expiration.dart';
 import '../../components/plan_card.dart';
 import '../../components/proceed_button.dart';
 import '../../components/token_controller.dart';
@@ -50,7 +51,10 @@ class _AddPage_3State extends State<AddPage_3> {
       return response.data;
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 403) {
-        await getAccessTokenFromRefreshToken();
+        final bool? result = await getAccessTokenFromRefreshToken();
+        if (result == false) {
+          LogoutByExpiration(context);
+        }
         await fetchTourData();
       }
 

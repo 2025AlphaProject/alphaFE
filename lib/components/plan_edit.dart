@@ -278,7 +278,10 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                   }
                 } catch (e) {
                   if (e is DioException && e.response?.statusCode == 403) {
-                    await getAccessTokenFromRefreshToken();
+                    final bool? result = await getAccessTokenFromRefreshToken();
+                    if (result == false) {
+                      LogoutByExpiration(context);
+                    }
                     // Retry the request after refreshing the token
                     final dio = Dio();
                     final accessToken = await getAccessToken();
