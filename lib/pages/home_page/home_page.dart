@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import '../../components/app_bar.dart';
+import '../../components/logout_by_expiration.dart';
 import '../../components/plan_card.dart'; // 여행 계획 카드 컴포넌트
 import '../../components/placeinfo_card.dart';
 import '../../components/proceed_button.dart'; // 버튼 컴포넌트
@@ -160,7 +161,10 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
       if (e is DioException && e.response?.statusCode == 403) {
-        await getAccessTokenFromRefreshToken();
+        final bool? result = await getAccessTokenFromRefreshToken();
+        if (result == false) {
+          LogoutByExpiration(context);
+        }
         await fetchPlans();
         return;
       }

@@ -8,6 +8,7 @@ import 'package:alpha_fe/pages/plan_page/add_user.dart';
 import 'package:alpha_fe/components/plan_loading_page.dart';
 
 import '../../components/auth_token_handler.dart';
+import '../../components/logout_by_expiration.dart';
 
 class PlanPage2 extends StatefulWidget {
   final int tour_id;
@@ -115,7 +116,10 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
 
       // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
       if (e is DioException && e.response?.statusCode == 403) {
-        await getAccessTokenFromRefreshToken();
+        final bool? result = await getAccessTokenFromRefreshToken();
+        if (result == false) {
+          LogoutByExpiration(context);
+        }
         await fetchTourCourse();
         return;
       }

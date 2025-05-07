@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/custom_alert_dialog.dart';
 import '../../components/auth_token_handler.dart';
+import '../../components/logout_by_expiration.dart';
 import '../../components/proceed_button.dart';
 import '../../components/app_bar.dart';
 import '../../components/token_controller.dart';
@@ -237,7 +238,10 @@ class _AddPage_0State extends State<AddPage_0> {
     } catch (e) {
       // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
       if (e is DioException && e.response?.statusCode == 403) {
-        await getAccessTokenFromRefreshToken();
+        final bool? result = await getAccessTokenFromRefreshToken();
+        if (result == false) {
+          LogoutByExpiration(context);
+        }
         await _registerTour();
         return;
       }

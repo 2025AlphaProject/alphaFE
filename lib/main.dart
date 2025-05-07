@@ -27,6 +27,7 @@
 *   9. gps.dart
 * */
 
+import 'package:alpha_fe/components/auth_token_handler.dart';
 import 'package:alpha_fe/components/token_controller.dart';
 import 'package:alpha_fe/pages/loading_page/page_controller.dart';
 import 'package:flutter/material.dart';
@@ -97,6 +98,7 @@ Future<void> main() async {
   // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
   await initNaverMapSdk();
 
+  getAccessTokenFromRefreshToken();
   final accessToken = await getAccessToken();
 
   runApp(

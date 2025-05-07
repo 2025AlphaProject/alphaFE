@@ -7,6 +7,7 @@ import 'package:alpha_fe/pages/my_page/mission_page_2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/custom_alert_dialog.dart';
 import '../../components/auth_token_handler.dart';
+import '../../components/logout_by_expiration.dart';
 import 'mission_success_page.dart';
 
 class Mission_Page extends StatefulWidget {
@@ -134,7 +135,10 @@ class _Mission_PageState extends State<Mission_Page> {
 
       // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
       if (e is DioException && e.response?.statusCode == 403) {
-        await getAccessTokenFromRefreshToken();
+        final bool? result = await getAccessTokenFromRefreshToken();
+        if (result == false) {
+          LogoutByExpiration(context);
+        }
         await missionCreate();
         return;
       }
