@@ -124,7 +124,8 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           final endDateStr = plan['endDate'];
           final endDate = DateTime.tryParse(endDateStr.replaceAll('.', '-'));
           final today = DateTime.now();
-          final isExpired = endDate != null && today.isAfter(DateTime(endDate.year, endDate.month, endDate.day));
+          final isExpired = endDate != null &&
+              today.isAfter(DateTime(endDate.year, endDate.month, endDate.day).add(const Duration(days: 1)));
 
           try {
             final courseResponse = await dio.get(

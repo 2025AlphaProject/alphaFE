@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
         final endDateStr = plan['end_date'];
         final endDate = DateTime.tryParse(endDateStr.replaceAll('.', '-'));
         final today = DateTime.now();
-        final isExpired = endDate != null && today.isAfter(DateTime(endDate.year, endDate.month, endDate.day));
+        final isExpired = endDate != null && today.isAfter(DateTime(endDate.year, endDate.month, endDate.day).add(Duration(days: 1)));
         try {
           final courseResponse = await dio.get(
             '$baseUrl/tour/course/$tourId/',
