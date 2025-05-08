@@ -1,9 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> LogoutByUser(BuildContext context) async {
+  double width = MediaQuery.of(context).size.width;
+  if (kIsWeb) {
+    width = 430;
+  }
   final shouldLogout = await showDialog<bool>(
     context: context,
     builder: (BuildContext context) {
@@ -12,7 +17,7 @@ Future<void> LogoutByUser(BuildContext context) async {
           borderRadius: BorderRadius.circular(12),
         ),
         backgroundColor: Colors.white,
-        contentPadding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width*0.0583, vertical: MediaQuery.of(context).size.height * 0.0369),
+        contentPadding: EdgeInsets.symmetric(horizontal: width*0.0583, vertical: MediaQuery.of(context).size.height * 0.0369),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

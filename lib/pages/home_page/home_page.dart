@@ -6,6 +6,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import '../../components/app_bar.dart';
 import '../../components/logout_by_expiration.dart';
 import '../../components/plan_card.dart'; // 여행 계획 카드 컴포넌트
@@ -497,7 +498,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(

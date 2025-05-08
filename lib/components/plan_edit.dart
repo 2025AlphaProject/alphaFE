@@ -3,6 +3,7 @@ import 'package:alpha_fe/components/token_controller.dart';
 import 'package:alpha_fe/mainscreen.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';
 import 'package:dio/dio.dart';
@@ -371,7 +372,10 @@ class _DeleteTourState extends State<DeleteTour> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return MediaQuery.removeViewInsets(
       removeBottom: true,
       context: context,

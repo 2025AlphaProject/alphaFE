@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:alpha_fe/components/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:alpha_fe/pages/my_page/mission_page_3.dart';
@@ -44,7 +45,10 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     final height = MediaQuery.of(context).size.height;
     return Center(
       child: Padding(

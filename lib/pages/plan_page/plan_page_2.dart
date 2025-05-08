@@ -1,5 +1,6 @@
 import 'package:alpha_fe/components/token_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../../components/app_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
@@ -227,7 +228,10 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return WillPopScope(
       onWillPop: () async => true,
       child: _isLoading
@@ -319,7 +323,10 @@ class Plan_Name extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     final statusText = getRemainingStatus(startDate, endDate);
 
     return Padding(
@@ -381,7 +388,10 @@ class Traveler_List extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     final parentState = context.findAncestorStateOfType<_plan_page2_bodyState>();
     final travelers = parentState?.travelers ?? [];
 

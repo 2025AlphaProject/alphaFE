@@ -3,6 +3,7 @@ import 'package:alpha_fe/components/mission_loading_page.dart';
 import 'package:dio/dio.dart';
 import 'package:alpha_fe/components/camera.dart';
 import 'package:alpha_fe/mainscreen.dart';
+import 'package:flutter/foundation.dart';
 import '../../components/token_controller.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
@@ -171,7 +172,10 @@ class _missionTestState extends State<missionTest> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "미션 진행도"),

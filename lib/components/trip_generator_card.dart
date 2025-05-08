@@ -2,6 +2,7 @@
 // 해당 버튼은 항상 AddPage_2 로 연결됩니다
 import 'dart:ui';
 import 'package:alpha_fe/components/auth_token_handler.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../pages/add_page/add_page_2.dart';
@@ -19,7 +20,10 @@ class GeneratorItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return Container(
       margin: EdgeInsets.symmetric(vertical: height * 0.009),
       decoration: BoxDecoration(

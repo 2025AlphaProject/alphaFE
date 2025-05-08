@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:alpha_fe/components/app_bar.dart';
@@ -32,7 +33,10 @@ class _nearEventState extends State<nearEvent> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     final event = widget.eventData;
     return SingleChildScrollView(// 사진 크기 때문에 scrollview로
       child: Padding(

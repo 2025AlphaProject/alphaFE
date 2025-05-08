@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:dio/dio.dart';
@@ -102,10 +103,10 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
 
   // 지도 마커 업데이트: 오류 시 SDK 초기화 및 재시도
   Future<void> _updateMarkers() async {
-    final width = MediaQuery
-        .of(context)
-        .size
-        .width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     try {
       for (final marker in _markers) {
         _mapController.deleteOverlay(
@@ -165,10 +166,10 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery
-        .of(context)
-        .size
-        .width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     final height = MediaQuery
         .of(context)
         .size

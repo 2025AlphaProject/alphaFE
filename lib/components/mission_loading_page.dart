@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 //미션 성공 여부 로딩페이지 띄우기
@@ -6,6 +7,10 @@ class MissionLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -21,7 +26,7 @@ class MissionLoadingView extends StatelessWidget {
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.024),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.133),
+              padding: EdgeInsets.symmetric(horizontal: width * 0.133),
               child: const LinearProgressIndicator(
                 color: Colors.black,
                 backgroundColor: Colors.grey,

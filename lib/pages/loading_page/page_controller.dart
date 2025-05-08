@@ -1,19 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'loading_page1.dart';
 import 'loading_page2.dart';
 import 'loading_page3.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart'; // pubspec.yaml에 추가 필요
-
-void main() {
-  runApp(
-      const MaterialApp(
-        home: LoginPageController(),
-      ));
-}
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class LoginPageController extends StatefulWidget {
   final String? kakaoNativeAppKey;
-  const LoginPageController({Key? key, this.kakaoNativeAppKey}) : super(key: key);
+  final String? kakaoJavaScriptAppKey;
+  const LoginPageController({Key? key, required this.kakaoNativeAppKey, required this.kakaoJavaScriptAppKey}) : super(key: key);
 
   @override
   State<LoginPageController> createState() => _LoginPageControllerState();
@@ -25,7 +20,10 @@ class _LoginPageControllerState extends State<LoginPageController> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -38,6 +36,7 @@ class _LoginPageControllerState extends State<LoginPageController> {
                 const LoadingPage2(),
                 LoadingPage3(
                   kakaoNativeAppKey: widget.kakaoNativeAppKey,
+                  kakaoJavaScriptAppKey: widget.kakaoJavaScriptAppKey,
                 ),
               ],
             ),
