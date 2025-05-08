@@ -33,7 +33,10 @@ class TravelEditMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -115,7 +118,10 @@ class _EditMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return InkWell(
       onTap: () {
         onTap();
@@ -184,7 +190,10 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return MediaQuery.removeViewInsets(
       removeBottom: true,
       context: context,
@@ -385,7 +394,7 @@ class _DeleteTourState extends State<DeleteTour> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
       width = 430;
     }
@@ -513,7 +522,10 @@ class _DeleteCourseState extends State<DeleteCourse> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return MediaQuery.removeViewInsets(
       removeBottom: true,
       context: context,

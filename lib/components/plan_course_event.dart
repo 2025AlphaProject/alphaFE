@@ -251,7 +251,7 @@ class place_card extends StatelessWidget {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   Container( //도로명 설명
-                                    padding: EdgeInsets.symmetric(horizontal:  width * 0.0083, vertical:  width * 0.0055),
+                                    padding: EdgeInsets.symmetric(horizontal:  width * 0.0083, vertical:  height * 0.0029),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(color: Colors.grey.shade400),
@@ -275,7 +275,7 @@ class place_card extends StatelessWidget {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   Container( //지번 설명
-                                    padding: EdgeInsets.symmetric(horizontal:  width * 0.0083, vertical:  width * 0.0055),
+                                    padding: EdgeInsets.symmetric(horizontal:  width * 0.0083, vertical:  height * 0.0029),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(color: Colors.grey.shade400),

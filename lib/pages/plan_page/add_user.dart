@@ -1,5 +1,6 @@
 import 'package:alpha_fe/components/token_controller.dart';
 import 'package:alpha_fe/mainscreen.dart';
+import 'package:alpha_fe/pages/home_page/home_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -157,8 +158,9 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(width * 0.05),
+                                  child: Container(
+                                    width: width,
+                                    padding: EdgeInsets.all(width*0.05),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
