@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';
 import 'package:dio/dio.dart';
@@ -48,7 +49,10 @@ class _planEditDateState extends State<planEditDate> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "날짜수정 앱바 영역"),

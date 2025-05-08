@@ -14,7 +14,6 @@ class CustomAlertDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
 
     return AlertDialog(
       backgroundColor: const Color(0xFFF9F9F9),

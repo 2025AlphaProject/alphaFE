@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../components/app_bar.dart';           // 공통 AppBar 컴포넌트
 import '../../components/trip_generator_card.dart';    // 여행지 선택용 드롭다운 카드
@@ -19,7 +20,10 @@ class AddPage_1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),

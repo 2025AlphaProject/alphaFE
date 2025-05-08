@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../pages/add_page/searchplace_page.dart';
 import 'custom_alert_dialog.dart';
@@ -38,7 +39,10 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return Container(
       width: width * 0.63,
       padding: EdgeInsets.symmetric(horizontal: width * 0.016, vertical: height * .03),

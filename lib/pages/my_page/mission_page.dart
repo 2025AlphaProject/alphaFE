@@ -1,4 +1,5 @@
 import 'package:alpha_fe/components/token_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart'; //
 import 'dart:convert';
@@ -150,7 +151,10 @@ class _Mission_PageState extends State<Mission_Page> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     int completed = _missions.where((m) => m['isCompleted'] == true).length;
     int total = _missions.length;
     print("ok:${_missions}"); //이건 확인용 최종때 지우면됨

@@ -1,5 +1,6 @@
 import 'package:alpha_fe/components/plan_card.dart';
 import 'package:alpha_fe/components/token_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/app_bar.dart';
@@ -242,9 +243,12 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final cards = sortedCardData;
+    if (kIsWeb) {
+      width = 430;
+    }
 
     return _isLoading
         ? const Center(child: CircularProgressIndicator())

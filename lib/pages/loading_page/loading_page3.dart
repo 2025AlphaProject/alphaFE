@@ -1,21 +1,19 @@
 import 'package:alpha_fe/components/login.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(
-    const MaterialApp(
-      home: LoadingPage3(),
-    )
-  );
-}
 
 class LoadingPage3 extends StatelessWidget {
   final String? kakaoNativeAppKey;
-  const LoadingPage3({super.key, this.kakaoNativeAppKey});
+  final String? kakaoJavaScriptAppKey;
+
+  const LoadingPage3({super.key, required this.kakaoNativeAppKey, required this.kakaoJavaScriptAppKey});
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -86,7 +84,11 @@ class LoadingPage3 extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(width*0.0533, 0, width*0.0533, height*0.0394),
                 child: GestureDetector(
                   onTap: () {
-                    KakaoLoginService.login(context, kakaoNativeAppKey!);
+                    KakaoLoginService.login(
+                      context,
+                      kakaoNativeAppKey: kakaoNativeAppKey!,
+                      kakaoJavaScriptAppKey: kakaoJavaScriptAppKey!,
+                    );
                   },
                   child: Image.asset(
                     'assets/kakao_login_button.png',

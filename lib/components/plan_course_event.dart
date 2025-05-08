@@ -1,5 +1,6 @@
 import 'package:alpha_fe/pages/plan_page/near_event.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
@@ -19,7 +20,10 @@ class travel_plan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     // --- Date filter state ---
     final selectedDate = ValueNotifier<String?>(null);
     final dates = courseData.map((e) => e['date'] as String).toSet().toList()..sort();

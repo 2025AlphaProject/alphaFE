@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AILoadingView extends StatelessWidget {
@@ -5,7 +6,10 @@ class AILoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,

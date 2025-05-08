@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
@@ -48,11 +49,11 @@ class CustomBottomNavigationBar extends StatelessWidget {
             unselectedItemColor: Colors.grey.shade600,
             selectedLabelStyle: TextStyle(
               color: Colors.grey.shade600,
-              fontSize: MediaQuery.of(context).size.width * 0.031
+              fontSize: 12.7
             ),
             unselectedLabelStyle: TextStyle(
               color: Colors.grey.shade600,
-              fontSize: MediaQuery.of(context).size.width * 0.031
+              fontSize: 12.7
             ),
       
             // 하단 탭 항목 정의

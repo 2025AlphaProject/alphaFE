@@ -1,5 +1,6 @@
 import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
 import 'package:alpha_fe/components/auth_token_handler.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // 종료일까지 남은 일 수 계산 및 상태 반환
@@ -40,7 +41,10 @@ class PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     final height = MediaQuery.of(context).size.height;
     final statusText = getRemainingStatus(startDate, endDate);
 

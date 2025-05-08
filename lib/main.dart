@@ -39,6 +39,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:alpha_fe/components/custom_alert_dialog.dart';
+import 'package:flutter/foundation.dart';
 
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
@@ -65,7 +66,9 @@ Future<void> main() async {
 
   await dotenv.load();
   final kakaoNativeAppKey = dotenv.env['KAKAO_NATIVE_APP_KEY'];
-  logger.d('🔑 Kakao Native App Key: $kakaoNativeAppKey');
+  final kakaoJavaScriptAppKey = dotenv.env['KAKAO_JAVA_SCRIPT_APP_KEY'];
+  print(kakaoNativeAppKey);
+  print(kakaoJavaScriptAppKey);
 
   if (kakaoNativeAppKey == null || kakaoNativeAppKey.isEmpty) {
     runApp(const MaterialApp(
@@ -78,25 +81,25 @@ Future<void> main() async {
     return;
   }
 
-  try {
-    await initNaverMapSdk();
-  } catch (e) {
-    runApp(const MaterialApp(
-      color: Color(0xFFFFFFFF),
-      home: CustomAlertDialog(
-        title: 'NaverMap sdk 오류',
-        contentText: '앱을 다시 실행해 주세요',
-      ),
-    ));
-    return;
-  }
+  // try {
+  //   await initNaverMapSdk();
+  // } catch (e) {
+  //   runApp(const MaterialApp(
+  //     color: Color(0xFFFFFFFF),
+  //     home: CustomAlertDialog(
+  //       title: 'NaverMap sdk 오류',
+  //       contentText: '앱을 다시 실행해 주세요',
+  //     ),
+  //   ));
+  //   return;
+  // }
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
 
   // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
-  await initNaverMapSdk();
+  // await initNaverMapSdk();
 
   getAccessTokenFromRefreshToken();
   final accessToken = await getAccessToken();
@@ -137,9 +140,24 @@ Future<void> main() async {
           // 스플래시 효과 완전히 비활성화
           splashFactory: NoSplash.splashFactory,
         ),
-        home: (accessToken?.isNotEmpty == true)
-            ? MainScreen()
-            : LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey),
+        // Conditional home widget for web vs mobile
+        home: (() {
+          Widget root = (accessToken?.isNotEmpty == true)
+              ? MainScreen()
+              : LoginPageController(
+                  kakaoNativeAppKey: kakaoNativeAppKey,
+                  kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,
+                );
+          return kIsWeb
+              ? Center(
+                  child: Container(
+                    width: 430,
+                    color: Colors.white,
+                    child: root,
+                  ),
+                )
+              : root;
+        })(),
       ),
     ),
   );
