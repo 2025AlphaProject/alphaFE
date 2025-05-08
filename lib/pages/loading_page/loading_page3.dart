@@ -10,7 +10,7 @@ class LoadingPage3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
       width = 430;
     }

@@ -34,7 +34,7 @@ class _LoadingPage2State extends State<LoadingPage2> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
       width = 430;
     }

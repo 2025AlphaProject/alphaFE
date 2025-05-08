@@ -421,7 +421,7 @@ class Traveler_List extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     CircleAvatar(
-                      radius: 24.6,
+                      radius: width * 0.06,
                       backgroundImage: NetworkImage(traveler["imageUrl"]!),
                     ),
                     SizedBox(height: height * 0.002),
@@ -503,7 +503,10 @@ class DashedLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return Padding(
       padding: EdgeInsets.fromLTRB(width * 0.04, 0, width * 0.04, height * 0.03),
       child: LayoutBuilder(

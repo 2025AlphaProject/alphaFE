@@ -399,9 +399,12 @@ class _PlanPageIndicatorState extends State<PlanPageIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     final dotSize = widget.dotSize ?? width * 0.02;
     final dotActiveWidth = widget.dotActiveWidth ?? width * 0.03;
+    if (kIsWeb) {
+      width = 430;
+    }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
