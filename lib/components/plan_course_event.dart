@@ -11,11 +11,12 @@ import 'date_dropdown.dart';
 //여행 코스
 
 class travel_plan extends StatelessWidget {
+  final String? accessToken;
   final List<Map<String, dynamic>> courseData;
   final int tour_id;
   final VoidCallback? onRefresh;
 
-  const travel_plan({super.key, required this.courseData, required this.tour_id, this.onRefresh});
+  const travel_plan({super.key, required this.courseData, required this.tour_id, this.onRefresh, required this.accessToken});
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +107,7 @@ class travel_plan extends StatelessWidget {
                                       onPressed: () async {
                                         final result = await showDialog(
                                           context: context,
-                                          builder: (context) => Center(child: DeleteCourse(tour_id: tour_id, target_date: date,onRefresh: onRefresh,)),
+                                          builder: (context) => Center(child: DeleteCourse(tour_id: tour_id, target_date: date,onRefresh: onRefresh, accessToken: accessToken,)),
                                         );
                                       },
                                       style: ElevatedButton.styleFrom(

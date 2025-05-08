@@ -1,33 +1,56 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
 // 리프레시 토큰 저장
 Future<void> saveRefreshToken(String? token) async {
-  await secureStorage.write(key: 'refresh_token', value: token);
+  if (!kIsWeb) {
+    await secureStorage.write(key: 'refresh_token', value: token);
+  }
 }
 
 // 리프레시 토큰 읽기
 Future<String?> getRefreshToken() async {
-  return await secureStorage.read(key: 'refresh_token');
+  if (!kIsWeb) {
+    return await secureStorage.read(key: 'refresh_token');
+  }
+  return null;
 }
 
 // 리프레시 토큰 삭제
 Future<void> deleteRefreshToken() async {
-  await secureStorage.delete(key: 'refresh_token');
+  if (!kIsWeb) {
+    await secureStorage.delete(key: 'refresh_token');
+  }
 }
 
 // 엑세스 토큰 저장
 Future<void> saveAccessToken(String? token) async {
-  await secureStorage.write(key: 'access_token', value: token);
+  if (!kIsWeb) {
+    await secureStorage.write(key: 'access_token', value: token);
+  }
 }
 
 // 엑세스 토큰 읽기
 Future<String?> getAccessToken() async {
-  return await secureStorage.read(key: 'access_token');
+  if (kIsWeb) {
+    try {
+      final info = await UserApi.instance.accessTokenInfo();
+      return info.id.toString(); // Or any other logic suitable for your use case
+    } catch (e) {
+      print('❌ access token 가져오기 실패: $e');
+      return null;
+    }
+  } else {
+    return await secureStorage.read(key: 'access_token');
+  }
 }
 
 // 엑세스 토큰 삭제
 Future<void> deleteAccessToken() async {
-  await secureStorage.delete(key: 'access_token');
+  if (!kIsWeb) {
+    await secureStorage.delete(key: 'access_token');
+  }
 }

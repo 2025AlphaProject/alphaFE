@@ -19,6 +19,7 @@ import '../../components/date_dropdown.dart';
 import '../../components/custom_alert_dialog.dart';
 
 class AddPage_2 extends StatefulWidget {
+  final String? accessToken;
   final String title;
   final int tourId;
   final Function(List<PlaceInfoBlock>)? onSaveCourseCallback;
@@ -29,7 +30,7 @@ class AddPage_2 extends StatefulWidget {
     required this.tourId,
     this.onSaveCourseCallback,
     this.isSingleDayMode = false, // default to false for multi-day mode
-    Key? key
+    Key? key, required this.accessToken
   }) : super(key: key);
 
   @override
@@ -63,7 +64,7 @@ class _AddPage_2State extends State<AddPage_2> {
 
   // 웹소켓 연결 후 요청된 행정구역에 대한 코스 데이터를 받아 UI에 반영
   void connectWebSocket({int connectionRetry = 0, int responseRetry = 0}) async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
     int? userId;
@@ -253,7 +254,7 @@ class _AddPage_2State extends State<AddPage_2> {
   // 웹소켓 데이터 응답 처리 함수 (기존 응답 처리 로직 분리)
   Future<void> processWebSocketData(dynamic data) async {
     final context_ = context;
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
 
@@ -483,7 +484,7 @@ class _AddPage_2State extends State<AddPage_2> {
   }
 
   Future<void> saveTourCourse([int? tourId, List<PlaceInfoBlock>? places]) async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
     final int useTourId = tourId ?? widget.tourId;
@@ -550,7 +551,7 @@ class _AddPage_2State extends State<AddPage_2> {
         context,
         CupertinoPageRoute(
           builder: (_) => AddPage_3(
-            tour_id: widget.tourId,
+            tour_id: widget.tourId, accessToken: widget.accessToken,
           ),
         ),
       );

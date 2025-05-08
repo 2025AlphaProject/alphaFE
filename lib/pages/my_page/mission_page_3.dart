@@ -11,13 +11,14 @@ import '../../components/gps.dart';
 import '../../components/mission_gps.dart';
 
 class missionTest extends StatefulWidget {
+  final String? accessToken;
   final Map<String, dynamic> mission;
   final dynamic image;
 
   const missionTest({
     Key? key,
     required this.mission,
-    required this.image,
+    required this.image, required this.accessToken,
   }) : super(key: key);
   @override
   State<missionTest> createState() => _missionTestState();
@@ -43,7 +44,7 @@ class _missionTestState extends State<missionTest> {
 
   //미션 성공 여부 판단
   Future<void> _sendMissionEntry() async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
 
     try {
@@ -87,7 +88,7 @@ class _missionTestState extends State<missionTest> {
 
   //미션 사진 업로드
   Future<void> uploadMissionImage() async {
-    final accessToken = await getAccessToken(); // 토큰 불러오기
+    final accessToken = widget.accessToken; // 토큰 불러오기
     final dio = Dio();
 
     try {
@@ -127,7 +128,7 @@ class _missionTestState extends State<missionTest> {
 
   //미션 최종 저장
   Future<void> finalMission() async{
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
     final currentLocation = await _locationService.getCurrentLocation(); // "위도,경도" 형태 문자열
     final parts = currentLocation.split(',');
@@ -246,7 +247,9 @@ class _missionTestState extends State<missionTest> {
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const MainScreen()),
+                        MaterialPageRoute(builder: (context) => MainScreen(
+                          accessToken: widget.accessToken,
+                        )),
                       );
                     },
                     child: const Text(

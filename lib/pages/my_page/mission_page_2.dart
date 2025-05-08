@@ -6,11 +6,12 @@ import '../../components/app_bar.dart';
 import 'package:alpha_fe/pages/my_page/mission_page_3.dart';
 
 class MissionPage_2 extends StatelessWidget {
+  final String? accessToken;
   final mission;
 
   const MissionPage_2({
     Key? key,
-    required this.mission
+    required this.mission, required this.accessToken
   }) : super(key: key);
 
   @override
@@ -18,17 +19,19 @@ class MissionPage_2 extends StatelessWidget {
     return Scaffold(
       appBar: const DefaultAppBar(title: "미션 수행"),
       backgroundColor: Colors.white,
-      body: MissionPage_2_body(mission:mission),
+      body: MissionPage_2_body(mission:mission, accessToken: accessToken,),
     );
   }
 }
 
 class MissionPage_2_body extends StatefulWidget {
+  final String? accessToken;
   final mission;
 
   const MissionPage_2_body({
     super.key,
     required this.mission,
+    required this.accessToken,
   });
 
 
@@ -294,6 +297,7 @@ class _MissionPage_2_bodyState extends State<MissionPage_2_body> {
                                       builder: (context) => missionTest(
                                         mission: widget.mission,
                                         image: _image!,
+                                        accessToken: widget.accessToken,
                                       ),
                                     ),
                                   );

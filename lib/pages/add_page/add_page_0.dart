@@ -15,8 +15,9 @@ import '../../components/token_controller.dart';
 
 // 추가 탭 0번째 페이지: 여행 이름과 날짜 입력
 class AddPage_0 extends StatefulWidget {
+  final String? accessToken;
   final Function(int)? onFinishCreation;
-  const AddPage_0({Key? key, this.onFinishCreation}) : super(key: key);
+  const AddPage_0({Key? key, this.onFinishCreation, required this.accessToken}) : super(key: key);
 
   @override
   _AddPage_0State createState() => _AddPage_0State();
@@ -113,7 +114,7 @@ class _AddPage_0State extends State<AddPage_0> {
 
   // 입력한 여행 정보로 서버에 여행 등록 요청
   Future<void> _registerTour() async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
     const url = 'http://conever.duckdns.org:8000';
 
@@ -222,7 +223,7 @@ class _AddPage_0State extends State<AddPage_0> {
         } else {
           Navigator.push(
             context,
-            CupertinoPageRoute(builder: (context) => AddPage_1(tourId: _tourId)),
+            CupertinoPageRoute(builder: (context) => AddPage_1(tourId: _tourId, accessToken: widget.accessToken,)),
           );
         }
       } else {

@@ -13,6 +13,7 @@ import 'logout_by_expiration.dart';
 
 // 전체적인 편집관련
 class TravelEditMenu extends StatelessWidget {
+  final String? accessToken;
   final String startDate;
   final String endDate;
   final int tour_id;
@@ -26,6 +27,7 @@ class TravelEditMenu extends StatelessWidget {
     required this.tour_id,
     required this.tourName,
     required this.onRefresh,
+    required this.accessToken,
   });
 
   @override
@@ -51,7 +53,14 @@ class TravelEditMenu extends StatelessWidget {
                 Navigator.pop(context);
                 showDialog(
                   context: context,
-                  builder: (context) => Center(child: EditTourNameDialog(tourName: tourName, tour_id: tour_id, onRefresh: onRefresh,)),
+                  builder: (context) => Center(
+                    child: EditTourNameDialog(
+                      tourName: tourName,
+                      tour_id: tour_id,
+                      onRefresh: onRefresh,
+                      accessToken: accessToken,
+                    ),
+                  ),
                 );
               },
             ),
@@ -76,7 +85,7 @@ class TravelEditMenu extends StatelessWidget {
                 Navigator.pop(context);
                 showDialog(
                   context: context,
-                  builder: (context) => Center(child: DeleteTour(tour_id: tour_id))
+                  builder: (context) => Center(child: DeleteTour(tour_id: tour_id, accessToken: accessToken,))
                 );
               },
             ),
@@ -142,11 +151,14 @@ class EditTourNameDialog extends StatefulWidget {
   final String tourName;
   final int tour_id;
   final VoidCallback? onRefresh;
+  final String? accessToken;
 
-
-  const EditTourNameDialog({Key? key,
+  const EditTourNameDialog({
+    Key? key,
     required this.tourName,
-    required this.tour_id, this.onRefresh
+    required this.tour_id,
+    this.onRefresh,
+    required this.accessToken,
   }) : super(key: key);
 
   @override
@@ -238,7 +250,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
 
                 try {
                   final dio = Dio();
-                  final accessToken = await getAccessToken();
+                  final accessToken = widget.accessToken;
                   final response = await dio.put(
                     'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
                     data: {
@@ -285,7 +297,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                     }
                     // Retry the request after refreshing the token
                     final dio = Dio();
-                    final accessToken = await getAccessToken();
+                    final accessToken = widget.accessToken;
                     final retryResponse = await dio.put(
                       'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
                       data: {
@@ -352,10 +364,11 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
 
 // 여행 삭제
 class DeleteTour extends StatefulWidget {
+  final String? accessToken;
   final int tour_id;
 
   const DeleteTour({Key? key,
-    required this.tour_id,
+    required this.tour_id, required this.accessToken,
   }) : super(key: key);
 
   @override
@@ -416,7 +429,7 @@ class _DeleteTourState extends State<DeleteTour> {
               onPressed: () async {
                 try {
                   final dio = Dio();
-                  final accessToken = await getAccessToken();
+                  final accessToken = widget.accessToken;
                   final response = await dio.delete(
                     'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
                     options: Options(
@@ -431,7 +444,7 @@ class _DeleteTourState extends State<DeleteTour> {
                     if (!mounted) return;
                     Navigator.of(context).pop();
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const MainScreen()),
+                      MaterialPageRoute(builder: (context) => MainScreen(accessToken: accessToken,)),
                     );
                   } else if (response.statusCode == 401) {
                     LogoutByExpiration(context);
@@ -475,6 +488,7 @@ class _DeleteTourState extends State<DeleteTour> {
 
 // 여행 경로 삭제(건들ㄴㄴ)
 class DeleteCourse extends StatefulWidget {
+  final String? accessToken;
   final int tour_id;
   final String target_date;
   final VoidCallback? onRefresh;
@@ -482,7 +496,7 @@ class DeleteCourse extends StatefulWidget {
   const DeleteCourse({Key? key,
     required this.tour_id,
     required this.target_date,
-    this.onRefresh
+    this.onRefresh, required this.accessToken
   }) : super(key: key);
 
   @override
@@ -550,7 +564,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
               onPressed: () async { //여행경로 삭제하기
                 try {
                   final dio = Dio();
-                  final accessToken = await getAccessToken();
+                  final accessToken = widget.accessToken;
                   final response = await dio.delete(
                     'http://conever.duckdns.org:8000/tour/course/${widget.tour_id}/',
                     data: {

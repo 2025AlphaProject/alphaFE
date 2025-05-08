@@ -11,10 +11,11 @@ import 'package:alpha_fe/components/auth_token_handler.dart';
 
 
 class AddPage_3 extends StatefulWidget {
+  final String? accessToken;
   final int tour_id; // 정상 등록 여부 확인 텍스트
   const AddPage_3({
     required this.tour_id,
-    Key? key
+    Key? key, required this.accessToken
   }) : super(key: key);
 
   @override
@@ -35,7 +36,7 @@ class _AddPage_3State extends State<AddPage_3> {
   }
 
   Future<Map<String, dynamic>> fetchTourData() async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
 
     final url = 'http://conever.duckdns.org:8000/tour/${widget.tour_id}/';
@@ -111,6 +112,7 @@ class _AddPage_3State extends State<AddPage_3> {
                   size_h: height * 0.38,
                   size_w: width * 0.75,
                   tour_id: widget.tour_id,
+                  accessToken: widget.accessToken,
                 ),
               ),
 
@@ -129,7 +131,7 @@ class _AddPage_3State extends State<AddPage_3> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const PlanPage(),
+                          builder: (context) => PlanPage(accessToken: widget.accessToken,),
                       ),
                   );
               },

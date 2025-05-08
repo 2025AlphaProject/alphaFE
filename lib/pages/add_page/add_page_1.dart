@@ -11,10 +11,11 @@ const List<String> districts = [
 ];
 
 class AddPage_1 extends StatelessWidget {
+  final String? accessToken;
   final int tourId;
   const AddPage_1({
     required this.tourId,
-    Key? key
+    Key? key, required this.accessToken
   }) : super(key: key);
 
 
@@ -61,7 +62,7 @@ class AddPage_1 extends StatelessWidget {
               SizedBox(height: height * 0.0692),
 
               // 행정구역 목록에 있는 요소들에 대해 GeneratorItem 생성
-              ...districts.map((name) => GeneratorItem(title: name, tourId: tourId)).toList(),
+              ...districts.map((name) => GeneratorItem(title: name, tourId: tourId, accessToken: accessToken,)).toList(),
             ],
           ),
         ),
