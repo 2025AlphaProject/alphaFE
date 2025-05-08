@@ -103,7 +103,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
 
   // 지도 마커 업데이트: 오류 시 SDK 초기화 및 재시도
   Future<void> _updateMarkers() async {
-    var width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
       width = 430;
     }
@@ -166,14 +166,11 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
       width = 430;
     }
-    final height = MediaQuery
-        .of(context)
-        .size
-        .height;
+    final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),

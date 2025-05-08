@@ -256,6 +256,11 @@ class _AddPage_2State extends State<AddPage_2> {
     final accessToken = await getAccessToken();
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
+    final height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
 
     if (widget.isSingleDayMode) {
       // 싱글 모드: 첫 번째 날짜 결과만 사용
@@ -276,8 +281,8 @@ class _AddPage_2State extends State<AddPage_2> {
           description: place['address'] ?? '주소 정보 없음',
           mapX: double.tryParse(place['mapX'] ?? '0') ?? 0.0,
           mapY: double.tryParse(place['mapY'] ?? '0') ?? 0.0,
-          width: MediaQuery.of(context_).size.width * 0.63,
-          height: MediaQuery.of(context_).size.width * 0.63 * 0.69,
+          width: width * 0.63,
+          height: height * 0.2//0.63 * 0.69,
         );
       }).toList();
 
@@ -348,8 +353,8 @@ class _AddPage_2State extends State<AddPage_2> {
               description: place['address'] ?? '주소 정보 없음',
               mapX: double.tryParse(place['mapX'] ?? '0') ?? 0.0,
               mapY: double.tryParse(place['mapY'] ?? '0') ?? 0.0,
-              width: MediaQuery.of(context_).size.width * 0.63,
-              height: MediaQuery.of(context_).size.width * 0.63 * 0.69,
+              width: width * 0.63,
+              height: height * 0.2//width* 0.63* 0.69,
             );
           }).toList();
           groupedWidgets.add(MapEntry(date, placeInfoBlocks));
@@ -455,11 +460,11 @@ class _AddPage_2State extends State<AddPage_2> {
     }
 
     setState(() {
-      var width = MediaQuery.of(context).size.width;
+      double width = MediaQuery.of(context).size.width;
       if (kIsWeb) {
         width = 430;
       }
-      final height = MediaQuery.of(context).size.width;
+      final height = MediaQuery.of(context).size.height;
       final newPlace = PlaceInfoBlock(
         imageUrl: imageUrl,
         title: title,
@@ -467,7 +472,7 @@ class _AddPage_2State extends State<AddPage_2> {
         mapX: mapX,
         mapY: mapY,
         width: width * 0.63,
-        height: width * 0.63 * 0.69,
+        height: height * 0.2//width* 0.63* 0.69,
       );
       if (entryIndex != -1) {
         _placeWidgets[entryIndex].value.add(newPlace);
@@ -557,8 +562,11 @@ class _AddPage_2State extends State<AddPage_2> {
 
   // PlaceInfoBlock 목록 상단에 표시되는 안내 문구
   Widget _buildTitleBlock() {
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    if (kIsWeb) {
+      width = 430;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -587,7 +595,10 @@ class _AddPage_2State extends State<AddPage_2> {
 
   // 날짜별 섹션 제목을 그리는 위젯
   Widget _buildDateDropdown() {
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: width * 0.05),
@@ -616,7 +627,10 @@ class _AddPage_2State extends State<AddPage_2> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     if (_isLoading) {
       return const AILoadingView();
     }
@@ -656,8 +670,8 @@ class _AddPage_2State extends State<AddPage_2> {
                       DateDropdown(
                         selectedDate: ValueNotifier<String?>(_selectedDate),
                         dates: _placeWidgets.map((e) => e.key).toList(),
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
+                        height: height,
+                        width: width,
                         onChanged: (value) {
                           setState(() {
                             _selectedDate = value;
@@ -733,7 +747,7 @@ class _AddPage_2State extends State<AddPage_2> {
                                 onTap: () => setState(() => _isAddingPlaceMap[entry.key] = true),
                                 child: Container(
                                   width: width * 0.63,
-                                  height: width * 0.63 * 0.69,
+                                  height: height * 0.2,//width* 0.63* 0.69,
                                   decoration: BoxDecoration(
                                     border: Border.all(color: Colors.grey.shade400),
                                     borderRadius: BorderRadius.circular(12),

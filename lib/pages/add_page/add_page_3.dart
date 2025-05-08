@@ -72,7 +72,7 @@ class _AddPage_3State extends State<AddPage_3> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
       width = 430;
     }

@@ -20,7 +20,7 @@ class travel_plan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
       width = 430;
     }
@@ -183,7 +183,10 @@ class place_card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return SizedBox(
       child: Column(
         children: [
@@ -366,7 +369,10 @@ class _EventsState extends State<Events> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 430;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
