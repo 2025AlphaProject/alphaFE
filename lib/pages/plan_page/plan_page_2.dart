@@ -12,8 +12,9 @@ import '../../components/auth_token_handler.dart';
 import '../../components/logout_by_expiration.dart';
 
 class PlanPage2 extends StatefulWidget {
+  final String? accessToken;
   final int tour_id;
-  const PlanPage2({Key? key, required this.tour_id}) : super(key: key);
+  const PlanPage2({Key? key, required this.tour_id, required this.accessToken}) : super(key: key);
 
   @override
   State<PlanPage2> createState() => _PlanPage2State();
@@ -32,12 +33,14 @@ class _PlanPage2State extends State<PlanPage2> {
       body: plan_page2_body(
         tour_id: widget.tour_id,
         onDataRefreshed: _onDataRefreshed,
+        accessToken: widget.accessToken,
       ),
     );
   }
 }
 
 class plan_page2_body extends StatefulWidget {
+  final String? accessToken;
   final int tour_id;
   final VoidCallback? onDataRefreshed;
   // Since widget.showaddbutton is a final variable, update logic should be managed with a separate state variable.
@@ -48,6 +51,7 @@ class plan_page2_body extends StatefulWidget {
     Key? key,
     required this.tour_id,
     this.onDataRefreshed,
+    required this.accessToken,
   }) : super(key: key);
 
   @override
@@ -79,7 +83,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   //여행 경로 가져오기 api
   Future<void> fetchTourCourse() async {
     final dio = Dio();
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     try {
       final response = await dio.get(
         'http://conever.duckdns.org:8000/tour/course/${widget.tour_id}/',
@@ -131,7 +135,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   //내 여행 가져오기(하나만) - 제목,날짜,동행자 정보 가져오기
   Future<void> fetchTourName() async {
     final dio = Dio();
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     try {
       final response = await dio.get(
         'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
@@ -268,6 +272,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                                     tour_id: widget.tour_id,
                                     tourName: tourName,
                                     onRefresh: _refreshData,
+                                    accessToken: widget.accessToken,
                                   ),
                                 ),
                               );
@@ -286,6 +291,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                         tour_id: widget.tour_id,
                         courseData: courseData,
                         onRefresh: _refreshData,
+                        accessToken: widget.accessToken,
                       ),
                     ],
                   ),
@@ -437,6 +443,7 @@ class Traveler_List extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => ProfileListPage(
                           tour_id: parentState!.widget.tour_id,
+                          accessToken: parentState.widget.accessToken,
                         ),
                       ),
                     ).then((_) {

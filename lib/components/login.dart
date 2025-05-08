@@ -74,7 +74,15 @@ class KakaoLoginService {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const MainScreen(),
+          builder: (context) => kIsWeb
+              ? Center(
+                  child: Container(
+                    width: 430,
+                    color: Colors.white,
+                    child: MainScreen(accessToken: token.accessToken,),
+                  ),
+                )
+              : MainScreen(accessToken: token.accessToken,),
         ),
       );
     } catch (e) {

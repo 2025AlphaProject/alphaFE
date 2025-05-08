@@ -13,7 +13,8 @@ import 'mission_success_page.dart';
 
 class Mission_Page extends StatefulWidget {
   final todayPlaces;
-  const Mission_Page({super.key,required this.todayPlaces});
+  final String? accessToken;
+  const Mission_Page({super.key,required this.todayPlaces, required this.accessToken});
 
   @override
   State<Mission_Page> createState() => _Mission_PageState();
@@ -71,7 +72,7 @@ class _Mission_PageState extends State<Mission_Page> {
 
   //미션 성공여부
   Future<bool> checkMissionComplete(int tdpId) async {
-    final accessToken = await getAccessToken();  // 인증 토큰 가져오기
+    final accessToken = widget.accessToken;  // 인증 토큰 가져오기
     final dio = Dio();
     final tdp_id = tdpId;
 
@@ -100,7 +101,7 @@ class _Mission_PageState extends State<Mission_Page> {
 
   //임의의 미션 부여하기
   Future<void> missionCreate() async{
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
     try {
       final formattedPayload = {
@@ -233,7 +234,7 @@ class _Mission_PageState extends State<Mission_Page> {
                   )
                 : Column(
                     children: _missions.map((mission) {
-                      return _missionItem(context, mission, width, height);
+                      return _missionItem(context, mission, width, height, widget.accessToken);
                     }).toList(),
                   ),
           ],
@@ -243,7 +244,7 @@ class _Mission_PageState extends State<Mission_Page> {
   }
 }
 
-Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double width, double height) {
+Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double width, double height, String? accessToken,) {
   final bool isCompleted = mission['isCompleted'] ?? false;
 
   return Padding(
@@ -267,7 +268,7 @@ Widget _missionItem(BuildContext context, Map<String, dynamic> mission, double w
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => MissionPage_2(mission: mission),
+                builder: (context) => MissionPage_2(mission: mission, accessToken: accessToken,),
               ),
             );
           }
