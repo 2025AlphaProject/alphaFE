@@ -9,7 +9,7 @@ String getRemainingStatus(String startDate, String endDate) {
   final start = DateTime.parse(startDate.replaceAll('.', '-'));
   final end = DateTime.parse(endDate.replaceAll('.', '-'));
 
-  if (today.isAfter(end)) return '종료';
+  if (today.isAfter(end.add(Duration(days: 1)))) return '종료';
   if (!today.isBefore(start)) return '진행중';
 
   final todayDate = DateTime(today.year, today.month, today.day);

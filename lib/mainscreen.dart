@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'pages/add_page/add_page_0.dart';
 import 'pages/home_page/home_page.dart';
 import 'pages/my_page/my_page.dart';
+import 'pages/my_page/my_page_web.dart';
 import 'pages/plan_page/plan_page.dart';
 import 'components/bottom_navi_bar.dart';
 
@@ -22,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
     HomePage(),
     PlanPage(),
     AddPage_0(),
-    MyPage(),
+    kIsWeb ? MyPage_Web() : MyPage(),
   ];
 
   @override
