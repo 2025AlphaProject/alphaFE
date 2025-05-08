@@ -14,20 +14,22 @@ class EditState {
 }
 
 class PlanPage extends StatelessWidget {
-  const PlanPage({Key? key}) : super(key: key);
+  final String? accessToken;
+  const PlanPage({Key? key, required this.accessToken}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
-      appBar: DefaultAppBar(title: "나의 계획"),
-      body: PlanPage_Body(),
+    return Scaffold(
+      backgroundColor: const Color(0xFFFFFFFF),
+      appBar: const DefaultAppBar(title: "나의 계획"),
+      body: PlanPage_Body(accessToken: accessToken,),
     );
   }
 }
 
 class PlanPage_Body extends StatefulWidget {
-  const PlanPage_Body({Key? key}) : super(key: key);
+  final String? accessToken;
+  const PlanPage_Body({Key? key, required this.accessToken}) : super(key: key);
 
   @override
   State<PlanPage_Body> createState() => _PlanPage_BodyState();
@@ -52,7 +54,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
   //내 여행 가져오기(리스트)
   Future<void> _fetchTourData() async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
     try {
       final response = await dio.get(
@@ -330,6 +332,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
                   size_h: height * 0.5,
                   size_w: width * 0.65,
                   tour_id: item['tour_id'],
+                  accessToken: widget.accessToken,
                 ),
               );
             },

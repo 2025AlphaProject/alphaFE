@@ -6,14 +6,15 @@ import 'package:dio/dio.dart';
 import 'package:alpha_fe/components/app_bar.dart';
 
 class ProfileListPage extends StatelessWidget {
+  final String? accessToken;
   final int tour_id;
-  const ProfileListPage({super.key, required this.tour_id});
+  const ProfileListPage({super.key, required this.tour_id, required this.accessToken});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const DefaultAppBar(title: "친구추가"),
-      body: ProfileListBody(tour_id: tour_id),
+      body: ProfileListBody(tour_id: tour_id, accessToken: accessToken,),
       backgroundColor: Colors.white,
     );
   }
@@ -21,7 +22,8 @@ class ProfileListPage extends StatelessWidget {
 
 class ProfileListBody extends StatefulWidget {
   final int tour_id;
-  const ProfileListBody({super.key, required this.tour_id});
+  final String? accessToken;
+  const ProfileListBody({super.key, required this.tour_id, required this.accessToken});
 
   @override
   State<ProfileListBody> createState() => _ProfileListBodyState();
@@ -57,7 +59,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
 
   Future<void> fetchMyInfo() async {
     final dio = Dio();
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     try {
       final response = await dio.get(
         'http://conever.duckdns.org:8000/user/me/',
@@ -189,7 +191,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                                 ),
                                               ),
                                               onPressed: () async {
-                                                final accessToken = await getAccessToken();
+                                                final accessToken = widget.accessToken;
                                                 try {
                                                   final dio = Dio();
                                                   final response = await dio.post(
@@ -208,7 +210,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                                   if (response.statusCode == 201) {
                                                     Navigator.pop(context);
                                                     Navigator.of(context).pushReplacement(
-                                                      MaterialPageRoute(builder: (context) => const MainScreen()),
+                                                      MaterialPageRoute(builder: (context) => MainScreen(accessToken: widget.accessToken,)),
                                                     );
                                                   }
                                                 } catch (e) {

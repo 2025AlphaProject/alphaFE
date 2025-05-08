@@ -8,13 +8,14 @@ import 'package:flutter/cupertino.dart';
 import '../pages/add_page/add_page_2.dart';
 
 class GeneratorItem extends StatelessWidget {
+  final String? accessToken;
   final String title;
   final int tourId;
 
   const GeneratorItem({
     required this.title,
     required this.tourId,
-    Key? key,
+    Key? key, required this.accessToken,
   }) : super(key: key);
 
   @override
@@ -39,6 +40,7 @@ class GeneratorItem extends StatelessWidget {
                 builder: (context) => AddPage_2(
                   title: title,
                   tourId: tourId,
+                  accessToken: accessToken,
                 ),
               ),
             );

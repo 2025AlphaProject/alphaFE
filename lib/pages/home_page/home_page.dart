@@ -19,7 +19,8 @@ import '../../components/token_controller.dart'; // 버튼 컴포넌트
 import '../../components/custom_alert_dialog.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String? accessToken;
+  const HomePage({super.key, required this.accessToken});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchPlans() async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     print('accessToken:$accessToken');
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
@@ -179,7 +180,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchRecommendedPlace({int retryCount = 0}) async {
     print('트렌딩 장소 가져오기 시작...');
     print('[DEBUG] 사용자 ID 요청 시작');
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
 
@@ -402,7 +403,8 @@ class _HomePageState extends State<HomePage> {
     final dio = Dio();
     final baseUrl = 'http://conever.duckdns.org:8000';
     try {
-      final accessToken = await getAccessToken();
+      final accessToken = widget.accessToken;
+
       // 여행 시작일을 불러오기 위한 GET 요청
       final startDateResponse = await dio.get(
         '$baseUrl/tour/$tourId/',
@@ -455,7 +457,7 @@ class _HomePageState extends State<HomePage> {
         Navigator.push(
           context,
           CupertinoPageRoute(
-            builder: (_) => AddPage_0(),
+            builder: (_) => AddPage_0(accessToken: widget.accessToken,),
           ),
         );
       },
@@ -593,6 +595,7 @@ class _HomePageState extends State<HomePage> {
                                               endDate: _nearestPlan!['end_date'] ?? '',
                                               size_h: height * 0.394,
                                               size_w: width * 0.8,
+                                              accessToken: widget.accessToken,
                                             )
                                           : _buildEmptyPlanCard(width, height)
                                     ),
@@ -676,7 +679,7 @@ class _HomePageState extends State<HomePage> {
                                         final String sigun = (_recommendedPlace?['address'] != null && (_recommendedPlace?['address'] as String).split(' ').length > 1)
                                             ? (_recommendedPlace?['address'] as String).split(' ')[1]
                                             : '';
-                                        final accessToken = await getAccessToken();
+                                        final accessToken = widget.accessToken;
                                         Navigator.of(context).push(
                                           CupertinoPageRoute(
                                             builder: (_) => AddPage_2(
@@ -691,16 +694,16 @@ class _HomePageState extends State<HomePage> {
                                                         Navigator.of(context).push(
                                                           CupertinoPageRoute(
                                                             builder: (_) => AddPage_3(
-                                                              tour_id: tourId,
+                                                              tour_id: tourId, accessToken: widget.accessToken,
                                                             ),
                                                           ),
                                                         );
                                                         saveTourCourse(tourId, places);
-                                                      },
+                                                      }, accessToken: widget.accessToken,
                                                     ),
                                                   ),
                                                 );
-                                              },
+                                              }, accessToken: widget.accessToken,
                                             ),
                                           ),
                                         );
@@ -796,7 +799,7 @@ class _HomePageState extends State<HomePage> {
             ),
             // 행정구역 검색 기능을 제공하는 앱바, 오버레이 리스트와 연결됨
             SearchAppBar(
-              onSaveCourse: saveTourCourse,
+              onSaveCourse: saveTourCourse, accessToken: widget.accessToken,
             ),
           ],
         ),

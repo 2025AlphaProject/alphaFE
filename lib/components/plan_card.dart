@@ -25,6 +25,7 @@ class PlanCard extends StatelessWidget {
   final double size_h; // 카드의 높이
   final double size_w; // 카드의 너비
   final int tour_id;
+  final String? accessToken;
 
   const PlanCard({
     Key? key,
@@ -33,7 +34,7 @@ class PlanCard extends StatelessWidget {
     required this.endDate,
     required this.size_h,
     required this.size_w,
-    required this.tour_id,
+    required this.tour_id, required this.accessToken,
   }) : super(key: key);
 
   // 시작일 ~ 종료일 형식의 날짜 범위 문자열 반환
@@ -66,6 +67,7 @@ class PlanCard extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => PlanPage2(
                     tour_id: tour_id,
+                    accessToken: accessToken,
                   ),
                 ),
               );

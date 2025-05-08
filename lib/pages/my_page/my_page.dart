@@ -12,20 +12,22 @@ import 'my_page_Q&A.dart';
 import 'package:dio/dio.dart';
 
 class MyPage extends StatelessWidget {
-  const MyPage({Key? key}) : super(key: key);
+  final String? accessToken;
+  const MyPage({Key? key, required this.accessToken}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
-      appBar: DefaultAppBar(title: "마이페이지"),
-      body: MyPageBody(),
+    return Scaffold(
+      backgroundColor: const Color(0xFFFFFFFF),
+      appBar: const DefaultAppBar(title: "마이페이지"),
+      body: MyPageBody(accessToken: accessToken,),
     );
   }
 }
 
 class MyPageBody extends StatefulWidget {
-  const MyPageBody({super.key});
+  final String? accessToken;
+  const MyPageBody({super.key, required this.accessToken});
 
   @override
   State<MyPageBody> createState() => _MyPageBodyState();
@@ -51,7 +53,7 @@ class _MyPageBodyState extends State<MyPageBody> {
 
   //프로필 사진 및 이름 - [GET] 유저 정보 가져오기
   Future<void> _fetchUserInfo() async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
 
     try {
@@ -89,7 +91,7 @@ class _MyPageBodyState extends State<MyPageBody> {
 
   //여행 수 표시 - [GET] 내 여행 가져오기(리스트)
   Future<void> _fetchTourCount() async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
     try {
       final response = await dio.get(
@@ -117,7 +119,7 @@ class _MyPageBodyState extends State<MyPageBody> {
   }
   // 내여행 가져오기
   Future<void> todayTours(String username) async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
     try {
       final response = await dio.get(
@@ -168,7 +170,7 @@ class _MyPageBodyState extends State<MyPageBody> {
 
   //오늘의 미션 개수 가져오기
   Future<void> loadTodayPlaces() async {
-    final accessToken = await getAccessToken();
+    final accessToken = widget.accessToken;
     final dio = Dio();
 
     final todayDateString = DateTime.now().toIso8601String().substring(0, 10);
@@ -296,7 +298,7 @@ class _MyPageBodyState extends State<MyPageBody> {
           SizedBox(height: height * 0.05),
           Column( //미션진행도랑 자주묻는 질문
             children: [
-              _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page(todayPlaces: todayPlaces), width, height),
+              _menuItem(context, Icons.trending_up, "미션 진행도", Mission_Page(todayPlaces: todayPlaces, accessToken: widget.accessToken,), width, height),
               _menuItem(context, Icons.help_outline_outlined, "자주 묻는 질문", const MyPage_QA(), width, height),
               _menuItem(context, Icons.logout, "로그아웃", const SizedBox(), width, height, onTap: () {LogoutByUser(context);}),
             ],
