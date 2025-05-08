@@ -319,7 +319,7 @@ class Plan_Name extends StatelessWidget {
     final startOnly = DateTime(start.year, start.month, start.day);
     final endOnly = DateTime(end.year, end.month, end.day);
 
-    if (today.isAfter(endOnly)) return '종료';
+    if (today.isAfter(endOnly.add(Duration(days: 1)))) return '종료';
     if (!today.isBefore(startOnly)) return '진행중';
 
     final remaining = startOnly.difference(today).inDays;

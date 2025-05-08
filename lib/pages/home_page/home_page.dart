@@ -274,10 +274,20 @@ class _HomePageState extends State<HomePage> {
 
             final selectedPlace = filteredPlaces[Random().nextInt(filteredPlaces.length)];
 
+            // 이미지 URL 처리 방식 변경
+            final originalUrl = selectedPlace['image1']?.toString() ?? '';
+            final secureUrl = originalUrl.replaceFirst('http://', '');
+            final imageUrl = (secureUrl.isNotEmpty)
+                ? (kIsWeb ? 'https://images.weserv.nl/?url=$secureUrl' : 'http://$secureUrl')
+                : '';
+            selectedPlace['image1'] = imageUrl;
+
             try {
-              await precacheImage(NetworkImage(selectedPlace['image1']), context);
+              if (!kIsWeb) {
+                await precacheImage(NetworkImage(selectedPlace['image1']), context);
+              }
             } catch (e) {
-              print("이미지 프리캐싱 실패: $e");
+              print("이미지 프리캐싱 실패 (앱에서만): $e");
             }
 
             if (!mounted) return;
@@ -318,10 +328,20 @@ class _HomePageState extends State<HomePage> {
 
           final selectedPlace = filteredPlaces[Random().nextInt(filteredPlaces.length)];
 
+          // 이미지 URL 처리 방식 변경
+          final originalUrl = selectedPlace['image1']?.toString() ?? '';
+          final secureUrl = originalUrl.replaceFirst('http://', '');
+          final imageUrl = (secureUrl.isNotEmpty)
+              ? (kIsWeb ? 'https://images.weserv.nl/?url=$secureUrl' : 'http://$secureUrl')
+              : '';
+          selectedPlace['image1'] = imageUrl;
+
           try {
-            await precacheImage(NetworkImage(selectedPlace['image1']), context);
+            if (!kIsWeb) {
+              await precacheImage(NetworkImage(selectedPlace['image1']), context);
+            }
           } catch (e) {
-            print("이미지 프리캐싱 실패: $e");
+            print("이미지 프리캐싱 실패 (앱에서만): $e");
           }
 
           if (!mounted) return;
@@ -636,6 +656,23 @@ class _HomePageState extends State<HomePage> {
                                       width: width * 0.87,
                                       height: height * 0.25,
                                       fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          width: width * 0.87,
+                                          height: height * 0.25,
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade300,
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.broken_image,
+                                              size: width * 0.093,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
                                   SizedBox(height: height * 0.015),

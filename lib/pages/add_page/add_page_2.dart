@@ -267,8 +267,10 @@ class _AddPage_2State extends State<AddPage_2> {
       if (filteredCourse.isEmpty) return;
 
       final newWidgets = filteredCourse.take(5).map((place) {
-        final imageUrl = (place['image1'] != null && place['image1'].toString().isNotEmpty)
-            ? place['image1']
+        final originalUrl = place['image1']?.toString() ?? '';
+        final secureUrl = originalUrl.replaceFirst('http://', '');
+        final imageUrl = (secureUrl.isNotEmpty)
+            ? (kIsWeb ? 'https://images.weserv.nl/?url=$secureUrl' : 'http://$secureUrl')
             : '';
 
         return PlaceInfoBlock(
@@ -339,8 +341,10 @@ class _AddPage_2State extends State<AddPage_2> {
           if (filteredCourse.isEmpty) continue;
 
           final placeInfoBlocks = filteredCourse.take(5).map((place) {
-            final imageUrl = (place['image1'] != null && place['image1'].toString().isNotEmpty)
-                ? place['image1']
+            final originalUrl = place['image1']?.toString() ?? '';
+            final secureUrl = originalUrl.replaceFirst('http://', '');
+            final imageUrl = (secureUrl.isNotEmpty)
+                ? (kIsWeb ? 'https://images.weserv.nl/?url=$secureUrl' : 'http://$secureUrl')
                 : '';
 
             return PlaceInfoBlock(

@@ -78,6 +78,21 @@ Future<void> main() async {
     return;
   }
 
+  if (!kIsWeb) {
+    try {
+      await initNaverMapSdk();
+    } catch (e) {
+      runApp(const MaterialApp(
+        color: Color(0xFFFFFFFF),
+        home: CustomAlertDialog(
+          title: 'NaverMap sdk 오류',
+          contentText: '앱을 다시 실행해 주세요',
+        ),
+      ));
+      return;
+    }
+  }
+  
   final accessToken = await getAccessToken();
 
   await SystemChrome.setPreferredOrientations([
