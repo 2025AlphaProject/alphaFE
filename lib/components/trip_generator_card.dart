@@ -53,8 +53,8 @@ class GeneratorItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(11.25),
             ),
             padding: EdgeInsets.symmetric(
-                vertical: width * 0.023,
-                horizontal: height * 0.021
+                vertical: height * 0.012,
+                horizontal: width * 0.04,
             ),
           ),
           child: Row(
