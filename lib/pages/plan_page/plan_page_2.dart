@@ -72,13 +72,6 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
 
   List<Map<String, dynamic>> courseData = [];
   bool _isLoading = true;
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    fetchTourName();
-    fetchTourCourse();
-    _refreshData();
-  }
 
   //여행 경로 가져오기 api
   Future<void> fetchTourCourse() async {
@@ -97,6 +90,13 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
       if (response.statusCode == 200) { //응답제대로 됬을때
         final tourResponse = response;
         final List<dynamic> allPlans = tourResponse.data is List ? tourResponse.data : [];
+        // 디버깅 출력 코드 추가
+        print("코스 데이터 이미지 URL 목록:");
+        for (final day in allPlans) {
+          for (final place in day['places']) {
+            print(" - ${place['image_url']}");
+          }
+        }
         setState(() {
           courseData = allPlans.map<Map<String, dynamic>>((day) {
             final date = day['date'] ?? '';
@@ -178,8 +178,6 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   Future<void> _loadInitialData() async {
     await fetchTourCourse(); // 먼저 코스 정보만 불러옴
 
-    final context_ = context;
-
     // 이미지 URL 목록 수집
     final imageUrls = courseData
         .expand((day) => day['places'] as List<Map<String, dynamic>>)
@@ -188,14 +186,16 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
         .toList();
 
     // 이미지 프리캐싱
-    await Future.wait(
-      imageUrls.map((url) => precacheImage(NetworkImage(url), context_)),
-    );
+    for (final url in imageUrls) {
+      if (!mounted) return;
+      try {
+        await precacheImage(NetworkImage(url), context);
+      } catch (e) {
+        print("프리캐싱 실패: $e");
+      }
+    }
 
-    // 이미지 프리캐싱 후 추가 대기 시간
-    await Future.delayed(const Duration(seconds: 2));
-
-    // 이후 여행 이름 등의 정보 로드
+    // 프리캐싱까지 완료 후 이름/날짜 등 정보 불러오기
     await fetchTourName();
 
     if (mounted) {
@@ -422,25 +422,31 @@ class Traveler_List extends StatelessWidget {
               spacing: width * 0.04,
               runSpacing: height * 0.01,
               children: [
-                ...travelers.map((traveler) => Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: width * 0.06,
-                      backgroundImage: NetworkImage(traveler["imageUrl"]!),
-                    ),
-                    SizedBox(height: height * 0.002),
-                    SizedBox(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          traveler["name"]!,
-                          style: const TextStyle(fontSize: 14.3),
+                ...travelers.map((traveler) {
+                  final rawUrl = traveler["imageUrl"]!;
+                  final imageUrl = kIsWeb
+                      ? 'https://images.weserv.nl/?url=${rawUrl.replaceFirst('http://', '')}'
+                      : rawUrl;
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: width * 0.06,
+                        backgroundImage: NetworkImage(imageUrl),
+                      ),
+                      SizedBox(height: height * 0.002),
+                      SizedBox(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            traveler["name"]!,
+                            style: const TextStyle(fontSize: 14.3),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                )),
+                    ],
+                  );
+                }),
                 GestureDetector(
                   onTap: () async {
                     await Navigator.push(
