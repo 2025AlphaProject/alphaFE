@@ -40,7 +40,7 @@ class _nearEventState extends State<nearEvent> {
     final event = widget.eventData;
     return SingleChildScrollView(// 사진 크기 때문에 scrollview로
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: width * 0.066, vertical: 0.0306),
+        padding: EdgeInsets.symmetric(horizontal: width * 0.066, vertical: height* 0.0306),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

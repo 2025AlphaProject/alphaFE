@@ -21,7 +21,7 @@ class GeneratorItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
       width = 430;
     }
@@ -53,8 +53,8 @@ class GeneratorItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(11.25),
             ),
             padding: EdgeInsets.symmetric(
-                vertical: width * 0.023,
-                horizontal: width * 0.04
+                vertical: height * 0.012,
+                horizontal: width * 0.04,
             ),
           ),
           child: Row(
