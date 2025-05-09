@@ -94,7 +94,7 @@ class _TravelAnimationScreenState extends State<TravelAnimationScreen>
                 child: Column(
                   children: [
                     SizedBox(
-                      height: height * 0.7,
+                      height: height * 0.6,
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(width * 0.0533, height * 0.246, width * 0.0533, 0),
                         child: Center(
