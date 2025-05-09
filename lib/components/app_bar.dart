@@ -116,6 +116,11 @@ class _SearchAppBarState extends State<SearchAppBar> {
     final size = renderBox.size;
     final offset = renderBox.localToGlobal(Offset.zero);
 
+    double width = MediaQuery.of(context).size.width;
+    if (kIsWeb) {
+      width = 390.0;
+    }
+
     // 검색어에 포함되는 행정구역만 필터링
     final filteredDistricts = seoulDistricts.where((gu) => gu.contains(_searchQuery)).toList();
 
@@ -139,7 +144,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
             Positioned(
               left: 20.0,
               top: offset.dy + 60.0,
-              width: 390.0,
+              width: width,
               child: SafeArea( // 시스템 UI 침범 방지
                 // 리스트에 그림자와 모서리 둥글기 효과 적용
                 child: PhysicalModel(
