@@ -770,32 +770,31 @@ class _AddPage_2State extends State<AddPage_2> {
                         // 날짜별로 추가된 코스 아래에 위치하는 '+ 장소 추가' 버튼
                         // 버튼을 누르면 해당 날짜에 새로운 장소 입력폼(PlaceInputCard) 표시됨
                         // 사용자가 입력을 완료하면 해당 날짜 섹션에만 장소가 추가됨
-                        _isAddingPlaceMap[entry.key] == true
-                            ?
-                            // 사용자가 장소를 직접 입력하는 카드
-                            // onComplete 콜백을 통해 입력한 장소 정보를 해당 날짜 그룹에 추가
-                            PlaceInputCard(
+                        (_isAddingPlaceMap[entry.key] == true && !kIsWeb)
+                            ? PlaceInputCard(
                                 onComplete: (imageUrl, title, description, mapX, mapY) =>
                                     addNewPlace(entry.key, imageUrl, title, description, mapX, mapY),
                                 onCancel: () => setState(() => _isAddingPlaceMap[entry.key] = false),
                               )
-                            : GestureDetector(
-                                onTap: () => setState(() => _isAddingPlaceMap[entry.key] = true),
-                                child: Container(
-                                  width: width * 0.63,
-                                  height: height * 0.2,//width* 0.63* 0.69,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey.shade400),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      '+ 장소 추가',
-                                      style: TextStyle(fontSize: 16.5),
+                            : (!kIsWeb
+                                ? GestureDetector(
+                                    onTap: () => setState(() => _isAddingPlaceMap[entry.key] = true),
+                                    child: Container(
+                                      width: width * 0.63,
+                                      height: height * 0.2,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey.shade400),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Center(
+                                        child: Text(
+                                          '+ 장소 추가',
+                                          style: TextStyle(fontSize: 16.5),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
+                                  )
+                                : const SizedBox.shrink()),
                         SizedBox(height: height * 0.0184),
                       ],
                       SizedBox(height: height * 0.13),
