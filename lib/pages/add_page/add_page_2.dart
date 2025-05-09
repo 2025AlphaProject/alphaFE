@@ -288,15 +288,25 @@ class _AddPage_2State extends State<AddPage_2> {
         );
       }).toList();
 
-      try {
-        await Future.wait(newWidgets.map((place) async {
-          if (place.imageUrl.isNotEmpty) {
+      await Future.wait(newWidgets.map((place) async {
+        if (place.imageUrl.isNotEmpty) {
+          try {
             await precacheImage(NetworkImage(place.imageUrl), context_);
+          } catch (e) {
+            print("이미지 프리캐싱 실패: $e");
+            final index = newWidgets.indexOf(place);
+            newWidgets[index] = PlaceInfoBlock(
+              imageUrl: 'ERROR',
+              title: place.title,
+              description: place.description,
+              mapX: place.mapX,
+              mapY: place.mapY,
+              width: place.width,
+              height: place.height,
+            );
           }
-        }));
-      } catch (e) {
-        print("이미지 프리캐싱 실패: $e");
-      }
+        }
+      }));
 
       if (mounted) {
         setState(() {
@@ -364,15 +374,32 @@ class _AddPage_2State extends State<AddPage_2> {
           groupedWidgets.add(MapEntry(date, placeInfoBlocks));
         }
 
-        try {
-          await Future.wait(groupedWidgets.expand((entry) => entry.value).map((place) async {
-            if (place.imageUrl.isNotEmpty) {
+        await Future.wait(groupedWidgets.expand((entry) => entry.value).map((place) async {
+          if (place.imageUrl.isNotEmpty) {
+            try {
               await precacheImage(NetworkImage(place.imageUrl), context_);
+            } catch (e) {
+              print("이미지 프리캐싱 실패: $e");
+              // imageUrl이 final이므로 새 PlaceInfoBlock을 생성하여 대체
+              final entry = groupedWidgets.firstWhere(
+                (entry) => entry.value.contains(place),
+                orElse: () => MapEntry('', []),
+              );
+              final index = entry.value.indexOf(place);
+              if (index != -1) {
+                entry.value[index] = PlaceInfoBlock(
+                  imageUrl: 'ERROR',
+                  title: place.title,
+                  description: place.description,
+                  mapX: place.mapX,
+                  mapY: place.mapY,
+                  width: place.width,
+                  height: place.height,
+                );
+              }
             }
-          }));
-        } catch (e) {
-          print("이미지 프리캐싱 실패: $e");
-        }
+          }
+        }));
 
         if (mounted) {
           setState(() {
