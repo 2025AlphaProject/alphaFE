@@ -8,7 +8,6 @@ import 'dart:math';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dio/dio.dart';
 import '../../components/save_loading_page.dart';
-import '../../components/token_controller.dart';
 import 'add_page_3.dart';
 import '../../components/app_bar.dart';
 import '../../components/proceed_button.dart';
@@ -498,7 +497,12 @@ class _AddPage_2State extends State<AddPage_2> {
     await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const SaveLoadingView(),
+      builder: (_) => const Center(
+        child: SizedBox(
+          width: kIsWeb ? 430 * 0.95 : null,
+          child: SaveLoadingView(),
+        ),
+      ),
     );
 
     try {

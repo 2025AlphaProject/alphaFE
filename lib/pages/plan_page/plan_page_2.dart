@@ -259,20 +259,25 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                             onPressed: () async {
                               final result = await showDialog(
                                 context: context,
-                                builder: (context) => AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  backgroundColor: const Color(0xFFF5F5F5),
-                                  elevation: 10,
-                                  contentPadding: EdgeInsets.zero,
-                                  content: TravelEditMenu(
-                                    startDate: startDate,
-                                    endDate: endDate,
-                                    tour_id: widget.tour_id,
-                                    tourName: tourName,
-                                    onRefresh: _refreshData,
-                                    accessToken: widget.accessToken,
+                                builder: (context) => Center(
+                                  child: SizedBox(
+                                    width: kIsWeb ? width * 0.95: null,
+                                    child: AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      backgroundColor: const Color(0xFFF5F5F5),
+                                      elevation: 10,
+                                      contentPadding: EdgeInsets.zero,
+                                      content: TravelEditMenu(
+                                        startDate: startDate,
+                                        endDate: endDate,
+                                        tour_id: widget.tour_id,
+                                        tourName: tourName,
+                                        onRefresh: _refreshData,
+                                        accessToken: widget.accessToken,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               );

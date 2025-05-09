@@ -453,7 +453,14 @@ class _DeleteTourState extends State<DeleteTour> {
                     if (!mounted) return;
                     Navigator.of(context).pop();
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => MainScreen(accessToken: accessToken,)),
+                      MaterialPageRoute(builder: (context) =>
+                          Center(
+                              child: Container(
+                                  color: Colors.white,
+                                  width: kIsWeb ? 430 : null,
+                                  child: MainScreen(accessToken: accessToken,))
+                          )
+                      ),
                     );
                   } else if (response.statusCode == 401) {
                     LogoutByExpiration(context);

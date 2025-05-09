@@ -77,7 +77,7 @@ class KakaoLoginService {
           builder: (context) => kIsWeb
               ? Center(
                   child: Container(
-                    width: 430,
+                    width: kIsWeb ? 430 : null,
                     color: Colors.white,
                     child: MainScreen(accessToken: token.accessToken,),
                   ),

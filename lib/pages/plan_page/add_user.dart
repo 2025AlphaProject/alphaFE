@@ -212,7 +212,17 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                                   if (response.statusCode == 201) {
                                                     Navigator.pop(context);
                                                     Navigator.of(context).pushReplacement(
-                                                      MaterialPageRoute(builder: (context) => MainScreen(accessToken: widget.accessToken,)),
+                                                      MaterialPageRoute(builder: (context) =>
+                                                          Center(
+                                                              child: Container(
+                                                                width: kIsWeb ? 430 : null,
+                                                                color: Colors.white,
+                                                                child: MainScreen(
+                                                                  accessToken: widget.accessToken,
+                                                                ),
+                                                              )
+                                                          )
+                                                      ),
                                                     );
                                                   }
                                                 } catch (e) {
