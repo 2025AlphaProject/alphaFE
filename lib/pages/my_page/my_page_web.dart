@@ -6,7 +6,7 @@ class MyPage_Web extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
@@ -27,28 +27,28 @@ class MyPage_Web extends StatelessWidget {
               ),
               child: Image.asset(
                 'assets/icon.png',
-                width: width * 0.15,
+                width: 150,
               ),
             ),
-            SizedBox(height: width * 0.06),
-            Text(
+            SizedBox(height: height * 0.2),
+            const Text(
               '이 기능은 앱에서만 지원됩니다.',
               style: TextStyle(
-                  fontSize: width * 0.02,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: width * 0.035),
+            SizedBox(height: height * 0.15),
             TextButton(
               onPressed: () {
                 // 여기에 다운로드 링크 연결
                 // 예: launchUrl(Uri.parse('https://play.google.com/...'));
               },
-              child: Text(
+              child: const Text(
                 '앱 다운로드',
                 style: TextStyle(
-                  fontSize: width * 0.015,
+                  fontSize: 20,
                   decoration: TextDecoration.underline,
                   color: Color(0xFF2684FF),
                 ),
