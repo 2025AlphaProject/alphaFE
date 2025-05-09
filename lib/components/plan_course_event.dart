@@ -186,9 +186,10 @@ class place_card extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
-      width = 430;
+      width = 410;
     }
     return SizedBox(
+      width: width * 0.9,
       child: Column(
         children: [
           SizedBox(
@@ -200,11 +201,11 @@ class place_card extends StatelessWidget {
                     imageUrl.isNotEmpty
                         ? imageUrl
                         : 'https://cdn.pixabay.com/photo/2016/11/29/02/02/beach-1867285_1280.jpg', // default image
-                    width: width * 0.333,
+                    width: width * 0.3,
                     height: height * 0.145,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
-                      width: width * 0.333,
+                      width: width * 0.3,
                       height: height * 0.145,
                       color: Colors.grey[300],
                       child: const Icon(Icons.image_not_supported, size: 22.6),
@@ -260,7 +261,7 @@ class place_card extends StatelessWidget {
                                   ),
                                   SizedBox(width: width * 0.016),
                                   SizedBox( //도로명 데이터
-                                    width: width * 0.361,
+                                    width: width * 0.34,
                                     child: Text(
                                       roadAddress.replaceAll(RegExp(r'[<>]'), ''),
                                       softWrap: true,
@@ -284,7 +285,7 @@ class place_card extends StatelessWidget {
                                   ),
                                   SizedBox(width: width* 0.0416),
                                   SizedBox( //지번 데이터
-                                    width: width * 0.361,
+                                    width: width * 0.34,
                                     child: Text(
                                       numberAddress.replaceAll(RegExp(r'[<>]'), ''),
                                       softWrap: true,
