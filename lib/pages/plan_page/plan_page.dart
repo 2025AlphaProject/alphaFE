@@ -319,6 +319,8 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
         SizedBox(
           height: height * 0.4,
           child: PageView.builder(
+            scrollDirection: Axis.horizontal,
+            physics: const ClampingScrollPhysics(),
             controller: _pageController,
             itemCount: cards.length,
             itemBuilder: (context, index) {

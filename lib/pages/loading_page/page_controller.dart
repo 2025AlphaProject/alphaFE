@@ -31,6 +31,8 @@ class _LoginPageControllerState extends State<LoginPageController> {
           Expanded(
             child: PageView(
               controller: _controller,
+              scrollDirection: Axis.horizontal,
+              physics: const ClampingScrollPhysics(),
               children: [
                 const LoadingPage1(),
                 const LoadingPage2(),
