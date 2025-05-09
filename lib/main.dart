@@ -41,6 +41,7 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:alpha_fe/components/custom_alert_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:ui';
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
 
@@ -95,14 +96,16 @@ Future<void> main() async {
   }
 
   String? accessToken;
-  try {
-    await getAccessTokenFromRefreshToken();
-    accessToken = await getAccessToken();
-  } catch (e) {
-    final storage = FlutterSecureStorage();
-    await storage.deleteAll(); // 복호화 오류로 인한 SecureStorage 초기화
-    logger.e('❌ SecureStorage 복호화 오류. 모든 토큰 초기화됨: $e');
-    accessToken = null;
+  if (!kIsWeb) {
+    try {
+      await getAccessTokenFromRefreshToken();
+      accessToken = await getAccessToken();
+    } catch (e) {
+      final storage = FlutterSecureStorage();
+      await storage.deleteAll(); // 복호화 오류로 인한 SecureStorage 초기화
+      logger.e('❌ SecureStorage 복호화 오류. 모든 토큰 초기화됨: $e');
+      accessToken = null;
+    }
   }
 
   await SystemChrome.setPreferredOrientations([
@@ -126,6 +129,12 @@ Future<void> main() async {
           GlobalWidgetsLocalizations.delegate,    //  일반 위젯 한글화
           GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
         ],
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
         theme: ThemeData(
           // 색상 전반 설정: primary는 기본 색상, secondary는 보조 색상
           colorScheme: ColorScheme.fromSeed(
