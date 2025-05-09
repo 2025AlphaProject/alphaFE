@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/components/app_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyPage_Web extends StatelessWidget {
   const MyPage_Web({super.key});
@@ -42,8 +43,7 @@ class MyPage_Web extends StatelessWidget {
             SizedBox(height: height * 0.15),
             TextButton(
               onPressed: () {
-                // 여기에 다운로드 링크 연결
-                // 예: launchUrl(Uri.parse('https://play.google.com/...'));
+                launchUrl(Uri.parse('https://drive.google.com/file/d/1gHgo81jTxybE8JcQ6nYdhIUGThPBE89W/view?usp=sharing'));
               },
               child: const Text(
                 '앱 다운로드',
