@@ -283,11 +283,10 @@ class _HomePageState extends State<HomePage> {
             selectedPlace['image1'] = imageUrl;
 
             try {
-              if (!kIsWeb) {
-                await precacheImage(NetworkImage(selectedPlace['image1']), context);
-              }
+              await precacheImage(NetworkImage(selectedPlace['image1']), context);
             } catch (e) {
-              print("이미지 프리캐싱 실패 (앱에서만): $e");
+              print("이미지 프리캐싱 실패: $e");
+              selectedPlace['image1'] = 'ERROR';
             }
 
             if (!mounted) return;
@@ -337,11 +336,10 @@ class _HomePageState extends State<HomePage> {
           selectedPlace['image1'] = imageUrl;
 
           try {
-            if (!kIsWeb) {
-              await precacheImage(NetworkImage(selectedPlace['image1']), context);
-            }
+            await precacheImage(NetworkImage(selectedPlace['image1']), context);
           } catch (e) {
-            print("이미지 프리캐싱 실패 (앱에서만): $e");
+            print("이미지 프리캐싱 실패: $e");
+            selectedPlace['image1'] = 'ERROR';
           }
 
           if (!mounted) return;
@@ -632,7 +630,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             // 트렌딩 버튼 하단에 여백 추가
-                            SizedBox(height: height * 0.09),
+                            SizedBox(height: height * 0.11),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: width * 0.02),
                               child: const Text(
@@ -651,29 +649,45 @@ class _HomePageState extends State<HomePage> {
                                 if (_recommendedPlace != null) ...[
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
-                                    child: Image.network(
-                                      _recommendedPlace!['image1'],
-                                      width: width * 0.87,
-                                      height: height * 0.25,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Container(
-                                          width: width * 0.87,
-                                          height: height * 0.25,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade300,
-                                            borderRadius: BorderRadius.circular(20),
-                                          ),
-                                          child: Center(
-                                            child: Icon(
-                                              Icons.broken_image,
-                                              size: width * 0.093,
-                                              color: Colors.grey,
+                                    child: _recommendedPlace!['image1'] != 'ERROR'
+                                        ? Image.network(
+                                            _recommendedPlace!['image1'],
+                                            width: width * 0.87,
+                                            height: height * 0.25,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Container(
+                                                width: width * 0.87,
+                                                height: height * 0.25,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade300,
+                                                  borderRadius: BorderRadius.circular(20),
+                                                ),
+                                                child: Center(
+                                                  child: Icon(
+                                                    Icons.broken_image,
+                                                    size: width * 0.093,
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          )
+                                        : Container(
+                                            width: width * 0.87,
+                                            height: height * 0.25,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              borderRadius: BorderRadius.circular(20),
+                                            ),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.broken_image,
+                                                size: width * 0.093,
+                                                color: Colors.grey,
+                                              ),
                                             ),
                                           ),
-                                        );
-                                      },
-                                    ),
                                   ),
                                   SizedBox(height: height * 0.015),
                                   Row(
@@ -825,7 +839,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: height * 0.092),
+                            SizedBox(height: height * 0.12),
                           ],
                         ),
                       ),

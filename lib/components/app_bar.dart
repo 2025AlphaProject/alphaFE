@@ -120,8 +120,8 @@ class _SearchAppBarState extends State<SearchAppBar> {
     final filteredDistricts = seoulDistricts.where((gu) => gu.contains(_searchQuery)).toList();
 
     // 반응형으로 리스트 항목의 높이 및 최대 높이 계산
-    final itemHeight = MediaQuery.of(currentContext).size.height * 0.07;
-    final maxListHeight = MediaQuery.of(currentContext).size.height * 0.35;
+    final itemHeight = 50.0;
+    final maxListHeight = 250.0;
     final listHeight = min(filteredDistricts.length * itemHeight, maxListHeight);
 
     return OverlayEntry(
@@ -137,20 +137,20 @@ class _SearchAppBarState extends State<SearchAppBar> {
           children: [
             // 오버레이 리스트의 위치를 SearchAppBar 아래로 반응형 배치
             Positioned(
-              left: offset.dx + 20,
-              top: offset.dy + MediaQuery.of(currentContext).size.height * 0.045,
-              width: size.width - 40,
+              left: 20.0,
+              top: offset.dy + 60.0,
+              width: 390.0,
               child: SafeArea( // 시스템 UI 침범 방지
                 // 리스트에 그림자와 모서리 둥글기 효과 적용
                 child: PhysicalModel(
                   color: Color(0xFFFFFFFF),
                   elevation: 2,
-                  borderRadius: BorderRadius.circular(MediaQuery.of(currentContext).size.width * 0.03),
+                  borderRadius: BorderRadius.circular(12),
                   clipBehavior: Clip.antiAlias,
                   // 리스트 배경, 높이, 내부 패딩 및 항목 구성 설정
                   child: Container(
                     height: listHeight,
-                    padding: EdgeInsets.all(MediaQuery.of(currentContext).size.width * 0.02),
+                    padding: EdgeInsets.all(8.0),
                     child: ListView.builder(
                       itemCount: filteredDistricts.length,
                       itemBuilder: (context, index) {
