@@ -40,6 +40,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:alpha_fe/components/custom_alert_dialog.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
 
@@ -92,8 +93,17 @@ Future<void> main() async {
       return;
     }
   }
-  
-  final accessToken = await getAccessToken();
+
+  String? accessToken;
+  try {
+    await getAccessTokenFromRefreshToken();
+    accessToken = await getAccessToken();
+  } catch (e) {
+    final storage = FlutterSecureStorage();
+    await storage.deleteAll(); // 복호화 오류로 인한 SecureStorage 초기화
+    logger.e('❌ SecureStorage 복호화 오류. 모든 토큰 초기화됨: $e');
+    accessToken = null;
+  }
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

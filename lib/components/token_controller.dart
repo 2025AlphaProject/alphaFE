@@ -35,17 +35,10 @@ Future<void> saveAccessToken(String? token) async {
 
 // 엑세스 토큰 읽기
 Future<String?> getAccessToken() async {
-  if (kIsWeb) {
-    try {
-      final info = await UserApi.instance.accessTokenInfo();
-      return info.id.toString(); // Or any other logic suitable for your use case
-    } catch (e) {
-      print('❌ access token 가져오기 실패: $e');
-      return null;
-    }
-  } else {
+  if (!kIsWeb) {
     return await secureStorage.read(key: 'access_token');
   }
+  return null;
 }
 
 // 엑세스 토큰 삭제
