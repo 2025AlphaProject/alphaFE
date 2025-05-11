@@ -42,6 +42,8 @@ import 'package:alpha_fe/components/custom_alert_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:ui';
+import 'package:provider/provider.dart';
+import 'provider.dart';
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
 
@@ -117,63 +119,66 @@ Future<void> main() async {
 
   runApp(
     Phoenix(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
-        supportedLocales: const [
-          Locale('ko', 'KR'), // 지원하는 로케일에 한국어 추가
-          Locale('en', 'US')
-        ],
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,   //  머티리얼 컴포넌트 한글화
-          GlobalWidgetsLocalizations.delegate,    //  일반 위젯 한글화
-          GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
-        ],
-        scrollBehavior: const MaterialScrollBehavior().copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-          },
-        ),
-        theme: ThemeData(
-          // 색상 전반 설정: primary는 기본 색상, secondary는 보조 색상
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.black,       // 색상 조합 시 기준이 되는 색
-            primary: Colors.black,         // 버튼, 로딩바 등 주요 요소 색상
-            secondary: Colors.white,       // 보조 색상 (예: 강조 배경 등)
+      child: MultiProvider(
+        providers: appProviders,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
+          supportedLocales: const [
+            Locale('ko', 'KR'), // 지원하는 로케일에 한국어 추가
+            Locale('en', 'US')
+          ],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,   //  머티리얼 컴포넌트 한글화
+            GlobalWidgetsLocalizations.delegate,    //  일반 위젯 한글화
+            GlobalCupertinoLocalizations.delegate,  //  쿠퍼티노(ios 스타일 위젯) 한글화
+          ],
+          scrollBehavior: const MaterialScrollBehavior().copyWith(
+            dragDevices: {
+              PointerDeviceKind.touch,
+              PointerDeviceKind.mouse,
+            },
           ),
+          theme: ThemeData(
+            // 색상 전반 설정: primary는 기본 색상, secondary는 보조 색상
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.black,       // 색상 조합 시 기준이 되는 색
+              primary: Colors.black,         // 버튼, 로딩바 등 주요 요소 색상
+              secondary: Colors.white,       // 보조 색상 (예: 강조 배경 등)
+            ),
 
-          // 로딩 인디케이터 색상 설정 (CircularProgressIndicator 등)
-          progressIndicatorTheme: const ProgressIndicatorThemeData(
-            color: Colors.black,
+            // 로딩 인디케이터 색상 설정 (CircularProgressIndicator 등)
+            progressIndicatorTheme: const ProgressIndicatorThemeData(
+              color: Colors.black,
+            ),
+
+            // 터치 시 잔상(물결 효과) 제거
+            splashColor: Colors.transparent,
+
+            // 길게 누를 때 하이라이트 색상 제거
+            highlightColor: Colors.transparent,
+
+            // 스플래시 효과 완전히 비활성화
+            splashFactory: NoSplash.splashFactory,
           ),
-
-          // 터치 시 잔상(물결 효과) 제거
-          splashColor: Colors.transparent,
-
-          // 길게 누를 때 하이라이트 색상 제거
-          highlightColor: Colors.transparent,
-
-          // 스플래시 효과 완전히 비활성화
-          splashFactory: NoSplash.splashFactory,
+          home: kIsWeb
+              ? Center(
+                  child: Container(
+                    width: 430,
+                    color: Colors.white,
+                    child: LoginPageController(
+                      kakaoNativeAppKey: kakaoNativeAppKey,
+                      kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,
+                    ),
+                  ),
+                )
+              : (accessToken?.isNotEmpty == true)
+                  ? MainScreen(accessToken: accessToken)
+                  : LoginPageController(
+                      kakaoNativeAppKey: kakaoNativeAppKey,
+                      kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,
+                    ),
         ),
-        home: kIsWeb
-            ? Center(
-                child: Container(
-                  width: 430,
-                  color: Colors.white,
-                  child: LoginPageController(
-                    kakaoNativeAppKey: kakaoNativeAppKey,
-                    kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,
-                  ),
-                ),
-              )
-            : (accessToken?.isNotEmpty == true)
-                ? MainScreen(accessToken: accessToken,)
-                : LoginPageController(
-                    kakaoNativeAppKey: kakaoNativeAppKey,
-                    kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,
-                  ),
       ),
     ),
   );
