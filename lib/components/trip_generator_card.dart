@@ -1,7 +1,7 @@
 // 추가 페이지에서 사용되는 행정구역 선택 버튼 아이템입니다
 // 해당 버튼은 항상 AddPage_2 로 연결됩니다
 import 'dart:ui';
-import 'package:alpha_fe/components/auth_token_handler.dart';
+import 'package:alpha_fe/components/access_token/get_access_token_from_refresh_token.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';

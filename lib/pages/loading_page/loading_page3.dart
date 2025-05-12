@@ -1,4 +1,4 @@
-import 'package:alpha_fe/components/login.dart';
+import 'package:alpha_fe/components/access_token/login_and_get_id_token.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

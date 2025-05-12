@@ -1,5 +1,5 @@
 import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
-import 'package:alpha_fe/components/auth_token_handler.dart';
+import 'package:alpha_fe/components/access_token/get_access_token_from_refresh_token.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

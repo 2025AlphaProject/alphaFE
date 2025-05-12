@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
-import 'package:alpha_fe/components/auth_token_handler.dart';
+import 'package:alpha_fe/components/access_token/get_access_token_from_refresh_token.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -15,7 +15,7 @@ import '../../components/proceed_button.dart'; // 버튼 컴포넌트
 import '../add_page/add_page_0.dart';
 import '../add_page/add_page_2.dart';
 import '../add_page/add_page_3.dart';
-import '../../components/token_controller.dart'; // 버튼 컴포넌트
+import '../../components/access_token/refresh_token_storage_save.dart'; // 버튼 컴포넌트
 import '../../components/custom_alert_dialog.dart';
 
 class HomePage extends StatefulWidget {
