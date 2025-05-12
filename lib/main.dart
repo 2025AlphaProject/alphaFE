@@ -27,8 +27,8 @@
 *   9. gps.dart
 * */
 
-import 'package:alpha_fe/components/auth_token_handler.dart';
-import 'package:alpha_fe/components/token_controller.dart';
+import 'package:alpha_fe/components/access_token/get_access_token_from_refresh_token.dart';
+import 'package:alpha_fe/components/access_token/refresh_token_storage_save.dart';
 import 'package:alpha_fe/pages/loading_page/page_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,6 +44,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'provider.dart';
+import 'package:alpha_fe/components/navigation/global_context.dart';
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
 
@@ -101,7 +102,7 @@ Future<void> main() async {
   if (!kIsWeb) {
     try {
       await getAccessTokenFromRefreshToken();
-      accessToken = await getAccessToken();
+      // accessToken = await getAccessToken();
     } catch (e) {
       final storage = FlutterSecureStorage();
       await storage.deleteAll(); // 복호화 오류로 인한 SecureStorage 초기화
@@ -122,6 +123,7 @@ Future<void> main() async {
       child: MultiProvider(
         providers: appProviders,
         child: MaterialApp(
+          navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
           locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
           supportedLocales: const [
@@ -166,18 +168,12 @@ Future<void> main() async {
                   child: Container(
                     width: 430,
                     color: Colors.white,
-                    child: LoginPageController(
-                      kakaoNativeAppKey: kakaoNativeAppKey,
-                      kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,
-                    ),
+                    child: LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey, kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,),
                   ),
                 )
               : (accessToken?.isNotEmpty == true)
                   ? MainScreen(accessToken: accessToken)
-                  : LoginPageController(
-                      kakaoNativeAppKey: kakaoNativeAppKey,
-                      kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,
-                    ),
+                  : LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey, kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,),
         ),
       ),
     ),
