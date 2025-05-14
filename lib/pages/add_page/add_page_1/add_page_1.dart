@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../components/app_bar.dart';           // 공통 AppBar 컴포넌트
-import '../../components/trip_generator_card.dart';    // 여행지 선택용 드롭다운 카드
+import '../../../components/app_bar.dart';           // 공통 AppBar 컴포넌트
+import '../../../components/trip_generator_card.dart';    // 여행지 선택용 드롭다운 카드
 
 // 서울시 행정구역 목록
 const List<String> districts = [
