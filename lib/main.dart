@@ -27,9 +27,9 @@
 *   9. gps.dart
 * */
 
-import 'package:alpha_fe/components/access_token/get_access_token_from_refresh_token.dart';
-import 'package:alpha_fe/components/access_token/refresh_token_storage_save.dart';
 import 'package:alpha_fe/pages/loading_page/page_controller.dart';
+import 'package:alpha_fe/services/access_token/get_access_token_from_refresh_token.dart';
+import 'package:alpha_fe/services/global_context/global_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'mainscreen.dart';
@@ -44,7 +44,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'provider.dart';
-import 'package:alpha_fe/components/navigation/global_context.dart';
 // 로거 사용을 위한 전역변수 선언
 final logger = Logger();
 
@@ -123,7 +122,7 @@ Future<void> main() async {
       child: MultiProvider(
         providers: appProviders,
         child: MaterialApp(
-          navigatorKey: navigatorKey,
+          navigatorKey: globalContext,
           debugShowCheckedModeBanner: false,
           locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
           supportedLocales: const [

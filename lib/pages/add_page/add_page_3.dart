@@ -5,9 +5,8 @@ import '../../components/app_bar.dart';
 import '../../components/logout_by_expiration.dart';
 import '../../components/plan_card.dart';
 import '../../components/proceed_button.dart';
-import '../../components/access_token/refresh_token_storage_save.dart';
+import '../../services/access_token/get_access_token_from_refresh_token.dart';
 import '../plan_page/plan_page.dart';
-import 'package:alpha_fe/components/access_token/get_access_token_from_refresh_token.dart';
 
 
 class AddPage_3 extends StatefulWidget {

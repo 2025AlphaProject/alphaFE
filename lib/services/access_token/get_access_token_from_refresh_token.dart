@@ -1,9 +1,9 @@
+import 'package:alpha_fe/services/access_token/refresh_token_storage_save.dart';
 import 'package:provider/provider.dart';
 import 'package:alpha_fe/providers/auth_provider.dart';
-import 'package:alpha_fe/components/navigation/global_context.dart';
-import 'package:alpha_fe/components/access_token/refresh_token_storage_save.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
+import '../global_context/global_context.dart';
 
 final logger = Logger();
 
@@ -19,7 +19,7 @@ Future<bool?> getAccessTokenFromRefreshToken() async {
       options: Options(headers: {'Accept': 'application/json'}),
     );
     final accessToken = response.data['access_token'];
-    Provider.of<AuthProvider>(navigatorKey.currentContext!, listen: false).setAccessToken(accessToken: accessToken);
+    Provider.of<AuthProvider>(globalContext.currentContext!, listen: false).setAccessToken(accessToken: accessToken);
 
   } catch (e) {
     logger.e('🔁 accessToken 발급 실패: $e');
