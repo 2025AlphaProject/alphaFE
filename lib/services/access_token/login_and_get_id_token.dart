@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:alpha_fe/mainscreen.dart';
-import 'token_controller.dart';
+import 'get_access_and_refresh_token.dart';
 
 class KakaoLoginService {
   static Future<void> login(BuildContext context, {
@@ -57,20 +56,8 @@ class KakaoLoginService {
         print("✅ scopes 동의 후 사용자 정보 재획득 완료");
       }
 
-      print("📌 서버에 로그인 요청 전송 중...");
-      final dio = Dio();
-      final formData = FormData.fromMap({'id_token': token.idToken});
-      var response = await dio.post(
-        'http://conever.duckdns.org:8000/auth/login/',
-        data: formData,
-        options: Options(headers: {'Accept': 'application/json'}),
-      );
-      print("✅ 서버 응답 수신 완료: ${response.statusCode} ${response.data}");
+      await getAccessAndRefreshToken(context, token);
 
-      saveRefreshToken(token.refreshToken);
-      saveAccessToken(token.accessToken);
-
-      print("🚀 메인 화면으로 이동");
       Navigator.push(
         context,
         MaterialPageRoute(

@@ -38,8 +38,7 @@ class LoadingPage1View extends StatelessWidget {
                           child: Column(
                             children: [
                               AnimatedOpacity(
-                                opacity: currentTextIndex >= 0 ? 1.0 : 0.0,
-                                duration: const Duration(milliseconds: 500),
+                                opacity: currentTextIndex >= 0 ? 1.0 : 0.0,duration: const Duration(milliseconds: 500),
                                 child: Text(
                                   "어디로 떠날지가 고민이시나요?",
                                   style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold),

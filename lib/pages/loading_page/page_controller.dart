@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'loading_page1/loading_page1.dart';
 import 'loading_page2/loading_page2.dart';
-import 'loading_view.dart';
-import 'loading_page3.dart';
+import 'loading_view/loading_view.dart';
+import 'loading_page3/loading_page3.dart';
 
 class LoginPageController extends StatelessWidget {
   final String? kakaoNativeAppKey;

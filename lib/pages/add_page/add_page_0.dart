@@ -4,11 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../components/custom_alert_dialog.dart';
-import '../../components/auth_token_handler.dart';
 import '../../components/logout_by_expiration.dart';
 import '../../components/proceed_button.dart';
 import '../../components/app_bar.dart';
-import '../../components/token_controller.dart';
+import '../../services/access_token/get_access_token_from_refresh_token.dart';
 
 // TODO: 여행 이름과 날짜를 확정짓고 '다음' 을 눌러 여행 id가 발급된 상태에서 다른 탭으로 전환할 때 별도의 처리가 필요(무분별한 여행 id 생성 방지)
 // 본 페이지에서 발급받은 tour_id 값은 최종 여행 등록에 필요하므로 모든 연결된 페이지에 인자값으로 전달됨

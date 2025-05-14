@@ -7,7 +7,6 @@ import '../pages/add_page/add_page_2.dart';
 import '../pages/add_page/add_page_3.dart';
 import 'placeinfo_card.dart';
 import 'dart:math';
-import '../main.dart'; // navigatorKey 사용을 위해 import
 
 class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
