@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import '../pages/add_page/add_page_2.dart';
+import '../pages/add_page/add_page_2/add_page_2.dart';
 
 class GeneratorItem extends StatelessWidget {
   final String? accessToken;

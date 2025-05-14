@@ -1,4 +1,4 @@
-import 'package:alpha_fe/pages/add_page/add_page_0/view_model/add_page_0_view_model.dart';
+import 'package:alpha_fe/pages/add_page/add_page_0/view_model/tour_create_view_model.dart';
 import 'package:alpha_fe/pages/add_page/add_page_1/add_page_1.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';

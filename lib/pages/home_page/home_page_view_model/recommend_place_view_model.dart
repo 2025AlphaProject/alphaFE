@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-import '../../../services/network/recommend_place/recommend_place.dart';
-import '../../../services/network/recommend_place/recommend_place_repository.dart';
+import '../../../services/websocket/recommend_place/recommend_place.dart';
+import '../../../services/websocket/recommend_place/recommend_place_repository.dart';
 
 class RecommendPlaceViewModel extends ChangeNotifier {
   Map<String, dynamic>? recommendedPlace;

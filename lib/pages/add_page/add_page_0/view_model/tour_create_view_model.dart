@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../services/network/tour_service/tour_service.dart';
+import '../../../../services/http/tour_service/tour_service.dart';
 
 class TourCreateViewModel with ChangeNotifier {
   bool isLoading = false;

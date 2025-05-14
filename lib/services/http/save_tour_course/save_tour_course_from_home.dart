@@ -1,9 +1,8 @@
-// AddPage_0에서 여행 생성 완료 후 전달된 tourId와 AddPage_2에서 선택한 장소 정보들을 함께 받아 서버에 POST 요청
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/services/dio/authorized_dio.dart';
 import '../../../components/placeinfo_card.dart';
 
-Future<void> saveTourCourse(BuildContext context, int tourId, List<PlaceInfoBlock> places) async {
+Future<void> SaveTourCourseFromHome(BuildContext context, int tourId, List<PlaceInfoBlock> places) async {
   try {
     final dio = await getAuthorizedDio(context);
     final baseUrl = 'http://conever.duckdns.org:8000';

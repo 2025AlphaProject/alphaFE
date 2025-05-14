@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:alpha_fe/services/network/recommend_place/recommend_place.dart';
+import 'package:alpha_fe/services/websocket/recommend_place/recommend_place.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:alpha_fe/services/websocket/socket_manager.dart';
