@@ -11,7 +11,7 @@ import '../../components/placeinfo_card.dart';
 import '../../components/proceed_button.dart'; // 버튼 컴포넌트
 import '../add_page/add_page_0/add_page_0.dart';
 import '../add_page/add_page_2/add_page_2.dart';
-import '../add_page/add_page_3.dart';
+import '../add_page/add_page_3/add_page_3.dart';
 import 'home_page_view_model/plan_view_model.dart';
 import 'home_page_view_model/recommend_place_view_model.dart';
 

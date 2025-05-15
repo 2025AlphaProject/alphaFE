@@ -1,12 +1,11 @@
+import 'package:alpha_fe/pages/add_page/add_page_3/view_model/show_final_tour_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import '../../components/app_bar.dart';
-import '../../components/logout_by_expiration.dart';
-import '../../components/plan_card.dart';
-import '../../components/proceed_button.dart';
-import '../../services/access_token/get_access_token_from_refresh_token.dart';
-import '../plan_page/plan_page.dart';
+import '../../../components/app_bar.dart';
+import '../../../components/plan_card.dart';
+import '../../../components/proceed_button.dart';
+import '../../plan_page/plan_page.dart';
+import 'package:provider/provider.dart';
 
 
 class AddPage_3 extends StatefulWidget {
@@ -22,50 +21,14 @@ class AddPage_3 extends StatefulWidget {
 }
 
 class _AddPage_3State extends State<AddPage_3> {
-  Map<String, dynamic>? _tourData;
 
   @override
   void initState() {
     super.initState();
-    fetchTourData().then((data) {
-      setState(() {
-        _tourData = data;
-      });
+    Future.microtask(() {
+      Provider.of<ShowFinalTourViewModel>(context, listen: false)
+          .fetchTourData(context, widget.tour_id);
     });
-  }
-
-  Future<Map<String, dynamic>> fetchTourData() async {
-    final accessToken = widget.accessToken;
-    final dio = Dio();
-
-    final url = 'http://conever.duckdns.org:8000/tour/${widget.tour_id}/';
-    try {
-      final response = await dio.get(
-          url,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken'
-          },
-        ),
-      );
-      return response.data;
-    } catch (e) {
-      if (e is DioException && e.response?.statusCode == 403) {
-        final bool? result = await getAccessTokenFromRefreshToken();
-        if (result == false) {
-          LogoutByExpiration(context);
-        }
-        await fetchTourData();
-      }
-
-      print("❌ 여행 데이터 불러오기 실패: $e");
-      return {
-        'tour_name': '여행 이름 불러오기 실패',
-        'start_date': '0000.00.00',
-        'end_date': '0000.00.00',
-      };
-    }
   }
 
   // "이 코스로 할게요!" 버튼 탭할 시 연결되어야 할 페이지, 경로 확정됨
@@ -76,6 +39,11 @@ class _AddPage_3State extends State<AddPage_3> {
     if (kIsWeb) {
       width = 430;
     }
+
+    final viewModel = context.watch<ShowFinalTourViewModel>();
+    final tourData = viewModel.tourData;
+    final isLoading = viewModel.isLoading;
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "추가하기 완료"),
@@ -101,13 +69,13 @@ class _AddPage_3State extends State<AddPage_3> {
           SizedBox(height: height * 0.035),
 
           // PlanCard로 구성된 회색 박스
-          _tourData == null
+          isLoading
             ? const Center(child: CircularProgressIndicator())
             : Center(
                 child: PlanCard(
-                  title: _tourData!['tour_name'] ?? '',
-                  startDate: _tourData!['start_date'] ?? '',
-                  endDate: _tourData!['end_date'] ?? '',
+                  title: tourData?['tour_name'] ?? '',
+                  startDate: tourData?['start_date'] ?? '',
+                  endDate: tourData?['end_date'] ?? '',
                   size_h: height * 0.38,
                   size_w: width * 0.75,
                   tour_id: widget.tour_id,
