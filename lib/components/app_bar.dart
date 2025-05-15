@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
-import '../pages/add_page/add_page_0.dart';
-import '../pages/add_page/add_page_2.dart';
-import '../pages/add_page/add_page_3.dart';
+import '../pages/add_page/add_page_0/add_page_0.dart';
+import '../pages/add_page/add_page_2/add_page_2.dart';
+import '../pages/add_page/add_page_3/add_page_3.dart';
 import 'placeinfo_card.dart';
 import 'dart:math';
 

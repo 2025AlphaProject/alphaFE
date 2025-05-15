@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
 import '../../../services/access_token/get_access_token_from_refresh_token.dart';
-import '../../../services/network/tour/tour_fetcher.dart';
-import '../../../services/network/tour/tour_utils.dart';
-import '../../../services/network/tour/tour_validator.dart';
-import '../../../services/network/user_me.dart';
+import '../../../services/http/tour/tour_fetcher.dart';
+import '../../../services/http/tour/tour_utils.dart';
+import '../../../services/http/tour/tour_validator.dart';
+import '../../../services/http/user_me.dart';
 
 class PlanViewModel extends ChangeNotifier {
   bool isLoading = true;

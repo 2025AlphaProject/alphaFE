@@ -1,13 +1,12 @@
-import 'package:alpha_fe/pages/add_page/add_page_1.dart';
+import 'package:alpha_fe/pages/add_page/add_page_0/view_model/tour_create_view_model.dart';
+import 'package:alpha_fe/pages/add_page/add_page_1/add_page_1.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import '../../components/custom_alert_dialog.dart';
-import '../../components/logout_by_expiration.dart';
-import '../../components/proceed_button.dart';
-import '../../components/app_bar.dart';
-import '../../services/access_token/get_access_token_from_refresh_token.dart';
+import 'package:provider/provider.dart';
+import '../../../components/custom_alert_dialog.dart';
+import '../../../components/proceed_button.dart';
+import '../../../components/app_bar.dart';
 
 // TODO: 여행 이름과 날짜를 확정짓고 '다음' 을 눌러 여행 id가 발급된 상태에서 다른 탭으로 전환할 때 별도의 처리가 필요(무분별한 여행 id 생성 방지)
 // 본 페이지에서 발급받은 tour_id 값은 최종 여행 등록에 필요하므로 모든 연결된 페이지에 인자값으로 전달됨
@@ -111,152 +110,152 @@ class _AddPage_0State extends State<AddPage_0> {
     }
   }
 
-  // 입력한 여행 정보로 서버에 여행 등록 요청
-  Future<void> _registerTour() async {
-    final accessToken = widget.accessToken;
-    final dio = Dio();
-    const url = 'http://conever.duckdns.org:8000';
-
-    // 기존 여행 중 동일한 제목과 날짜가 있는지 확인
-    try {
-      // 현재 사용자 이름 가져오기
-      final userResponse = await dio.get(
-        '$url/user/me/',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'Accept': 'application/json',
-          },
-        ),
-      );
-      final currentUsername = userResponse.data['username'];
-
-      // 모든 여행 목록 가져오기
-      final tourResponse = await dio.get(
-        '$url/tour/',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'Accept': 'application/json',
-          },
-        ),
-      );
-      final List<dynamic> allPlans = tourResponse.data;
-
-      // 현재 사용자의 여행만 필터링
-      final List<dynamic> userPlans = allPlans.where((plan) {
-        final List<dynamic> users = plan['user'] ?? [];
-        return users.any((u) => u['username'] == currentUsername);
-      }).toList();
-
-      // 입력된 제목과 날짜 포맷 생성
-      final String inputTitle = _titleController.text;
-      final String inputStart = '${_selectedDateRange!.start.year.toString().padLeft(4, '0')}-${_selectedDateRange!.start.month.toString().padLeft(2, '0')}-${_selectedDateRange!.start.day.toString().padLeft(2, '0')}';
-      final String inputEnd =   '${_selectedDateRange!.end.year.toString().padLeft(4, '0')}-${_selectedDateRange!.end.month.toString().padLeft(2, '0')}-${_selectedDateRange!.end.day.toString().padLeft(2, '0')}';
-
-      // 동일한 여행이 이미 존재하는지 검사
-      final bool exists = userPlans.any((plan) =>
-        plan['tour_name'] == inputTitle &&
-        plan['start_date'] == inputStart &&
-        plan['end_date'] == inputEnd
-      );
-
-      if (exists) {
-        // 이미 존재하는 여행인 경우 알림 후 종료
-        await showDialog(
-          context: context,
-          builder: (BuildContext dialogContext) => const CustomAlertDialog(
-            title: '이미 존재하는 여행입니다',
-            contentText: '',
-          ),
-        );
-        return;
-      }
-    } catch (e) {
-      // 예외 발생 시 로깅 후 계속 진행
-      print('중복 여행 확인 중 오류 발생: $e');
-    }
-
-    if (_titleController.text.isEmpty ||
-        _titleController.text.length > 10 ||
-        _selectedDateRange == null) {
-      await showDialog(
-        context: context,
-        builder: (BuildContext context) => const CustomAlertDialog(
-          title: '입력 오류',
-          contentText: '여행 이름(10자 이내)과 날짜를 모두 입력해주세요',
-        ),
-      );
-      return;
-    }
-
-    try {
-      // 입력받은 2가지 데이터에 대해 POST 요청
-      final response = await dio.post(
-        '$url/tour/',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken'
-          }
-        ),
-        data: {
-          'tour_name': _titleController.text,
-          'start_date': '${_selectedDateRange!.start.year}-${_selectedDateRange!.start.month.toString().padLeft(2, '0')}-${_selectedDateRange!.start.day.toString().padLeft(2, '0')}',
-          'end_date': '${_selectedDateRange!.end.year}-${_selectedDateRange!.end.month.toString().padLeft(2, '0')}-${_selectedDateRange!.end.day.toString().padLeft(2, '0')}',
-        },
-      );
-
-      if (response.statusCode == 201) {
-        // 성공적으로 tour_id 발급 시 다음 페이지로 이동
-        setState(() {
-          _tourId = response.data['id'];
-        });
-        _tourRegistered = true; // 여행이 생성되었음을 표시
-
-        print(_tourId);
-
-        if (widget.onFinishCreation != null) {
-          // 콜백 함수가 주어진 경우 → AddPage_2로부터 이어지는 흐름 → onFinishCreation으로 tourId 전달하여 이후 saveTourCourse에 활용
-          widget.onFinishCreation!(_tourId);
-        } else {
-          Navigator.push(
-            context,
-            CupertinoPageRoute(builder: (context) => AddPage_1(tourId: _tourId, accessToken: widget.accessToken,)),
-          );
-        }
-      } else {
-        // 등록 실패 시
-        _tourRegistered = false;
-        await showDialog(
-          context: context,
-          builder: (BuildContext context) => const CustomAlertDialog(
-            title: '등록 실패',
-            contentText: '여행 등록에 실패했습니다',
-          ),
-        );
-      }
-    } catch (e) {
-      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
-      if (e is DioException && e.response?.statusCode == 403) {
-        final bool? result = await getAccessTokenFromRefreshToken();
-        if (result == false) {
-          LogoutByExpiration(context);
-        }
-        await _registerTour();
-        return;
-      }
-      // 요청 에러 발생 시
-      _tourRegistered = false;
-      await showDialog(
-        context: context,
-        builder: (BuildContext context) => CustomAlertDialog(
-          title: '예외 발생',
-          contentText: '오류 발생: $e',
-        ),
-      );
-    }
-  }
+  // // 입력한 여행 정보로 서버에 여행 등록 요청
+  // Future<void> _registerTour() async {
+  //   final accessToken = widget.accessToken;
+  //   final dio = Dio();
+  //   const url = 'http://conever.duckdns.org:8000';
+  //
+  //   // 기존 여행 중 동일한 제목과 날짜가 있는지 확인
+  //   try {
+  //     // 현재 사용자 이름 가져오기
+  //     final userResponse = await dio.get(
+  //       '$url/user/me/',
+  //       options: Options(
+  //         headers: {
+  //           'Authorization': 'Bearer $accessToken',
+  //           'Accept': 'application/json',
+  //         },
+  //       ),
+  //     );
+  //     final currentUsername = userResponse.data['username'];
+  //
+  //     // 모든 여행 목록 가져오기
+  //     final tourResponse = await dio.get(
+  //       '$url/tour/',
+  //       options: Options(
+  //         headers: {
+  //           'Authorization': 'Bearer $accessToken',
+  //           'Accept': 'application/json',
+  //         },
+  //       ),
+  //     );
+  //     final List<dynamic> allPlans = tourResponse.data;
+  //
+  //     // 현재 사용자의 여행만 필터링
+  //     final List<dynamic> userPlans = allPlans.where((plan) {
+  //       final List<dynamic> users = plan['user'] ?? [];
+  //       return users.any((u) => u['username'] == currentUsername);
+  //     }).toList();
+  //
+  //     // 입력된 제목과 날짜 포맷 생성
+  //     final String inputTitle = _titleController.text;
+  //     final String inputStart = '${_selectedDateRange!.start.year.toString().padLeft(4, '0')}-${_selectedDateRange!.start.month.toString().padLeft(2, '0')}-${_selectedDateRange!.start.day.toString().padLeft(2, '0')}';
+  //     final String inputEnd =   '${_selectedDateRange!.end.year.toString().padLeft(4, '0')}-${_selectedDateRange!.end.month.toString().padLeft(2, '0')}-${_selectedDateRange!.end.day.toString().padLeft(2, '0')}';
+  //
+  //     // 동일한 여행이 이미 존재하는지 검사
+  //     final bool exists = userPlans.any((plan) =>
+  //       plan['tour_name'] == inputTitle &&
+  //       plan['start_date'] == inputStart &&
+  //       plan['end_date'] == inputEnd
+  //     );
+  //
+  //     if (exists) {
+  //       // 이미 존재하는 여행인 경우 알림 후 종료
+  //       await showDialog(
+  //         context: context,
+  //         builder: (BuildContext dialogContext) => const CustomAlertDialog(
+  //           title: '이미 존재하는 여행입니다',
+  //           contentText: '',
+  //         ),
+  //       );
+  //       return;
+  //     }
+  //   } catch (e) {
+  //     // 예외 발생 시 로깅 후 계속 진행
+  //     print('중복 여행 확인 중 오류 발생: $e');
+  //   }
+  //
+  //   if (_titleController.text.isEmpty ||
+  //       _titleController.text.length > 10 ||
+  //       _selectedDateRange == null) {
+  //     await showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) => const CustomAlertDialog(
+  //         title: '입력 오류',
+  //         contentText: '여행 이름(10자 이내)과 날짜를 모두 입력해주세요',
+  //       ),
+  //     );
+  //     return;
+  //   }
+  //
+  //   try {
+  //     // 입력받은 2가지 데이터에 대해 POST 요청
+  //     final response = await dio.post(
+  //       '$url/tour/',
+  //       options: Options(
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Authorization': 'Bearer $accessToken'
+  //         }
+  //       ),
+  //       data: {
+  //         'tour_name': _titleController.text,
+  //         'start_date': '${_selectedDateRange!.start.year}-${_selectedDateRange!.start.month.toString().padLeft(2, '0')}-${_selectedDateRange!.start.day.toString().padLeft(2, '0')}',
+  //         'end_date': '${_selectedDateRange!.end.year}-${_selectedDateRange!.end.month.toString().padLeft(2, '0')}-${_selectedDateRange!.end.day.toString().padLeft(2, '0')}',
+  //       },
+  //     );
+  //
+  //     if (response.statusCode == 201) {
+  //       // 성공적으로 tour_id 발급 시 다음 페이지로 이동
+  //       setState(() {
+  //         _tourId = response.data['id'];
+  //       });
+  //       _tourRegistered = true; // 여행이 생성되었음을 표시
+  //
+  //       print(_tourId);
+  //
+  //       if (widget.onFinishCreation != null) {
+  //         // 콜백 함수가 주어진 경우 → AddPage_2로부터 이어지는 흐름 → onFinishCreation으로 tourId 전달하여 이후 saveTourCourse에 활용
+  //         widget.onFinishCreation!(_tourId);
+  //       } else {
+  //         Navigator.push(
+  //           context,
+  //           CupertinoPageRoute(builder: (context) => AddPage_1(tourId: _tourId, accessToken: widget.accessToken,)),
+  //         );
+  //       }
+  //     } else {
+  //       // 등록 실패 시
+  //       _tourRegistered = false;
+  //       await showDialog(
+  //         context: context,
+  //         builder: (BuildContext context) => const CustomAlertDialog(
+  //           title: '등록 실패',
+  //           contentText: '여행 등록에 실패했습니다',
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
+  //     if (e is DioException && e.response?.statusCode == 403) {
+  //       final bool? result = await getAccessTokenFromRefreshToken();
+  //       if (result == false) {
+  //         LogoutByExpiration(context);
+  //       }
+  //       await _registerTour();
+  //       return;
+  //     }
+  //     // 요청 에러 발생 시
+  //     _tourRegistered = false;
+  //     await showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) => CustomAlertDialog(
+  //         title: '예외 발생',
+  //         contentText: '오류 발생: $e',
+  //       ),
+  //     );
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -429,7 +428,41 @@ class _AddPage_0State extends State<AddPage_0> {
                     text: "새 여행 만들기",
                     fontSize_: 18.5,
                     fontWeight_: FontWeight.bold,
-                    onTap: _registerTour,
+                    onTap: () {
+                      final title = _titleController.text;
+                      final dateRange = _selectedDateRange;
+
+                      if (title.isEmpty || title.length > 10 || dateRange == null) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => const CustomAlertDialog(
+                            title: '입력 오류',
+                            contentText: '여행 이름(10자 이내)과 날짜를 모두 입력해주세요',
+                          ),
+                        );
+                        return;
+                      }
+                      context.read<TourCreateViewModel>().registerTour(
+                        context,
+                        title,
+                        dateRange,
+                        onSuccess: (tourId) {
+                          if (widget.onFinishCreation != null) {
+                            widget.onFinishCreation!(tourId);
+                          } else {
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (context) => AddPage_1(
+                                  tourId: tourId,
+                                  accessToken: widget.accessToken,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    },
                   ),
                 ),
               ),

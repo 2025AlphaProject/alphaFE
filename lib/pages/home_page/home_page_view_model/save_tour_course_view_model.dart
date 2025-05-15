@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../components/placeinfo_card.dart';
 import '../../../services/dio/authorized_dio.dart';
-import '../../../services/network/save_tour_course/save_tour_course.dart';
+import '../../../services/http/save_tour_course/save_tour_course_from_home.dart';
 
 class TourCourseViewModel with ChangeNotifier {
   bool isSaving = false;
@@ -16,7 +16,7 @@ class TourCourseViewModel with ChangeNotifier {
     final dio = await getAuthorizedDio(context);
 
     try {
-      await saveTourCourse(dio as BuildContext, tourId, places);
+      await SaveTourCourseFromHome(dio as BuildContext, tourId, places);
       saveSuccess = true;
     } catch (_) {
       saveSuccess = false;

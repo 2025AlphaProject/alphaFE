@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter/foundation.dart';
 import '../../dio/authorized_dio.dart';
 
@@ -19,17 +18,6 @@ class RecommendPlaceService {
       }
     }
     return null;
-  }
-
-  /// 추천 장소용 웹소켓 채널 생성
-  static WebSocketChannel openRecommendationChannel({
-    required int userId,
-    required String district,
-    required int uniqueCode,
-  }) {
-    final url =
-        'ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&unique_code=$uniqueCode&days=1&sigunguName=$district';
-    return WebSocketChannel.connect(Uri.parse(url));
   }
 
   /// 랜덤 서울시 행정구역명 하나 리턴
