@@ -365,28 +365,9 @@ class _HomePageState extends State<HomePage> {
                                             : '';
                                         Navigator.of(context).push(
                                           CupertinoPageRoute(
-                                            builder: (_) => AddPage_2(
-                                              title: sigun,
-                                              tourId: 0,
-                                              isSingleDayMode: true, // 싱글모드 명시 -> 트렌딩, 검색창일 경우 true
-                                              onSaveCourseCallback: (places) {
-                                                Navigator.of(context).push(
-                                                  CupertinoPageRoute(
-                                                    builder: (_) => AddPage_0(
-                                                      onFinishCreation: (int tourId) {
-                                                        Navigator.of(context).push(
-                                                          CupertinoPageRoute(
-                                                            builder: (_) => AddPage_3(
-                                                              tour_id: tourId, accessToken: widget.accessToken,
-                                                            ),
-                                                          ),
-                                                        );
-                                                        context.read<TourCourseViewModel>().save(context, tourId, places);
-                                                      }, accessToken: widget.accessToken,
-                                                    ),
-                                                  ),
-                                                );
-                                              }, accessToken: widget.accessToken,
+                                            builder: (_) => AddPage_0(
+                                                accessToken: widget.accessToken,
+                                                sigun: sigun,
                                             ),
                                           ),
                                         );

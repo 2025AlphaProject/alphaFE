@@ -1,5 +1,6 @@
 import 'package:alpha_fe/pages/add_page/add_page_0/view_model/tour_create_view_model.dart';
 import 'package:alpha_fe/pages/add_page/add_page_1/add_page_1.dart';
+import 'package:alpha_fe/pages/add_page/add_page_2/add_page_2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,23 +9,20 @@ import '../../../components/custom_alert_dialog.dart';
 import '../../../components/proceed_button.dart';
 import '../../../components/app_bar.dart';
 
-// TODO: 여행 이름과 날짜를 확정짓고 '다음' 을 눌러 여행 id가 발급된 상태에서 다른 탭으로 전환할 때 별도의 처리가 필요(무분별한 여행 id 생성 방지)
+
 // 본 페이지에서 발급받은 tour_id 값은 최종 여행 등록에 필요하므로 모든 연결된 페이지에 인자값으로 전달됨
 
 // 추가 탭 0번째 페이지: 여행 이름과 날짜 입력
 class AddPage_0 extends StatefulWidget {
   final String? accessToken;
-  final Function(int)? onFinishCreation;
-  const AddPage_0({Key? key, this.onFinishCreation, required this.accessToken}) : super(key: key);
+  final String? sigun;
+  const AddPage_0({Key? key, this.sigun, required this.accessToken}) : super(key: key);
 
   @override
   _AddPage_0State createState() => _AddPage_0State();
 }
 
 class _AddPage_0State extends State<AddPage_0> {
-
-  // 싱글모드 여부 확인: 콜백이 존재한다면 싱글모드로 간주
-  late bool _isSingleMode;
 
   // 여행 이름 입력을 위한 컨트롤러
   final TextEditingController _titleController = TextEditingController();
@@ -40,7 +38,6 @@ class _AddPage_0State extends State<AddPage_0> {
   @override
   void initState() {
     super.initState();
-    _isSingleMode = widget.onFinishCreation != null;
     _tourId = 0;
   }
 
@@ -81,19 +78,9 @@ class _AddPage_0State extends State<AddPage_0> {
     );
 
     if (picked != null) {
-      // _isSingleMode일 때 1일 이상 선택 불가
-      if (_isSingleMode && picked.duration.inDays > 0) {
-        await showDialog(
-          context: context,
-          builder: (BuildContext context) => const CustomAlertDialog(
-            title: '안내',
-            contentText: '지금은 1일만 선택할 수 있습니다.',
-          ),
-        );
-        return;
-      }
-      // _isSingleMode가 아닐 때 15일 이상 선택 불가
-      if (!_isSingleMode && picked.duration.inDays > 2) {
+
+      // 3일 이상 선택 불가
+      if (picked.duration.inDays > 2) {
         await showDialog(
           context: context,
           builder: (BuildContext context) => const CustomAlertDialog(
@@ -410,12 +397,10 @@ class _AddPage_0State extends State<AddPage_0> {
               ),
               SizedBox(height: height * 0.005),
 
-              // 접속 경로에 따라 경고 메세지 다르게
-              _isSingleMode
-                  ? Text("• 지금은 1일만 선택할 수 있습니다",
-                  style: TextStyle(fontSize: 12.3, color: Colors.red.shade500))
-                  : Text("• 지금은 3일만 선택할 수 있습니다",
-                  style: TextStyle(fontSize: 12.3, color: Colors.red.shade500)),
+              Text(
+                  "• 지금은 3일만 선택할 수 있습니다",
+                  style: TextStyle(fontSize: 12.3, color: Colors.red.shade500)
+              ),
 
               SizedBox(height: height * 0.073,),
               // 새 여행 만들기 버튼 - 여행 id 발급 및 행정구역 선택 페이지로 이동
@@ -447,8 +432,17 @@ class _AddPage_0State extends State<AddPage_0> {
                         title,
                         dateRange,
                         onSuccess: (tourId) {
-                          if (widget.onFinishCreation != null) {
-                            widget.onFinishCreation!(tourId);
+                          if (widget.sigun != null) {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) => AddPage_2(
+                                        title: widget.sigun!,
+                                        tourId: tourId,
+                                        accessToken: widget.accessToken
+                                    ),
+                                )
+                            );
                           } else {
                             Navigator.push(
                               context,

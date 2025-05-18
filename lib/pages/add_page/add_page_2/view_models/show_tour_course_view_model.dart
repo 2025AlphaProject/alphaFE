@@ -34,7 +34,6 @@ class ShowTourCourseViewModel extends ChangeNotifier {
   Future<void> fetchCourseRecommendation({
     required int tourId,
     required String areaName,
-    required bool isSingleDayMode,
     required bool isWeb,
     required BuildContext context,
   }) async {
@@ -42,7 +41,6 @@ class ShowTourCourseViewModel extends ChangeNotifier {
       context: context,
       tourId: tourId,
       areaName: areaName,
-      isSingleDayMode: isSingleDayMode,
       isWeb: isWeb,
       state: _state,
       onSuccess: notifyListeners,

@@ -159,7 +159,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
                       itemCount: filteredDistricts.length,
                       itemBuilder: (context, index) {
                         final gu = filteredDistricts[index];
-                        // 리스트 항목 탭 시 여행 생성 흐름으로 이동
+                        // 리스트 항목 탭 시 AddPage_0으로만 이동하도록 수정
                         return ListTile(
                           title: Text(gu),
                           onTap: () {
@@ -170,28 +170,9 @@ class _SearchAppBarState extends State<SearchAppBar> {
                             if (!mounted) return;
                             Navigator.of(currentContext).push(
                               CupertinoPageRoute(
-                                builder: (_) => AddPage_2(
-                                  title: gu,
-                                  tourId: 0,
-                                  isSingleDayMode: true,
-                                  onSaveCourseCallback: (places) {
-                                    Navigator.of(currentContext).push(
-                                      CupertinoPageRoute(
-                                        builder: (_) => AddPage_0(
-                                          onFinishCreation: (int tourId) {
-                                            Navigator.of(currentContext).push(
-                                              CupertinoPageRoute(
-                                                builder: (_) => AddPage_3(
-                                                  tour_id: tourId, accessToken: widget.accessToken,
-                                                ),
-                                              ),
-                                            );
-                                            widget.onSaveCourse(tourId, places);
-                                          }, accessToken: widget.accessToken,
-                                        ),
-                                      ),
-                                    );
-                                  }, accessToken: widget.accessToken,
+                                builder: (_) => AddPage_0(
+                                  sigun: gu,
+                                  accessToken: widget.accessToken,
                                 ),
                               ),
                             ).then((_) {
