@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:alpha_fe/pages/home_page/home_page_view_model/save_tour_course_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,58 +42,6 @@ class _HomePageState extends State<HomePage> {
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
-  }
-
-  // AddPage_0에서 여행 생성 완료 후 전달된 tourId와 AddPage_2에서 선택한 장소 정보들을 함께 받아 서버에 POST 요청
-  Future<void> saveTourCourse(int tourId, List<PlaceInfoBlock> places) async {
-    final dio = Dio();
-    final baseUrl = 'http://conever.duckdns.org:8000';
-    try {
-      final accessToken = widget.accessToken;
-
-      // 여행 시작일을 불러오기 위한 GET 요청
-      final startDateResponse = await dio.get(
-        '$baseUrl/tour/$tourId/',
-        options: Options(headers: {
-          'Authorization': 'Bearer $accessToken',
-        }),
-      );
-      final startDate = startDateResponse.data['start_date'];
-
-      // 장소 정보를 서버에 맞는 포맷으로 변환 (name, mapX, mapY, image, address)
-      final List<Map<String, dynamic>> courseData = places.map((place) => {
-        'name': '<${place.title}>',
-        'mapX': place.mapX,
-        'mapY': place.mapY,
-        'image_url': place.imageUrl,
-        'road_address': '<${place.description}>'
-      }).toList();
-
-      // 최종 코스 정보를 서버에 저장 요청
-      final response = await dio.post(
-        '$baseUrl/tour/course/',
-        data: {
-          'tour_id': '$tourId',
-          'date': startDate,
-          'places': courseData,
-        },
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken',
-        }),
-      );
-
-      // 저장 성공 시 콘솔에 출력
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        print('경로 저장 완료');
-      }
-      else {
-        print('저장 실패: ${response.statusCode}');
-      }
-    }
-    catch (e) {
-      print('예외 발생: $e');
-    }
   }
 
   // PlanCard와 동일 크기의 빈 카드 UI, 탭 시 새 여행 생성 페이지로 이동
@@ -365,28 +312,9 @@ class _HomePageState extends State<HomePage> {
                                             : '';
                                         Navigator.of(context).push(
                                           CupertinoPageRoute(
-                                            builder: (_) => AddPage_2(
-                                              title: sigun,
-                                              tourId: 0,
-                                              isSingleDayMode: true, // 싱글모드 명시 -> 트렌딩, 검색창일 경우 true
-                                              onSaveCourseCallback: (places) {
-                                                Navigator.of(context).push(
-                                                  CupertinoPageRoute(
-                                                    builder: (_) => AddPage_0(
-                                                      onFinishCreation: (int tourId) {
-                                                        Navigator.of(context).push(
-                                                          CupertinoPageRoute(
-                                                            builder: (_) => AddPage_3(
-                                                              tour_id: tourId, accessToken: widget.accessToken,
-                                                            ),
-                                                          ),
-                                                        );
-                                                        context.read<TourCourseViewModel>().save(context, tourId, places);
-                                                      }, accessToken: widget.accessToken,
-                                                    ),
-                                                  ),
-                                                );
-                                              }, accessToken: widget.accessToken,
+                                            builder: (_) => AddPage_0(
+                                                accessToken: widget.accessToken,
+                                                sigun: sigun,
                                             ),
                                           ),
                                         );
@@ -482,7 +410,7 @@ class _HomePageState extends State<HomePage> {
             ),
             // 행정구역 검색 기능을 제공하는 앱바, 오버레이 리스트와 연결됨
             SearchAppBar(
-              onSaveCourse: saveTourCourse, accessToken: widget.accessToken,
+              accessToken: widget.accessToken,
             ),
           ],
         ),

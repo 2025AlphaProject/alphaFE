@@ -17,14 +17,10 @@ class AddPage_2 extends StatefulWidget {
   final String? accessToken;
   final String title;
   final int tourId;
-  final Function(List<PlaceInfoBlock>)? onSaveCourseCallback;
-  final bool isSingleDayMode; // New flag to control single day mode
 
   const AddPage_2({
     required this.title,
     required this.tourId,
-    this.onSaveCourseCallback,
-    this.isSingleDayMode = false, // default to false for multi-day mode
     Key? key, required this.accessToken
   }) : super(key: key);
 
@@ -58,7 +54,6 @@ class _AddPage_2State extends State<AddPage_2> {
         context: context,
         tourId: widget.tourId,
         areaName: widget.title,
-        isSingleDayMode: widget.isSingleDayMode,
         isWeb: kIsWeb,
       );
     });
@@ -211,9 +206,7 @@ class _AddPage_2State extends State<AddPage_2> {
         value: _selectedDate,
         isExpanded: true,
         dropdownColor: const Color(0xFFF5F5F5),
-        hint: widget.isSingleDayMode
-            ? const Text("추천 코스입니다", style: TextStyle(fontSize: 18.5, color: Colors.black))
-            : const Text("날짜를 선택해주세요", style: TextStyle(fontSize: 18.5, color: Colors.black)),
+        hint: const Text("날짜를 선택해주세요", style: TextStyle(fontSize: 18.5, color: Colors.black)),
         items: _placeWidgets.map((entry) {
           return DropdownMenuItem<String>(
             value: entry.key,
@@ -409,17 +402,11 @@ class _AddPage_2State extends State<AddPage_2> {
                         fontSize_: 14.3,
                         fontWeight_: FontWeight.bold,
                         onTap: () async {
-                          if (widget.onSaveCourseCallback != null) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              widget.onSaveCourseCallback!(_placeWidgets.expand((entry) => entry.value).toList());
-                            });
-                          } else {
                             await SaveTourCourseFromAdd().saveCourse(
                               context: context,
                               placeWidgets: _placeWidgets,
                               tourId: widget.tourId,
                             );
-                          }
                         },
                       ),
                     ),
