@@ -5,6 +5,7 @@ import 'package:alpha_fe/pages/home_page/home_page_view_model/plan_view_model.da
 import 'package:alpha_fe/pages/home_page/home_page_view_model/recommend_place_view_model.dart';
 import 'package:alpha_fe/pages/home_page/home_page_view_model/save_tour_course_view_model.dart';
 import 'package:alpha_fe/pages/loading_page/loading_view/loading_view.dart';
+import 'package:alpha_fe/pages/plan_page/add_user/view_model/add_user_view_model.dart';
 import 'package:alpha_fe/providers/auth_provider.dart';
 import 'package:alpha_fe/services/websocket/show_tour_course/show_tour_course_api.dart';
 import 'package:alpha_fe/services/websocket/show_tour_course/show_tour_course_websocket.dart';
@@ -21,4 +22,5 @@ List<SingleChildWidget> appProviders = [
   ChangeNotifierProvider(create: (_) => RecommendPlaceViewModel()),
   ChangeNotifierProvider(create: (_) => ShowTourCourseViewModel(apiService: ShowTourCourseApi(), socketService: ShowTourCourseWebsocket(),),),
   ChangeNotifierProvider(create: (_) => ShowFinalTourViewModel()),
+  ChangeNotifierProvider(create: (_) => AddUserViewModel()),
 ];
