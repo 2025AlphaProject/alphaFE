@@ -10,9 +10,12 @@ import 'package:alpha_fe/services/websocket/show_tour_course/show_tour_course_ap
 import 'package:alpha_fe/services/websocket/show_tour_course/show_tour_course_websocket.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:alpha_fe/pages/home_page/home_page_view_model/home_page_view_model.dart';
+
 
 
 List<SingleChildWidget> appProviders = [
+  ChangeNotifierProvider(create: (_) => HomePageViewModel()),
   ChangeNotifierProvider(create: (_) => AuthProvider()),
   ChangeNotifierProvider(create: (_) => PlanViewModel()),
   ChangeNotifierProvider(create: (_) => LoadingViewModel()),
