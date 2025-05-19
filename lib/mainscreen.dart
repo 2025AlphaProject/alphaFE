@@ -23,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
   // 하단 탭에 연결될 페이지 목록
   List<Widget> get _pages => [
 
-    HomePage(accessToken: widget.accessToken,),
+    HomePage(),
     PlanPage(accessToken: widget.accessToken,),
     AddPage_0(accessToken: widget.accessToken,),
     kIsWeb ? MyPage_Web() : MyPage(accessToken: widget.accessToken,),
