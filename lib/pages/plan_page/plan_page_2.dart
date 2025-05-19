@@ -4,7 +4,7 @@ import '../../components/app_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/components/plan_course_event.dart';
-import 'package:alpha_fe/pages/plan_page/add_user.dart';
+import 'package:alpha_fe/pages/plan_page/add_user/add_user.dart';
 import 'package:alpha_fe/components/plan_loading_page.dart';
 
 import '../../components/logout_by_expiration.dart';
