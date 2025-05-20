@@ -72,7 +72,7 @@ class UpcomingPlanSection extends StatelessWidget {
         Navigator.push(
           context,
           CupertinoPageRoute(
-            builder: (_) => AddPage_0(accessToken: accessToken),
+            builder: (_) => AddPage_0(),
           ),
         );
       },

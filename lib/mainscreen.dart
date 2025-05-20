@@ -25,7 +25,7 @@ class _MainScreenState extends State<MainScreen> {
 
     HomePage(),
     PlanPage(accessToken: widget.accessToken,),
-    AddPage_0(accessToken: widget.accessToken,),
+    AddPage_0(),
     kIsWeb ? MyPage_Web() : MyPage(accessToken: widget.accessToken,),
 
   ];

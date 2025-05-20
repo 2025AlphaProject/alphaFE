@@ -170,7 +170,6 @@ class _SearchAppBarState extends State<SearchAppBar> {
                               CupertinoPageRoute(
                                 builder: (_) => AddPage_0(
                                   sigun: gu,
-                                  accessToken: widget.accessToken,
                                 ),
                               ),
                             ).then((_) {
