@@ -39,7 +39,6 @@ class HomePageViewModel extends ChangeNotifier {
     Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (_) => AddPage_0(
-          accessToken: accessToken,
           sigun: sigunguText(context),
         ),
       ),
