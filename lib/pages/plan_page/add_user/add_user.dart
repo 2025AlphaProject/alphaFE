@@ -115,7 +115,6 @@ class _ProfileListBodyState extends State<ProfileListBody> {
               },
             ),
           ),
-
           Expanded(
             child: ListView.builder(
               itemCount: _profiles.length,
