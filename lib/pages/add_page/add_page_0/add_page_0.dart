@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:alpha_fe/components/custom_alert_dialog.dart';
 import '../../../components/proceed_button.dart';
 import '../../../components/app_bar.dart';
 import 'package:alpha_fe/pages/add_page/add_page_0/view_model/add_page_0_view_model.dart';
@@ -94,7 +94,22 @@ class _AddPage_0State extends State<AddPage_0> {
                     text: "새 여행 만들기",
                     fontSize_: 18.5,
                     fontWeight_: FontWeight.bold,
-                    onTap: () => viewModel.createTour(context, widget.sigun),
+                    onTap: () {
+                      final success = viewModel.createTour(
+                        context: context,
+                        sigun: widget.sigun,
+                      );
+
+                      if (!success) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const CustomAlertDialog(
+                            title: '입력 오류',
+                            contentText: '여행 이름(10자 이내)과 날짜를 모두 입력해주세요',
+                          ),
+                        );
+                      }
+                    },
                   ),
                 ),
               ),

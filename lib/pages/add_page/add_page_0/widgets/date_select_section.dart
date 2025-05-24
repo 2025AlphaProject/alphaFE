@@ -64,7 +64,43 @@ class DateSelectSection extends StatelessWidget {
             DateSelectButton(
               height: height * 0.058,
               width: width * 0.14,
-              onPressed: () => viewModel.selectDateRange(context),
+              onPressed: () async {
+                final picked = await showDateRangePicker(
+                  context: context,
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(const Duration(days: 365)),
+                  locale: const Locale('ko', 'KR'),
+                  builder: (context, child) {
+                    return Theme(
+                      data: ThemeData.light().copyWith(
+                        colorScheme: const ColorScheme.light(
+                          primary: Color(0xFF2C2C2C),
+                          onPrimary: Colors.white,
+                          surface: Colors.white,
+                          onSurface: Colors.black87,
+                        ),
+                        dialogBackgroundColor: Colors.white,
+                      ),
+                      child: child!,
+                    );
+                  },
+                );
+
+                if (picked != null) {
+                  if (!viewModel.isValidDateRange(picked)) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => const AlertDialog(
+                        title: Text('입력 오류'),
+                        content: Text('지금은 3일 이내로만 선택할 수 있습니다'),
+                      ),
+                    );
+                    return;
+                  }
+
+                  viewModel.updateSelectedDateRange(picked);
+                }
+              },
             ),
           ],
         ),
