@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../../components/placeinfo_card.dart';
+import 'package:alpha_fe/pages/add_page/add_page_2/models/place_info.dart';
 import '../../../components/save_loading_page.dart';
 import '../../../pages/add_page/add_page_3/add_page_3.dart';
 import '../../dio/authorized_dio.dart';
@@ -9,7 +9,7 @@ import '../../dio/authorized_dio.dart';
 class SaveTourCourseFromAdd {
   Future<void> saveCourse({
     required BuildContext context,
-    required List<MapEntry<String, List<PlaceInfoBlock>>> placeWidgets,
+    required List<MapEntry<String, List<PlaceInfo>>> placeWidgets,
     required int tourId,
   }) async {
     final dio = await getAuthorizedDio(context);
