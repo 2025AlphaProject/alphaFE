@@ -6,21 +6,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../pages/add_page/add_page_2/add_page_2.dart';
 
+
 class GeneratorItem extends StatelessWidget {
-  final String? accessToken;
   final String title;
   final int tourId;
 
   const GeneratorItem({
     required this.title,
     required this.tourId,
-    Key? key, required this.accessToken,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+
     if (kIsWeb) {
       width = 430;
     }
@@ -39,7 +40,6 @@ class GeneratorItem extends StatelessWidget {
                 builder: (context) => AddPage_2(
                   title: title,
                   tourId: tourId,
-                  accessToken: accessToken,
                 ),
               ),
             );
