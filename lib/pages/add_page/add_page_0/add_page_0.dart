@@ -1,15 +1,13 @@
-import 'package:alpha_fe/pages/add_page/add_page_0/view_model/tour_create_view_model.dart';
-import 'package:alpha_fe/pages/add_page/add_page_1/add_page_1.dart';
-import 'package:alpha_fe/pages/add_page/add_page_2/add_page_2.dart';
-import 'package:alpha_fe/providers/auth_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../components/custom_alert_dialog.dart';
+
 import '../../../components/proceed_button.dart';
 import '../../../components/app_bar.dart';
 import 'package:alpha_fe/pages/add_page/add_page_0/view_model/add_page_0_view_model.dart';
+import 'package:alpha_fe/pages/add_page/add_page_0/widgets/date_select_section.dart';
+import 'package:alpha_fe/pages/add_page/add_page_0/widgets/title_input_section.dart';
 
 
 // 추가 탭 0번째 페이지: 여행 이름과 날짜 입력
@@ -27,6 +25,10 @@ class _AddPage_0State extends State<AddPage_0> {
   @override
   void initState() {
     super.initState();
+    // ViewModel의 이전값 리셋
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AddPage0ViewModel>().resetState();
+    });
   }
 
 
@@ -66,39 +68,10 @@ class _AddPage_0State extends State<AddPage_0> {
 
               SizedBox(height: height * 0.05),
 
-              // 여행 제목 입력 - 10글자 제한
-              const Text("✏️ 여행 제목",
-                  style: TextStyle(
-                    fontSize: 20.5,
-                    fontWeight: FontWeight.bold,
-                  )),
-              SizedBox(height: height * 0.01),
-              SizedBox(
-                height: height * 0.06,
-                child: TextField(
-                  controller: viewModel.titleController,
-                  maxLength: 10,
-                  decoration: InputDecoration(
-                    isDense: true,
-                    hintText: viewModel.selectedDateRange == null
-                        ? ""
-                        : "${viewModel.selectedDateRange!.start.year}.${viewModel.selectedDateRange!.start.month.toString().padLeft(2, '0')}.${viewModel.selectedDateRange!.start.day.toString().padLeft(2, '0')} ~ "
-                        "${viewModel.selectedDateRange!.end.year}.${viewModel.selectedDateRange!.end.month.toString().padLeft(2, '0')}.${viewModel.selectedDateRange!.end.day.toString().padLeft(2, '0')}",
-                    hintStyle: const TextStyle(
-                      fontSize: 14.3,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    counterText: "",
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: height * 0.02,
-                      horizontal: width * 0.03,
-                    ),
-                  ),
-                ),
+              TitleInputSection(
+                viewModel: viewModel,
+                width: width,
+                height: height,
               ),
               SizedBox(height: height * 0.005),
               const Text("• 한글, 영문, 특수기호 구분없이 10자 이내로 입력",
@@ -108,83 +81,11 @@ class _AddPage_0State extends State<AddPage_0> {
 
               SizedBox(height: height * 0.05),
 
-              // 여행 날짜 입력 - material.dart의 DateRangePicker 사용
-              const Text("✏️ 여행 날짜",
-                  style: TextStyle(
-                    fontSize: 20.5,
-                    fontWeight: FontWeight.bold,
-                  )),
-              SizedBox(height: height * 0.01),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-
-                  // 날짜 표시 필드
-                  Expanded(
-                    child: SizedBox(
-                      height: height * 0.06,
-                      child: TextField(
-                        readOnly: true,
-                        cursorColor: const Color(0xFF2C2C2C),
-                        decoration: InputDecoration(
-                          isDense: true,
-                          hintText: viewModel.selectedDateRange == null
-                              ? ""
-                              : "${viewModel.selectedDateRange!.start.year}.${viewModel.selectedDateRange!.start.month.toString().padLeft(2, '0')}.${viewModel.selectedDateRange!.start.day.toString().padLeft(2, '0')} ~ "
-                                "${viewModel.selectedDateRange!.end.year}.${viewModel.selectedDateRange!.end.month.toString().padLeft(2, '0')}.${viewModel.selectedDateRange!.end.day.toString().padLeft(2, '0')}",
-                          hintStyle: const TextStyle(
-                            fontSize: 12.3,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFFF5F5F5),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          counterText: "",
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: height * 0.02,
-                            horizontal: width * 0.03,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(width: width * 0.02),
-
-                  // 날짜 선택 버튼 - showDateRangePicker 호출
-                  SizedBox(
-                    height: height * 0.058,
-                    width: width * 0.14,
-                    child: ElevatedButton(
-                      onPressed: () => viewModel.selectDateRange(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2C2C2C),
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        "🗓️",
-                        style: TextStyle(
-                          fontSize: 18.5,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: height * 0.005),
-
-              Text(
-                  "• 지금은 3일만 선택할 수 있습니다",
-                  style: TextStyle(fontSize: 12.3, color: Colors.red.shade500)
+              // 여행 날짜 선택 영역 - DateSelectSection 위젯 분리 적용
+              DateSelectSection(
+                width: width,
+                height: height,
+                viewModel: viewModel,
               ),
 
               SizedBox(height: height * 0.073,),

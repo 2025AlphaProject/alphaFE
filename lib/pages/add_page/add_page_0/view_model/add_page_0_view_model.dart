@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:alpha_fe/providers/auth_provider.dart';
 import 'package:alpha_fe/pages/add_page/add_page_1/add_page_1.dart';
 import 'package:alpha_fe/pages/add_page/add_page_2/add_page_2.dart';
 import 'package:alpha_fe/components/custom_alert_dialog.dart';
@@ -87,7 +86,6 @@ class AddPage0ViewModel with ChangeNotifier {
 
     final title = titleController.text;
     final dateRange = selectedDateRange!;
-    final accessToken = context.read<AuthProvider>().accessToken;
 
     context.read<TourCreateViewModel>().registerTour(
       context,
@@ -101,7 +99,6 @@ class AddPage0ViewModel with ChangeNotifier {
               builder: (context) => AddPage_2(
                 title: sigun,
                 tourId: tourId,
-                accessToken: accessToken,
               ),
             ),
           );
@@ -111,13 +108,18 @@ class AddPage0ViewModel with ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => AddPage_1(
                 tourId: tourId,
-                accessToken: accessToken,
               ),
             ),
           );
         }
       },
     );
+  }
+
+  void resetState() {
+    titleController.clear();
+    selectedDateRange = null;
+    notifyListeners();
   }
 
   @override
