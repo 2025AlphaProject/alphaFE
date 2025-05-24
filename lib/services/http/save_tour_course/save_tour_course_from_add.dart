@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-
+import 'package:alpha_fe/components/custom_alert_dialog.dart';
 import 'package:alpha_fe/pages/add_page/add_page_2/models/place_info.dart';
 import '../../../components/save_loading_page.dart';
 import '../../../pages/add_page/add_page_3/add_page_3.dart';
 import '../../dio/authorized_dio.dart';
 
-/// TODO: 각 날짜별 코스에 해당되는 장소가 아무것도 없을 때 400 Bad Request 에러 해결해야함
+
 class SaveTourCourseFromAdd {
   Future<void> saveCourse({
     required BuildContext context,
@@ -15,6 +15,20 @@ class SaveTourCourseFromAdd {
   }) async {
     final dio = await getAuthorizedDio(context);
     const baseUrl = 'http://conever.duckdns.org:8000';
+
+    final hasEmptyDate = placeWidgets.any((entry) => entry.value.isEmpty);
+
+    if (hasEmptyDate) {
+      if (Navigator.canPop(context)) Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (_) => const CustomAlertDialog(
+          title: '입력 오류',
+          contentText: '모든 날짜에 최소 하나 이상의 장소를 추가해야 합니다.',
+        ),
+      );
+      return;
+    }
 
     await showDialog(
       context: context,
@@ -62,7 +76,7 @@ class SaveTourCourseFromAdd {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => AddPage_3(tour_id: tourId, accessToken: '',),
+          builder: (_) => AddPage_3(tour_id: tourId),
         ),
       );
     } catch (e) {
