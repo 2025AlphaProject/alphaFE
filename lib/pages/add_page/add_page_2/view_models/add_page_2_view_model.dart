@@ -14,7 +14,10 @@ class AddPage2ViewModel extends ChangeNotifier {
   bool _hasInitialized = false;
 
   void onViewEnter() {
-    resetState();
+    if (!_hasInitialized) {
+      resetState();
+      _hasInitialized = true;
+    }
   }
 
   void toggleEditMode() {
@@ -117,6 +120,7 @@ class AddPage2ViewModel extends ChangeNotifier {
     _visibleButton = true;
     _idleTimer?.cancel();
     _idleTimer = null;
+    _hasInitialized = false;
     notifyListeners();
   }
 

@@ -8,12 +8,12 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import '../../../components/app_bar.dart';
 import '../../../components/proceed_button.dart';
-import '../../../components/placeinfo_card.dart';
-import '../../../components/placeinput_card.dart';
 import '../../../components/ai_loading_page.dart';
-import '../../../components/date_dropdown.dart';
-import '../../../components/custom_alert_dialog.dart';
 import 'package:alpha_fe/pages/add_page/add_page_2/models/place_info.dart';
+import 'widgets/title_block.dart';
+import 'widgets/date_selector.dart';
+import 'widgets/place_info_list_section.dart';
+import 'widgets/place_input_area.dart';
 
 class AddPage_2 extends StatefulWidget {
   final String title;
@@ -31,7 +31,6 @@ class AddPage_2 extends StatefulWidget {
 
 class _AddPage_2State extends State<AddPage_2> {
   late ScrollController _scrollController;
-  bool _didReset = false;
 
   @override
   void initState() {
@@ -48,40 +47,6 @@ class _AddPage_2State extends State<AddPage_2> {
     });
   }
 
-
-
-  // PlaceInfoBlock 목록 상단에 표시되는 안내 문구
-  Widget _buildTitleBlock() {
-    double width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-    if (kIsWeb) {
-      width = 430;
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("📍${widget.title}", style: const TextStyle(fontSize: 26.7, fontWeight: FontWeight.w900)),
-        const Padding(
-          padding: EdgeInsets.only(left: 37.5),
-          child: Text('근처 코스를 알려드릴게요', style: TextStyle(fontSize: 14.3, color: Color(0xFF757575))),
-        ),
-        SizedBox(height: height * 0.0138),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 0.02),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              const Text('최근 업데이트: ', style: TextStyle(fontSize: 14.3, fontWeight: FontWeight.bold, color: Color(0xFF7F7F7F))),
-              SizedBox(width: width * 0.01),
-              // 오늘 날짜를 yyyy-MM-dd 형식으로 표시
-              Text(DateTime.now().toLocal().toString().substring(0, 10), style: TextStyle(fontSize: width * 0.03, color: const Color(0xFF7F7F7F))),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 
 
   @override
@@ -141,11 +106,11 @@ class _AddPage_2State extends State<AddPage_2> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(height: height * 0.028),
-                          _buildTitleBlock(),
+                          TitleBlock(title: widget.title),
                           SizedBox(height: height * 0.0267),
-                          DateDropdown(
-                            selectedDate: addPage2ViewModel.selectedDate,
+                          DateSelector(
                             dates: addPage2ViewModel.placeInfos.keys.toList(),
+                            selectedDate: addPage2ViewModel.selectedDate,
                             height: height,
                             width: width,
                             onChanged: (value) {
@@ -167,87 +132,29 @@ class _AddPage_2State extends State<AddPage_2> {
                               ),
                             ),
                           if (addPage2ViewModel.selectedDate.value != null)
-                            for (var info in addPage2ViewModel.placeInfos[addPage2ViewModel.selectedDate.value!] ?? []) ...[
-                              Stack(
-                                children: [
-                                  PlaceInfoBlock(
-                                    imageUrl: info.imageUrl,
-                                    title: info.title,
-                                    description: info.description,
-                                    mapX: info.mapX,
-                                    mapY: info.mapY,
-                                    width: width * 0.63,
-                                    height: height * 0.2,
-                                  ),
-                                  if (addPage2ViewModel.isEditMode)
-                                    Positioned(
-                                      top: 0,
-                                      left: 0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          addPage2ViewModel.removePlace(addPage2ViewModel.selectedDate.value!, info);
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.withOpacity(0.8),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: height * .004,
-                                            horizontal: width * 0.01,
-                                          ),
-                                          child: const Icon(Icons.close, size: 18.5, color: Colors.white),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              SizedBox(height: height * 0.0268),
-                            ],
+                            PlaceInfoListSection(
+                              placeList: addPage2ViewModel.placeInfos[addPage2ViewModel.selectedDate.value!] ?? [],
+                              isEditMode: addPage2ViewModel.isEditMode,
+                              width: width,
+                              height: height,
+                              onRemove: (info) {
+                                addPage2ViewModel.removePlace(addPage2ViewModel.selectedDate.value!, info);
+                              },
+                            ),
                           if (addPage2ViewModel.selectedDate.value != null)
-                            (addPage2ViewModel.isAddingPlaceMap[addPage2ViewModel.selectedDate.value!] == true && !kIsWeb)
-                                ? PlaceInputCard(
-                                    onComplete: (imageUrl, title, description, mapX, mapY) {
-                                      if (addPage2ViewModel.isDuplicatePlace(addPage2ViewModel.selectedDate.value!, title, description)) {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => const CustomAlertDialog(
-                                            title: '안내',
-                                            contentText: '이미 추가된 장소입니다',
-                                          ),
-                                        );
-                                        return;
-                                      }
-                                      final newPlace = PlaceInfo(
-                                        imageUrl: imageUrl,
-                                        title: title,
-                                        description: description,
-                                        mapX: mapX,
-                                        mapY: mapY,
-                                      );
-                                      addPage2ViewModel.addNewPlace(addPage2ViewModel.selectedDate.value!, newPlace);
-                                    },
-                                    onCancel: () => addPage2ViewModel.toggleAddingPlace(addPage2ViewModel.selectedDate.value!, false),
-                                  )
-                                : (!kIsWeb
-                                    ? GestureDetector(
-                                        onTap: () => addPage2ViewModel.toggleAddingPlace(addPage2ViewModel.selectedDate.value!, true),
-                                        child: Container(
-                                          width: width * 0.63,
-                                          height: height * 0.2,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: Colors.grey.shade400),
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          child: const Center(
-                                            child: Text(
-                                              '+ 장소 추가',
-                                              style: TextStyle(fontSize: 16.5),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : const SizedBox.shrink()),
+                            PlaceInputArea(
+                              isAdding: addPage2ViewModel.isAddingPlaceMap[addPage2ViewModel.selectedDate.value!] == true,
+                              isWeb: kIsWeb,
+                              width: width,
+                              height: height,
+                              onTapAdd: () => addPage2ViewModel.toggleAddingPlace(addPage2ViewModel.selectedDate.value!, true),
+                              onCancel: () => addPage2ViewModel.toggleAddingPlace(addPage2ViewModel.selectedDate.value!, false),
+                              onComplete: (info) {
+                                addPage2ViewModel.addNewPlace(addPage2ViewModel.selectedDate.value!, info);
+                              },
+                              isDuplicate: (title, desc) =>
+                                addPage2ViewModel.isDuplicatePlace(addPage2ViewModel.selectedDate.value!, title, desc),
+                            ),
                           SizedBox(height: height * 0.0184),
                           SizedBox(height: height * 0.13),
                         ],

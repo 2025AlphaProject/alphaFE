@@ -6,6 +6,7 @@ import '../../../components/save_loading_page.dart';
 import '../../../pages/add_page/add_page_3/add_page_3.dart';
 import '../../dio/authorized_dio.dart';
 
+/// TODO: 각 날짜별 코스에 해당되는 장소가 아무것도 없을 때 400 Bad Request 에러 해결해야함
 class SaveTourCourseFromAdd {
   Future<void> saveCourse({
     required BuildContext context,
