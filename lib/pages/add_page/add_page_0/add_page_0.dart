@@ -73,11 +73,6 @@ class _AddPage_0State extends State<AddPage_0> {
                 width: width,
                 height: height,
               ),
-              SizedBox(height: height * 0.005),
-              const Text("• 한글, 영문, 특수기호 구분없이 10자 이내로 입력",
-                  style: TextStyle(fontSize: 12.3, color: Colors.grey)),
-              const Text("• 결정 후 수정할 수 없으니 신중히 정해주세요",
-                  style: TextStyle(fontSize: 12.3, color: Colors.grey)),
 
               SizedBox(height: height * 0.05),
 
