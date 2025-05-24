@@ -6,14 +6,15 @@ import '../../../components/plan_card.dart';
 import '../../../components/proceed_button.dart';
 import '../../plan_page/plan_page.dart';
 import 'package:provider/provider.dart';
+import 'package:alpha_fe/providers/auth_provider.dart';
 
 
 class AddPage_3 extends StatefulWidget {
-  final String? accessToken;
+
   final int tour_id; // 정상 등록 여부 확인 텍스트
   const AddPage_3({
     required this.tour_id,
-    Key? key, required this.accessToken
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -34,6 +35,7 @@ class _AddPage_3State extends State<AddPage_3> {
   // "이 코스로 할게요!" 버튼 탭할 시 연결되어야 할 페이지, 경로 확정됨
   @override
   Widget build(BuildContext context) {
+    final accessToken = context.read<AuthProvider>().accessToken;
     final height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
@@ -79,7 +81,7 @@ class _AddPage_3State extends State<AddPage_3> {
                   size_h: height * 0.38,
                   size_w: width * 0.75,
                   tour_id: widget.tour_id,
-                  accessToken: widget.accessToken,
+                  accessToken: accessToken,
                 ),
               ),
 
@@ -98,7 +100,7 @@ class _AddPage_3State extends State<AddPage_3> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => PlanPage(accessToken: widget.accessToken,),
+                          builder: (context) => PlanPage(accessToken: accessToken,),
                       ),
                   );
               },
