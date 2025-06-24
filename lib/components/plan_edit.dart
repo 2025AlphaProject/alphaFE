@@ -1,6 +1,6 @@
 import 'package:alpha_fe/mainscreen.dart';
-import 'package:alpha_fe/pages/plan_page/plan_page.dart';
-import 'package:alpha_fe/pages/plan_page/plan_page_2.dart';
+import 'package:alpha_fe/pages/plan_page/plan_page_1/plan_page.dart';
+import 'package:alpha_fe/pages/plan_page/plan_page_2/plan_page_2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';

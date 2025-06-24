@@ -1,10 +1,10 @@
+import 'package:alpha_fe/pages/my_page/my_page_app/my_page.dart';
+import 'package:alpha_fe/pages/plan_page/plan_page_1/plan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'pages/add_page/add_page_0/add_page_0.dart';
 import 'pages/home_page/home_page.dart';
-import 'pages/my_page/my_page.dart';
 import 'pages/my_page/my_page_web.dart';
-import 'pages/plan_page/plan_page.dart';
 import 'components/bottom_navi_bar.dart';
 
 class MainScreen extends StatefulWidget {
