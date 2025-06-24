@@ -17,10 +17,13 @@ class MyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const DefaultAppBar(title: "마이페이지"),
-      body: myPageBody(),
+    return ChangeNotifierProvider<MyPageViewmodel>(
+      create: (_) => MyPageViewmodel(),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFFFFFFF),
+        appBar: const DefaultAppBar(title: "마이페이지"),
+        body: myPageBody(),
+      ),
     );
   }
 }

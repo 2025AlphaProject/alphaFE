@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import '../../../components/app_bar.dart';
 import '../../../components/plan_card.dart';
 import '../../../components/proceed_button.dart';
-import '../../plan_page/plan_page.dart';
 import 'package:provider/provider.dart';
+
+import '../../plan_page/plan_page_1/plan_page.dart';
 
 
 class AddPage_3 extends StatefulWidget {
