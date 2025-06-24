@@ -6,14 +6,12 @@ import '../models/tour_info.dart';
 class ShowTourCourseResponseHandler {
   final bool isWeb;
   final String areaName;
-  final bool isSingleDayMode;
   final ShowTourCourseState state;
   final TourInfo tourInfo;
 
   ShowTourCourseResponseHandler({
     required this.isWeb,
     required this.areaName,
-    required this.isSingleDayMode,
     required this.state,
     required this.tourInfo,
   });
@@ -30,24 +28,15 @@ class ShowTourCourseResponseHandler {
     state.receivedData = true;
     final result = <String, List<PlaceInfo>>{};
 
-    if (isSingleDayMode) {
-      final list = (data["result"][0] as List)
+    final dates = tourInfo.dateRange;
+    for (int i = 0; i < dates.length && i < data["result"].length; i++) {
+      final list = (data["result"][i] as List)
           .where((e) => (e["address"]?.toString().contains(areaName) ?? false))
           .map((e) => PlaceInfo.fromJson(e, isWeb: isWeb))
           .take(5)
           .toList();
-      result[areaName] = list;
-    } else {
-      final dates = tourInfo.dateRange;
-      for (int i = 0; i < dates.length && i < data["result"].length; i++) {
-        final list = (data["result"][i] as List)
-            .where((e) => (e["address"]?.toString().contains(areaName) ?? false))
-            .map((e) => PlaceInfo.fromJson(e, isWeb: isWeb))
-            .take(5)
-            .toList();
-        if (list.isNotEmpty) {
-          result[dates[i]] = list;
-        }
+      if (list.isNotEmpty) {
+        result[dates[i]] = list;
       }
     }
 

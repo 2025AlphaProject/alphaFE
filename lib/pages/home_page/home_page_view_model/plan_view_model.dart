@@ -5,7 +5,7 @@ import '../../../services/access_token/get_access_token_from_refresh_token.dart'
 import '../../../services/http/tour/tour_fetcher.dart';
 import '../../../services/http/tour/tour_utils.dart';
 import '../../../services/http/tour/tour_validator.dart';
-import '../../../services/http/user_me.dart';
+import '../../../services/http/user_me/user_me.dart';
 
 class PlanViewModel extends ChangeNotifier {
   bool isLoading = true;
@@ -16,7 +16,8 @@ class PlanViewModel extends ChangeNotifier {
   Future<void> fetchPlans(BuildContext context) async {
     try {
       // 1. 사용자 이름 불러오기
-      currentUsername = await UserService.getCurrentUsername(context);
+      final userInfo = await UserService().fetchMyInfo(context);
+      currentUsername = userInfo['username'];
 
       // 2. 사용자 관련 여행 목록 불러오기
       final userPlans = await TourFetcher.getUserTours(context, currentUsername!);

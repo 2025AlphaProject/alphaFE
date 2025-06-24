@@ -1,9 +1,12 @@
 import 'package:alpha_fe/mainscreen.dart';
 import 'package:alpha_fe/pages/home_page/home_page.dart';
+import 'package:alpha_fe/pages/plan_page/add_user/view_model/add_user_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:alpha_fe/components/app_bar.dart';
+import 'package:provider/provider.dart';
+
+import '../../../services/http/add_user_to_tour/add_user.dart';
 
 class ProfileListPage extends StatelessWidget {
   final String? accessToken;
@@ -31,59 +34,60 @@ class ProfileListBody extends StatefulWidget {
 
 class _ProfileListBodyState extends State<ProfileListBody> {
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, dynamic>> _profiles = [];
+  // _profiles 제거됨, ViewModel 사용
 
   late final int tour_id;
 
   // 유저 검색 api
-  Future<void> fetchAddUsers() async {
-    final dio = Dio();
-    try {
-      final response = await dio.get(
-        'http://conever.duckdns.org:8000/user/',
-      );
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
-        setState(() {
-          _profiles = List<Map<String, dynamic>>.from(data).where((profile) {
-            return _myInfo == null || profile['sub'] != _myInfo!['sub'];
-          }).toList();
-        });
-      }
-    } catch (e) {
-      print('Error fetching users: $e');
-    }
-  }
-
-  Map<String, dynamic>? _myInfo;
-
-  Future<void> fetchMyInfo() async {
-    final dio = Dio();
-    final accessToken = widget.accessToken;
-    try {
-      final response = await dio.get(
-        'http://conever.duckdns.org:8000/user/me/',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
-      );
-      if (response.statusCode == 200) {
-        setState(() {
-          _myInfo = response.data;
-        });
-      }
-    } catch (e) {
-      print('Error fetching my info: $e');
-    }
-  }
+  // Future<void> fetchAddUsers() async {
+  //   final dio = Dio();
+  //   try {
+  //     final response = await dio.get(
+  //       'http://conever.duckdns.org:8000/user/',
+  //     );
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> data = response.data;
+  //       setState(() {
+  //         _profiles = List<Map<String, dynamic>>.from(data).where((profile) {
+  //           return _myInfo == null || profile['sub'] != _myInfo!['sub'];
+  //         }).toList();
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching users: $e');
+  //   }
+  // }
+  //
+  // Map<String, dynamic>? _myInfo;
+  //
+  // Future<void> fetchMyInfo() async {
+  //   final dio = Dio();
+  //   final accessToken = widget.accessToken;
+  //   try {
+  //     final response = await dio.get(
+  //       'http://conever.duckdns.org:8000/user/me/',
+  //       options: Options(
+  //         headers: {
+  //           'Authorization': 'Bearer $accessToken',
+  //         },
+  //       ),
+  //     );
+  //     if (response.statusCode == 200) {
+  //       setState(() {
+  //         _myInfo = response.data;
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching my info: $e');
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
     tour_id = widget.tour_id;
-    fetchMyInfo().then((_) => fetchAddUsers());
+    final viewModel = context.read<AddUserViewModel>();
+    viewModel.loadUsers(context);
   }
 
   @override
@@ -115,140 +119,130 @@ class _ProfileListBodyState extends State<ProfileListBody> {
               },
             ),
           ),
+
           Expanded(
-            child: ListView.builder(
-              itemCount: _profiles.length,
-              itemBuilder: (context, index) {
-                final profile = _profiles[index];
-                if (_searchController.text.isEmpty || profile['username']
-                    .toString()
-                    .contains(_searchController.text)) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: width * 0.02,
-                        vertical: height * 0.005
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: ListTile(
-                            leading: CircleAvatar( //유저 나타내기
-                              backgroundImage: profile['profile_image_url'] != null && profile['profile_image_url'] != ""
-                                  ? NetworkImage(profile['profile_image_url'])
-                                  : null,
-                              child: profile['profile_image_url'] == null || profile['profile_image_url'] == ""
-                                  ? const Icon(Icons.person, size: 24.6)
-                                  : null,
+            child: Consumer<AddUserViewModel>(
+              builder: (context, viewModel, _) {
+                final profiles = viewModel.filteredUsers;
+                return ListView.builder(
+                  itemCount: profiles.length,
+                  itemBuilder: (context, index) {
+                    final profile = profiles[index];
+                    if (_searchController.text.isEmpty ||
+                        profile.username.contains(_searchController.text)) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.02,
+                            vertical: height * 0.005),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage: profile.profileImageUrl != null && profile.profileImageUrl != ""
+                                      ? NetworkImage(profile.profileImageUrl!)
+                                      : null,
+                                child: profile.profileImageUrl == null || profile.profileImageUrl == ""
+                                    ? const Icon(Icons.person, size: 24.6)
+                                    : null,
+                                ),
+                                title: Text(
+                                  profile.username,
+                                  style: const TextStyle(fontSize: 18.5, fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             ),
-                            title: Text(
-                              profile['username'],
-                              style: const TextStyle(fontSize: 18.5, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        IconButton( //해당유저 추가 버튼
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return Dialog(
-                                  backgroundColor: const Color(0xFFF9F9F9),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Container(
-                                    width: width,
-                                    padding: EdgeInsets.all(width*0.05),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Text(
-                                          '추가 확인',
-                                          style: TextStyle(fontSize: 18.5, fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(height: height * 0.011),
-                                        const Text(
-                                          '이 유저를 추가하시겠습니까?',
-                                          style: TextStyle(fontSize: 16.5),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        SizedBox(height: height * 0.023),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            IconButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return Dialog(
+                                      backgroundColor: const Color(0xFFF9F9F9),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Container(
+                                        width: width,
+                                        padding: EdgeInsets.all(width * 0.05),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            TextButton(
-                                              onPressed: () => Navigator.pop(context),
-                                              child: const Text(
-                                                '취소',
-                                                style: TextStyle(fontSize: 18.5, color: Colors.black),
-                                              ),
+                                            const Text(
+                                              '추가 확인',
+                                              style: TextStyle(fontSize: 18.5, fontWeight: FontWeight.bold),
                                             ),
-                                            ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.black,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(8),
+                                            SizedBox(height: height * 0.011),
+                                            const Text(
+                                              '이 유저를 추가하시겠습니까?',
+                                              style: TextStyle(fontSize: 16.5),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            SizedBox(height: height * 0.023),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.pop(context),
+                                                  child: const Text(
+                                                    '취소',
+                                                    style: TextStyle(fontSize: 18.5, color: Colors.black),
+                                                  ),
                                                 ),
-                                              ),
-                                              onPressed: () async {
-                                                final accessToken = widget.accessToken;
-                                                try {
-                                                  final dio = Dio();
-                                                  final response = await dio.post(
-                                                    'http://conever.duckdns.org:8000/tour/add_traveler/',
-                                                    options: Options(
-                                                      headers: {
-                                                        'Authorization': 'Bearer $accessToken',
-                                                        'Content-Type': 'application/json',
-                                                      },
+                                                ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors.black,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(8),
                                                     ),
-                                                    data: {
-                                                      'add_traveler_sub': profile['sub'],
-                                                      'travel_id': tour_id,
-                                                    },
-                                                  );
-                                                  if (response.statusCode == 201) {
-                                                    Navigator.pop(context);
-                                                    Navigator.of(context).pushReplacement(
-                                                      MaterialPageRoute(builder: (context) =>
-                                                          Center(
-                                                              child: Container(
-                                                                width: kIsWeb ? 430 : null,
-                                                                color: Colors.white,
-                                                                child: MainScreen(
-                                                                  accessToken: widget.accessToken,
-                                                                ),
-                                                              )
-                                                          )
-                                                      ),
+                                                  ),
+                                                  onPressed: () async {
+                                                    final success = await addUserToTour(
+                                                      context: context,
+                                                      tourId: tour_id,
+                                                      sub: profile.sub,
                                                     );
-                                                  }
-                                                } catch (e) {
-                                                  print('Error adding user: $e');
-                                                }
-                                              },
-                                              child: const Text(
-                                                '확인',
-                                                style: TextStyle(fontSize: 18.5, color: Colors.white),
-                                              ),
+                                                    if (success) {
+                                                      Navigator.pop(context);
+                                                      Navigator.of(context).pushReplacement(
+                                                        MaterialPageRoute(builder: (context) =>
+                                                            Center(
+                                                                child: Container(
+                                                                  width: kIsWeb ? 430 : null,
+                                                                  color: Colors.white,
+                                                                  child: MainScreen(
+                                                                    accessToken: widget.accessToken,
+                                                                  ),
+                                                                )
+                                                            )
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                  child: const Text(
+                                                    '확인',
+                                                    style: TextStyle(fontSize: 18.5, color: Colors.white),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
+                                      ),
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                          icon: const Icon(Icons.add, size: 24.6),
+                              icon: const Icon(Icons.add, size: 24.6),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return SizedBox.shrink();
-                }
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                );
               },
             ),
           ),
@@ -257,4 +251,3 @@ class _ProfileListBodyState extends State<ProfileListBody> {
     );
   }
 }
-

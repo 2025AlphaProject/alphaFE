@@ -21,7 +21,6 @@ class ShowTourCourseRequestManager {
     required BuildContext context,
     required int tourId,
     required String areaName,
-    required bool isSingleDayMode,
     required bool isWeb,
     required ShowTourCourseState state,
     required VoidCallback onSuccess,
@@ -32,10 +31,7 @@ class ShowTourCourseRequestManager {
     final userId = await apiService.fetchUserId(context);
     if (userId == null) return onError('사용자 정보를 불러올 수 없습니다.');
 
-    final tourInfo = isSingleDayMode
-        ? TourInfo(userId: userId, startDate: DateTime.now(), endDate: DateTime.now())
-        : await apiService.fetchTourInfo(context, tourId, userId);
-
+    final tourInfo = await apiService.fetchTourInfo(context, tourId, userId);
     if (tourInfo == null) return onError('여행 날짜 정보를 불러올 수 없습니다.');
 
     socketService.connect(
@@ -46,7 +42,6 @@ class ShowTourCourseRequestManager {
         final handler = ShowTourCourseResponseHandler(
           isWeb: isWeb,
           areaName: areaName,
-          isSingleDayMode: isSingleDayMode,
           state: state,
           tourInfo: tourInfo,
         );
