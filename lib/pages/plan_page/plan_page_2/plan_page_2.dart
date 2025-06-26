@@ -32,7 +32,7 @@ class _PlanPage2State extends State<PlanPage2> {
       body: plan_page2_body(
         tour_id: widget.tour_id,
         onDataRefreshed: _onDataRefreshed,
-        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQyOTM5LCJpYXQiOjE3NTA5MzkzMzksImp0aSI6IjA0MGFmNzNhNGYzYjQzMTlhZDIxMDFlN2EzNjJlOGNhIiwic3ViIjo0MjQ3MDU2NzY2fQ.34dfWAxL2ERsiMQISjaBFco8UNJiswNUOGMjukFF3rY",
+        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQ2NzE2LCJpYXQiOjE3NTA5NDMxMTYsImp0aSI6IjU5ZjEzY2E3OTUzZjQ1ZjdiNzVjZTVmMDdhY2QyNDc3Iiwic3ViIjo0MjQ3MDU2NzY2fQ.zaFLoabaEpdIc61GjmHdRHJhH4nCai9YpkOhvF6Zra0",
       ),
     );
   }

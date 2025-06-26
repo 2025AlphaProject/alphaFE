@@ -6,7 +6,7 @@ import '../../../../components/app_bar.dart';
 import 'package:alpha_fe/components/mission_loading_page.dart';
 import '../../mission_page_1/viewModel/mission_page_1_viewModel.dart';
 import '../../mission_page_2/viewModel/mission_page_2_viewModel.dart';
-import 'mission_page_3_viewModel.dart';
+import '../viewModel/mission_page_3_viewModel.dart';
 
 class missionTest extends StatefulWidget {
   final int index;

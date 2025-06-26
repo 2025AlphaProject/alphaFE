@@ -101,7 +101,7 @@ class _AddPage_3State extends State<AddPage_3> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => PlanPage(accessToken: accessToken,),
+                          builder: (context) => PlanPage(),
                       ),
                   );
               },

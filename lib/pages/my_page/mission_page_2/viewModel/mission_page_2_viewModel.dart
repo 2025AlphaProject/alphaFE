@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../../../services/dio/authorized_dio.dart';
 import 'package:alpha_fe/components/camera.dart';
 
 class MissionPage2Viewmodel extends ChangeNotifier {

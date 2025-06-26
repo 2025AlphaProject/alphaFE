@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'dart:io';
 import '../../mission_page_1/viewModel/mission_page_1_viewModel.dart';
 import '../../mission_page_2/viewmodel/mission_page_2_viewmodel.dart';
+import 'mission_test_button.dart';
 
 
 // ✅ 사진 미리보기 - 찍은 사진보기
@@ -64,6 +65,11 @@ class PlaceImage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
+        ),
+        // Wrap MissionTestButton with ChangeNotifierProvider for MissionPage2Viewmodel
+        ChangeNotifierProvider(
+          create: (_) => MissionPage2Viewmodel(),
+          child: MissionTestButton(index: 1,),  //TODO: index 숫자 바꾸기
         ),
       ],
     );

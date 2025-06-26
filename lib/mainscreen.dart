@@ -24,9 +24,9 @@ class _MainScreenState extends State<MainScreen> {
   List<Widget> get _pages => [
 
     HomePage(),
-    PlanPage(accessToken: widget.accessToken,),
+    PlanPage(),
     AddPage_0(),
-    kIsWeb ? MyPage_Web() : MyPage(accessToken: widget.accessToken,),
+    kIsWeb ? MyPage_Web() : MyPage(),
 
   ];
 

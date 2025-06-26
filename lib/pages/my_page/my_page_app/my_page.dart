@@ -12,9 +12,6 @@ import 'viewModel/my_page_viewModel.dart';
 
 
 class MyPage extends StatelessWidget {
-  final String? accessToken;
-  const MyPage({Key? key, this.accessToken}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<MyPageViewmodel>(
