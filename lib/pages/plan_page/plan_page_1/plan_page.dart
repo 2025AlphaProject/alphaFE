@@ -60,7 +60,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
         'http://conever.duckdns.org:8000/tour/',
         options: Options(
           headers: {
-            'Authorization': 'Bearer $accessToken',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQyOTM5LCJpYXQiOjE3NTA5MzkzMzksImp0aSI6IjA0MGFmNzNhNGYzYjQzMTlhZDIxMDFlN2EzNjJlOGNhIiwic3ViIjo0MjQ3MDU2NzY2fQ.34dfWAxL2ERsiMQISjaBFco8UNJiswNUOGMjukFF3rY',
             'Content-Type': 'application/json',
           },
         ),
@@ -73,7 +73,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           'http://conever.duckdns.org:8000/user/me',
           options: Options(
             headers: {
-              'Authorization': 'Bearer $accessToken',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQyOTM5LCJpYXQiOjE3NTA5MzkzMzksImp0aSI6IjA0MGFmNzNhNGYzYjQzMTlhZDIxMDFlN2EzNjJlOGNhIiwic3ViIjo0MjQ3MDU2NzY2fQ.34dfWAxL2ERsiMQISjaBFco8UNJiswNUOGMjukFF3rY',
               'Accept': 'application/json'
             },
           ),
@@ -138,7 +138,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
               'http://conever.duckdns.org:8000/tour/course/$tourId/',
               options: Options(
                 headers: {
-                  'Authorization': 'Bearer $accessToken',
+                  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQyOTM5LCJpYXQiOjE3NTA5MzkzMzksImp0aSI6IjA0MGFmNzNhNGYzYjQzMTlhZDIxMDFlN2EzNjJlOGNhIiwic3ViIjo0MjQ3MDU2NzY2fQ.34dfWAxL2ERsiMQISjaBFco8UNJiswNUOGMjukFF3rY',
                   'Content-Type': 'application/json',
                 },
               ),
@@ -152,7 +152,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
                 'http://conever.duckdns.org:8000/tour/$tourId/',
                 options: Options(
                   headers: {
-                    'Authorization': 'Bearer $accessToken',
+                    'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQyOTM5LCJpYXQiOjE3NTA5MzkzMzksImp0aSI6IjA0MGFmNzNhNGYzYjQzMTlhZDIxMDFlN2EzNjJlOGNhIiwic3ViIjo0MjQ3MDU2NzY2fQ.34dfWAxL2ERsiMQISjaBFco8UNJiswNUOGMjukFF3rY',
                     'Content-Type': 'application/json',
                   },
                 ),

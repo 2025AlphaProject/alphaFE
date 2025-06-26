@@ -1,5 +1,5 @@
 class UserProfile {
-  final String sub;
+  final int sub;
   final String username;
   final String? profileImageUrl;
 

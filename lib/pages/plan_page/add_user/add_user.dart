@@ -1,6 +1,6 @@
 import 'package:alpha_fe/mainscreen.dart';
 import 'package:alpha_fe/pages/home_page/home_page.dart';
-import 'package:alpha_fe/pages/plan_page/add_user/view_model/add_user_view_model.dart';
+import 'package:alpha_fe/pages/plan_page/add_user/viewModel/add_user_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/components/app_bar.dart';
@@ -37,50 +37,6 @@ class _ProfileListBodyState extends State<ProfileListBody> {
   // _profiles 제거됨, ViewModel 사용
 
   late final int tour_id;
-
-  // 유저 검색 api
-  // Future<void> fetchAddUsers() async {
-  //   final dio = Dio();
-  //   try {
-  //     final response = await dio.get(
-  //       'http://conever.duckdns.org:8000/user/',
-  //     );
-  //     if (response.statusCode == 200) {
-  //       final List<dynamic> data = response.data;
-  //       setState(() {
-  //         _profiles = List<Map<String, dynamic>>.from(data).where((profile) {
-  //           return _myInfo == null || profile['sub'] != _myInfo!['sub'];
-  //         }).toList();
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching users: $e');
-  //   }
-  // }
-  //
-  // Map<String, dynamic>? _myInfo;
-  //
-  // Future<void> fetchMyInfo() async {
-  //   final dio = Dio();
-  //   final accessToken = widget.accessToken;
-  //   try {
-  //     final response = await dio.get(
-  //       'http://conever.duckdns.org:8000/user/me/',
-  //       options: Options(
-  //         headers: {
-  //           'Authorization': 'Bearer $accessToken',
-  //         },
-  //       ),
-  //     );
-  //     if (response.statusCode == 200) {
-  //       setState(() {
-  //         _myInfo = response.data;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching my info: $e');
-  //   }
-  // }
 
   @override
   void initState() {
@@ -200,7 +156,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                                     final success = await addUserToTour(
                                                       context: context,
                                                       tourId: tour_id,
-                                                      sub: profile.sub,
+                                                      sub: profile.sub.toString(),
                                                     );
                                                     if (success) {
                                                       Navigator.pop(context);
