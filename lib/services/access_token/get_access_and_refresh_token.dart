@@ -19,8 +19,8 @@ Future<void> getAccessAndRefreshToken(BuildContext context, OAuthToken token) as
 
     print("✅ 서버 응답 수신 완료: ${response.statusCode} ${response.data}");
 
-    await saveRefreshToken(token.refreshToken);
-    context.read<AuthProvider>().setAccessToken(accessToken: token.accessToken);
+    await saveRefreshToken(response.data['tokens']['refresh_token']);
+    context.read<AuthProvider>().setAccessToken(accessToken: response.data['tokens']['access_token']);
 
     print("🚀 메인 화면으로 이동");
   } catch (e) {

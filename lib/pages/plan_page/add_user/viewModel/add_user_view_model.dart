@@ -15,6 +15,7 @@ class AddUserViewModel extends ChangeNotifier {
 
     final myInfo = await _service.fetchMyInfo(context);
     final rawUsers = await _service.fetchAllUsers(context);
+    print(rawUsers);
 
     allUsers = rawUsers
         .where((u) => u['sub'] != myInfo['sub'])
@@ -22,6 +23,7 @@ class AddUserViewModel extends ChangeNotifier {
         .toList();
 
     filteredUsers = allUsers;
+    print(filteredUsers);
     isLoading = false;
     notifyListeners();
   }
