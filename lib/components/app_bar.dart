@@ -5,7 +5,7 @@ import 'package:flutter/scheduler.dart';
 import '../pages/add_page/add_page_0/add_page_0.dart';
 import '../pages/add_page/add_page_2/add_page_2.dart';
 import '../pages/add_page/add_page_3/add_page_3.dart';
-import 'placeinfo_card.dart';
+import '../pages/add_page/add_page_2/placeinfo_card.dart';
 import 'dart:math';
 
 class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {

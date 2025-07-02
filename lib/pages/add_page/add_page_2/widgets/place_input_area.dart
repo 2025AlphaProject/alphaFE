@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../components/placeinput_card.dart';
+import '../placeinput_card.dart';
 import 'package:alpha_fe/pages/add_page/add_page_2/models/place_info.dart';
 
 class PlaceInputArea extends StatelessWidget {

@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import '../../../components/app_bar.dart';
 import '../../../components/proceed_button.dart';
-import '../../../components/ai_loading_page.dart';
+import 'ai_loading_page.dart';
 import 'package:alpha_fe/pages/add_page/add_page_2/models/place_info.dart';
 import 'widgets/title_block.dart';
 import 'widgets/date_selector.dart';

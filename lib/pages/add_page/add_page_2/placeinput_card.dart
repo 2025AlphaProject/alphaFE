@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../pages/add_page/searchplace_page.dart';
-import 'custom_alert_dialog.dart';
+import '../searchplace_page.dart';
+import '../../../components/custom_alert_dialog.dart';
 
 // 사용자가 장소를 입력하거나 검색하여 정보를 입력할 수 있는 카드
 class PlaceInputCard extends StatefulWidget {
