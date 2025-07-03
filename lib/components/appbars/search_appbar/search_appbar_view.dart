@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import '../../../../pages/add_page/add_page_0/add_page_0.dart';
-import 'search_appbar_viewmodel.dart';
+import 'search_appbar_view_model.dart';
 import 'dart:math';
 
 
 class SearchAppBar extends StatefulWidget {
-  final String? accessToken;
 
   const SearchAppBar({
     Key? key,
-    required this.accessToken,
   }) : super(key: key);
 
 

@@ -143,7 +143,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SearchAppBar(
-              accessToken: accessToken,
             ),
           ],
         ),
