@@ -32,19 +32,20 @@ class SortViewModel extends ChangeNotifier{
 
   List<Map<String, dynamic>> get sortedCardData {
     final sorted = List<Map<String, dynamic>>.from(_cardData);
+    print("sorted: $sorted");
     switch (_sortType) {
       case SortType.dDayAsc:
         sorted.sort((a, b) =>
-            calculateDday(a['endDate']!).compareTo(
-                calculateDday(b['endDate']!)));
+            calculateDday(a['end_date']!).compareTo(
+                calculateDday(b['end_date']!)));
         break;
       case SortType.dDayDesc:
         sorted.sort((a, b) =>
-            calculateDday(b['endDate']!).compareTo(
-                calculateDday(a['endDate']!)));
+            calculateDday(b['end_date']!).compareTo(
+                calculateDday(a['end_date']!)));
         break;
       case SortType.title:
-        sorted.sort((a, b) => a['title']!.compareTo(b['title']!));
+        sorted.sort((a, b) => a['tour_name']!.compareTo(b['tour_name']!));
         break;
     }
     return sorted;

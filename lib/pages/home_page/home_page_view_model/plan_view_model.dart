@@ -1,3 +1,4 @@
+import 'package:alpha_fe/services/dio/authorized_dio.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 

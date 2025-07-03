@@ -31,7 +31,7 @@ class PlanPage_Body extends StatefulWidget {
 }
 
 class _PlanPage_BodyState extends State<PlanPage_Body> {
-  late PageController _pageController;
+  PageController? _pageController;
   late int initialPage;
 
   @override
@@ -47,7 +47,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
   void _initController(List<Map<String, dynamic>> sortedCardData) {
     final today = DateTime.now();
     final index = sortedCardData.indexWhere((item) {
-      final end = DateTime.parse(item['endDate']!.replaceAll('.', '-'));
+      final end = DateTime.parse(item['end_date']!.replaceAll('.', '-'));
       return !end.isBefore(today);
     });
     initialPage = index != -1 ? index : 0;
@@ -79,7 +79,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
       width = 430;
     }
 
-    if (!isLoading && cards.isNotEmpty && (_pageController == null || !_pageController.hasClients)) {
+    if (!isLoading && cards.isNotEmpty && (_pageController == null || !(_pageController?.hasClients ?? false))) {
       _initController(cards);
     }
 
@@ -150,19 +150,19 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           child: PageView.builder(
             scrollDirection: Axis.horizontal,
             physics: const ClampingScrollPhysics(),
-            controller: _pageController,
+            controller: _pageController!,
             itemCount: cards.length,
             itemBuilder: (context, index) {
               final item = cards[index];
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: width * 0.02),
                 child: PlanCard(
-                  title: item['title']!,
-                  startDate: item['startDate']!,
-                  endDate: item['endDate']!,
+                  title: item['tour_name']!,
+                  startDate: item['start_date']!,
+                  endDate: item['end_date']!,
                   size_h: height * 0.5,
                   size_w: width * 0.65,
-                  tour_id: item['tour_id'],
+                  tour_id: item['id'],
                 ),
               );
             },
@@ -173,7 +173,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
         // 페이지 인디케이터
         PlanPageIndicator(
-          controller: _pageController,
+          controller: _pageController!,
           count: cards.length,
           dotSize: width * 0.02,
           dotActiveWidth: width * 0.03,
@@ -185,7 +185,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
 //페이지 인디케이터
 class PlanPageIndicator extends StatefulWidget {
-  final PageController controller;
+  final PageController? controller;
   final int count;
   final double? dotSize;
   final double? dotActiveWidth;
@@ -208,12 +208,12 @@ class _PlanPageIndicatorState extends State<PlanPageIndicator> {
   @override
   void initState() {
     super.initState();
-    _currentPage = widget.controller.initialPage;
-    widget.controller.addListener(_pageListener);
+    _currentPage = widget.controller?.initialPage ?? 0;
+    widget.controller?.addListener(_pageListener);
   }
 
   void _pageListener() {
-    final newPage = widget.controller.page?.round() ?? 0;
+    final newPage = widget.controller?.page?.round() ?? 0;
     if (_currentPage != newPage) {
       setState(() {
         _currentPage = newPage;
@@ -223,7 +223,7 @@ class _PlanPageIndicatorState extends State<PlanPageIndicator> {
 
   @override
   void dispose() {
-    widget.controller.removeListener(_pageListener);
+    widget.controller?.removeListener(_pageListener);
     super.dispose();
   }
 
