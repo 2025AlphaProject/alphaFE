@@ -11,7 +11,6 @@ Future<bool> CheckMissionService(BuildContext context, int tdpId) async {
     }
     return false;
   } catch (e) {
-    print("CheckMissionService 오류 발생: $e");
-    return false;
+    throw Exception("CheckMissionService Error: $e");
   }
 }

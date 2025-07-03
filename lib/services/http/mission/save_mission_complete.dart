@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../dio/authorized_dio.dart';
 
-Future<Response?> SaveMissionComplete(BuildContext context, int tdpId, bool isSuccess) async {
+Future<Response> SaveMissionComplete(BuildContext context, int tdpId, bool isSuccess) async {
   final dio = await getAuthorizedDio(context);
   final data = {
     "tdp_id": tdpId,
@@ -11,7 +11,6 @@ Future<Response?> SaveMissionComplete(BuildContext context, int tdpId, bool isSu
   try {
     return await dio.post('http://conever.duckdns.org:8000/mission/save_mission_complete/', data: data);
   } catch (e) {
-    print('SaveMissionComplete 오류 발생: $e');
-    return null;
+    throw Exception("SaveMissionComplete Error: $e");
   }
 }

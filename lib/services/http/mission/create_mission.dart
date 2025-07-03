@@ -16,7 +16,6 @@ Future<bool> CreateMissionService(BuildContext context, List<Map<String, dynamic
     final response = await dio.post('http://conever.duckdns.org:8000/mission/random/', data: payload);
     return response.statusCode == 201;
   } catch (e) {
-    print("CreateMissionService 오류 발생: $e");
-    return false;
+    throw Exception("CreateMissionService Error: $e");
   }
 }

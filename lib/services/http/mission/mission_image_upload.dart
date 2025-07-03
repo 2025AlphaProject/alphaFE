@@ -2,7 +2,7 @@ import 'package:alpha_fe/services/dio/authorized_dio.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-Future<Response?> MissionImageUpload(BuildContext context, String imagePath, int tdpId) async {
+Future<Response> MissionImageUpload(BuildContext context, String imagePath, int tdpId) async {
   final dio = await getAuthorizedDio(context);
 
   final formData = FormData.fromMap({
@@ -17,7 +17,6 @@ Future<Response?> MissionImageUpload(BuildContext context, String imagePath, int
     );
     return response;
   } catch (e) {
-    print('MissionImageUpload 오류 발생: $e');
-    return null;
+    throw Exception("MissionImageUpload Error: $e");
   }
 }
