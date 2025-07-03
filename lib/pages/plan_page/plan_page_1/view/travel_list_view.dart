@@ -45,7 +45,6 @@ class PlanList extends StatelessWidget {
       initialPage: initialPage,
     );
     final cards = vm.sortedCardData;
-    final accessToken = Provider.of<AuthProvider>(context, listen: false).accessToken;
 
     return Column(
       children: [
@@ -70,7 +69,6 @@ class PlanList extends StatelessWidget {
                   size_h: height * 0.5,
                   size_w: width * 0.65,
                   tour_id: item['tour_id'],
-                  accessToken: accessToken,
                 ),
               );
             },

@@ -17,7 +17,7 @@ Future<bool> addUserToTour({
     );
     return response.statusCode == 201;
   } catch (e) {
-    print('Error adding user: $e');
+    print('Error adding user: $e');  //TODO: stack 을 사용해서 Firebase Crashlytics 아니면 Sentry 로 로그 수집을 할 수 있다.
     return false;
   }
 }

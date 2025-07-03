@@ -82,7 +82,6 @@ class _AddPage_3State extends State<AddPage_3> {
                   size_h: height * 0.38,
                   size_w: width * 0.75,
                   tour_id: widget.tour_id,
-                  accessToken: accessToken,
                 ),
               ),
 

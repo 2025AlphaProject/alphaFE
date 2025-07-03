@@ -48,7 +48,6 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
     _fetchTourData();
   }
 
-  //내 여행 가져오기(리스트)
   Future<void> _fetchTourData() async {
     final accessToken = widget.accessToken;
     final dio = Dio();
@@ -330,7 +329,6 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
                   size_h: height * 0.5,
                   size_w: width * 0.65,
                   tour_id: item['tour_id'],
-                  accessToken: widget.accessToken,
                 ),
               );
             },

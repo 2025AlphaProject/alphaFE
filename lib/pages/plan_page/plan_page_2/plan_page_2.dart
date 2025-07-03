@@ -11,9 +11,8 @@ import '../../../components/logout_by_expiration.dart';
 import '../../../services/access_token/get_access_token_from_refresh_token.dart';
 
 class PlanPage2 extends StatefulWidget {
-  final String? accessToken;
   final int tour_id;
-  const PlanPage2({Key? key, required this.tour_id, required this.accessToken}) : super(key: key);
+  const PlanPage2({Key? key, required this.tour_id}) : super(key: key);
 
   @override
   State<PlanPage2> createState() => _PlanPage2State();

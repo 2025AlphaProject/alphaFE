@@ -1,11 +1,12 @@
+import 'package:alpha_fe/services/dio/authorized_dio.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
 import '../../../services/access_token/get_access_token_from_refresh_token.dart';
-import '../../../services/http/tour/tour_fetcher.dart';
-import '../../../services/http/tour/tour_utils.dart';
-import '../../../services/http/tour/tour_validator.dart';
-import '../../../services/http/user_me/user_me.dart';
+import '../../../services/http/tour/get_user_tours.dart';
+import '../../../services/http/tour/pick_nearest_tour.dart';
+import '../../../services/http/tour/is_valid_plan.dart';
+import '../../../services/http/user/fetch_my_info.dart';
 
 class PlanViewModel extends ChangeNotifier {
   bool isLoading = true;
@@ -16,18 +17,18 @@ class PlanViewModel extends ChangeNotifier {
   Future<void> fetchPlans(BuildContext context) async {
     try {
       // 1. 사용자 이름 불러오기
-      final userInfo = await UserService().fetchMyInfo(context);
+      final userInfo = await FetchMyInfo(context: context);
       currentUsername = userInfo['username'];
 
       // 2. 사용자 관련 여행 목록 불러오기
-      final userPlans = await TourFetcher.getUserTours(context, currentUsername!);
+      final userPlans = await GetUserTours(context: context, username: currentUsername!);
 
       // 3. 유효한 여행만 필터링 (만료 or 코스 없는 여행 삭제)
-      final validPlans = await TourValidator.filterValidTours(context, userPlans);
+      final validPlans = await FilterValidTours(context: context, plans: userPlans);
 
       // 4. 가장 가까운 여행 선택
       if (validPlans.isNotEmpty) {
-        nearestPlan = TourUtils.pickNearestTour(validPlans);
+        nearestPlan = PickNearestTour(validPlans: validPlans);
       } else {
         nearestPlan = null;
       }
@@ -46,4 +47,19 @@ class PlanViewModel extends ChangeNotifier {
       notifyListeners(); // 상태 변경 알림
     }
   }
+}
+
+Future<List<dynamic>> FilterValidTours({
+  required BuildContext context,
+  required List<dynamic> plans,
+}) async {
+  final validPlans = <dynamic>[];
+
+  for (final plan in plans) {
+    final isValid = await IsValidPlan(context: context, plan: plan);
+    if (isValid) {
+      validPlans.add(plan);
+    }
+  }
+  return validPlans;
 }

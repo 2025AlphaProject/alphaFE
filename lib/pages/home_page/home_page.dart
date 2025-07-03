@@ -69,7 +69,6 @@ class _HomePageState extends State<HomePage> {
                               nearestPlan: nearestPlan,
                               width: width,
                               height: height,
-                              accessToken: accessToken,
                             ),
                             SizedBox(height: height * 0.06),
                             Center(

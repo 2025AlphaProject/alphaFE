@@ -1,6 +1,6 @@
 import 'package:alpha_fe/pages/add_page/add_page_2/view_models/show_tour_course_view_model.dart';
 import 'package:alpha_fe/pages/add_page/add_page_2/view_models/add_page_2_view_model.dart';
-import 'package:alpha_fe/services/http/save_tour_course/save_tour_course_from_add.dart';
+import 'package:alpha_fe/services/http/tour/save_tour_course.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -186,7 +186,7 @@ class _AddPage_2State extends State<AddPage_2> {
                             fontSize_: 14.3,
                             fontWeight_: FontWeight.bold,
                             onTap: () async {
-                              await SaveTourCourseFromAdd().saveCourse(
+                              await SaveTourCourse(
                                 context: context,
                                 placeWidgets: addPage2ViewModel.placeInfos.entries.toList(),
                                 tourId: widget.tourId,

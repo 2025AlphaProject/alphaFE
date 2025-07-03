@@ -1,4 +1,6 @@
-
+import 'package:alpha_fe/services/http/mission/check_mission_complete.dart';
+import 'package:alpha_fe/services/http/mission/mission_image_upload.dart';
+import 'package:alpha_fe/services/http/mission/save_mission_complete.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
@@ -34,25 +36,23 @@ class MissionPage3Viewmodel extends ChangeNotifier {
 
   Future<void>sendMissionEntry(BuildContext context) async {
     try {
-      final requestData = {
-            "travel_id": mission['tour_id'],
-            "place_id": mission['place_id'],
-            "mission_id": mission['mission_id'],
-          };
-      final dio = await getAuthorizedDio(context);
-      final response = await dio.post('http://conever.duckdns.org:8000/mission/check_complete/',
-        data: requestData,);
-      if (response.statusCode == 200) {
+      final response = await CheckMissionComplete(
+        context,
+        mission['tour_id'],
+        mission['place_id'],
+        mission['mission_id'],
+      );
+      if (response?.statusCode == 200) {
         print('✅ 미션 진입 API 성공');
-        final data = response.data;
+        final data = response?.data;
         print(data);
         if(data['result']=="success"){
           mission['isCompleted']= true;
         }
         finalMission(context); //미션최종 저장 실행
       } else {
-        print('❌ 미션 진입 API 실패: ${response.statusCode}');
-        final data = response.data;
+        print('❌ 미션 진입 API 실패: ${response?.statusCode}');
+        final data = response?.data;
         print(data);
       }
     } catch (e) {
@@ -74,17 +74,15 @@ class MissionPage3Viewmodel extends ChangeNotifier {
       notifyListeners();
     }
     try {
-      final requestData = {
-        "tdp_id": mission['tdp_id'],
-        "is_success": _mission_success
-      };
-      final dio = await getAuthorizedDio(context);
-      final response = await dio.post('http://conever.duckdns.org:8000/mission/save_mission_complete/',
-        data: requestData);
+      final response = await SaveMissionComplete(
+        context,
+        mission['tdp_id'],
+        _mission_success,
+      );
 
-      if (response.statusCode == 201) {
+      if (response?.statusCode == 201) {
         print('미션 최종결과 저장 성공');
-        print(response.data);
+        print(response?.data);
         _isLoading = false;
         notifyListeners();
       }
@@ -94,8 +92,6 @@ class MissionPage3Viewmodel extends ChangeNotifier {
   }
 
   Future<void>uploadMissionImage(BuildContext context) async {
-    final accessToken = context.read<AuthProvider>().accessToken;
-    final dio = Dio();
     final image = context.read<MissionPage2Viewmodel>().image;
     if (image == null) {
       print('❌ 이미지가 없습니다.');
@@ -103,31 +99,13 @@ class MissionPage3Viewmodel extends ChangeNotifier {
       notifyListeners();
       return;
     }
-    try {
-      final formData = FormData.fromMap({
-        'travel_days_id': mission['tdp_id'].toString(),
-        'image': image != null ? await MultipartFile.fromFile(image.path) : null,
-      });
-      final response = await dio.post(
-        'http://conever.duckdns.org:8000/mission/image_upload/',
-        data: formData,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'Content-Type': 'multipart/form-data',
-          },
-        ),
-      );
-      if (response.statusCode == 201) {
-        print('미션 이미지 업로드 성공');
-        sendMissionEntry(context);
-      } else {
-        print('업로드 실패: ${response.statusCode}');
-        _isLoading = false;
-        notifyListeners();
-      }
-    } catch (e) {
-      print('$e');
+
+    final response = await MissionImageUpload(context, image.path, mission['tdp_id']);
+    if (response?.statusCode == 201) {
+      print('미션 이미지 업로드 성공');
+      sendMissionEntry(context);
+    } else {
+      print('업로드 실패: ${response?.statusCode}');
       _isLoading = false;
       notifyListeners();
     }

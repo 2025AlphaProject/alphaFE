@@ -90,8 +90,8 @@ class _missionTestState extends State<missionTest> {
                 ),
                 child: _image != null
                     ? Image.file(_image, fit: BoxFit.cover)
-                    : Padding(
-                  padding: const EdgeInsets.all(20.0),
+                    : const Padding(
+                  padding: EdgeInsets.all(20.0),
                   child: Text(
                     '사진이 없습니다.',
                     textAlign: TextAlign.center,
