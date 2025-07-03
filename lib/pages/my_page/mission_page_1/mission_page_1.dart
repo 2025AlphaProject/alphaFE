@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import '../../../../components/app_bar.dart';
+import '../../../components/appbars/default_appbar/default_appbar.dart';
 import 'viewModel/mission_page_1_viewModel.dart';
 import 'view/mission_progress.dart';
 import 'view/mission_item.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import '../../../components/app_bar.dart';
+import '../../../components/appbars/default_appbar/default_appbar.dart';
 import 'package:dio/dio.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/components/plan_course_event.dart';

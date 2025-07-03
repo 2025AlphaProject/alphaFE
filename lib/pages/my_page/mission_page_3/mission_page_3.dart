@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
-import '../../../../components/app_bar.dart';
+import '../../../components/appbars/default_appbar/default_appbar.dart';
 import 'package:alpha_fe/pages/my_page/mission_loading_page.dart';
 import '../mission_page_1/viewModel/mission_page_1_viewModel.dart';
 import '../mission_page_2/viewModel/mission_page_2_viewModel.dart';
