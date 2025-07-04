@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../searchplace_page.dart';
-import '../../../components/custom_alert_dialog.dart';
+import 'add_page_2/searchplace_page/searchplace_view.dart';
+import '../../components/custom_alert_dialog.dart';
 
 // 사용자가 장소를 입력하거나 검색하여 정보를 입력할 수 있는 카드
 class PlaceInputCard extends StatefulWidget {
@@ -34,6 +34,16 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
   @override
   void initState() {
     super.initState();
+  }
+
+  // 외부 검색 화면에서 장소를 선택했을 때 입력값을 자동으로 채워넣음
+  void setPlaceInfo(Map<String, dynamic> place) {
+    _imageUrl = place['imageUrl'] ?? '';
+    _title = place['title'] ?? '';
+    _description = place['address'] ?? '';
+    _mapX = place['mapX'] ?? 0.0;
+    _mapY = place['mapY'] ?? 0.0;
+    setState(() {});
   }
 
   @override
@@ -208,13 +218,5 @@ class _PlaceInputCardState extends State<PlaceInputCard> {
     );
   }
 
-  // 외부 검색 화면에서 장소를 선택했을 때 입력값을 자동으로 채워넣음
-  void setPlaceInfo(Map<String, dynamic> place) {
-    _imageUrl = place['imageUrl'] ?? '';
-    _title = place['title'] ?? '';
-    _description = place['address'] ?? '';
-    _mapX = place['mapX'] ?? 0.0;
-    _mapY = place['mapY'] ?? 0.0;
-    setState(() {});
-  }
+
 }
