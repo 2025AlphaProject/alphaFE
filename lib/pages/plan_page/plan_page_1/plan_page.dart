@@ -2,7 +2,7 @@ import 'package:alpha_fe/components/plan_card.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import '../../../components/app_bar.dart';
+import '../../../components/appbars/default_appbar/default_appbar.dart';
 import '../../../components/logout_by_expiration.dart';
 import '../../../services/access_token/get_access_token_from_refresh_token.dart';
 

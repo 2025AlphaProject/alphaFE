@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:alpha_fe/pages/add_page/add_page_2/models/place_info.dart';
-import '../../../../components/placeinfo_card.dart';
+import '../placeinfo_card.dart';
 
 class PlaceInfoListSection extends StatelessWidget {
   final List<PlaceInfo> placeList;

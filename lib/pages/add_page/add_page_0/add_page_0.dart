@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:alpha_fe/components/custom_alert_dialog.dart';
 import '../../../components/proceed_button.dart';
-import '../../../components/app_bar.dart';
+import '../../../components/appbars/default_appbar/default_appbar.dart';
 import 'package:alpha_fe/pages/add_page/add_page_0/view_model/add_page_0_view_model.dart';
 import 'package:alpha_fe/pages/add_page/add_page_0/widgets/date_select_section.dart';
 import 'package:alpha_fe/pages/add_page/add_page_0/widgets/title_input_section.dart';

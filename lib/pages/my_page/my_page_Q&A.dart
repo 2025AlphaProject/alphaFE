@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../components/app_bar.dart';
+import '../../components/appbars/default_appbar/default_appbar.dart';
 
 class MyPage_QA extends StatelessWidget {
   const MyPage_QA({Key? key}) : super(key: key);

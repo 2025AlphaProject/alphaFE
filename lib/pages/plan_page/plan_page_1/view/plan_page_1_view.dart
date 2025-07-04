@@ -2,7 +2,7 @@ import 'package:alpha_fe/pages/plan_page/plan_page_1/view/travel_list_view.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import '../../../../components/app_bar.dart';
+import '../../../../components/appbars/default_appbar/default_appbar.dart';
 import '../viewModel/plan_sort_viewModel.dart';
 
 class PlanPage_1 extends StatelessWidget {

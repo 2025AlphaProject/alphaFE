@@ -1,7 +1,7 @@
 //이건 현재 사용 X
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../components/app_bar.dart';
+import '../../components/appbars/default_appbar/default_appbar.dart';
 import 'package:dio/dio.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

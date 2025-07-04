@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:alpha_fe/components/app_bar.dart';
+import 'package:alpha_fe/components/appbars/default_appbar/default_appbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyPage_Web extends StatelessWidget {

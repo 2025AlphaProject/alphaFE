@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:alpha_fe/components/app_bar.dart';
+import 'package:alpha_fe/components/appbars/default_appbar/default_appbar.dart';
 
 //각 장소별 상세정보페이지
 class nearEvents extends StatelessWidget {
