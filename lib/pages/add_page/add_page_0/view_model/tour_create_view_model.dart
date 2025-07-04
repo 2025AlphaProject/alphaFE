@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../services/http/tour_service/tour_service.dart';
+import '../../../../services/http/tour/register_tour.dart';
 
 class TourCreateViewModel with ChangeNotifier {
   bool isLoading = false;
@@ -17,7 +17,7 @@ class TourCreateViewModel with ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await TourService.registerTour(context, title, range);
+      final result = await RegisterTour(context, title, range);
       if (result != null) {
         isSuccess = true;
         onSuccess?.call(result); // Pass tourId if needed

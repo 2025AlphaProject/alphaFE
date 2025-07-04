@@ -11,9 +11,8 @@ import '../../../components/logout_by_expiration.dart';
 import '../../../services/access_token/get_access_token_from_refresh_token.dart';
 
 class PlanPage2 extends StatefulWidget {
-  final String? accessToken;
   final int tour_id;
-  const PlanPage2({Key? key, required this.tour_id, required this.accessToken}) : super(key: key);
+  const PlanPage2({Key? key, required this.tour_id}) : super(key: key);
 
   @override
   State<PlanPage2> createState() => _PlanPage2State();
@@ -32,7 +31,7 @@ class _PlanPage2State extends State<PlanPage2> {
       body: plan_page2_body(
         tour_id: widget.tour_id,
         onDataRefreshed: _onDataRefreshed,
-        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQyOTM5LCJpYXQiOjE3NTA5MzkzMzksImp0aSI6IjA0MGFmNzNhNGYzYjQzMTlhZDIxMDFlN2EzNjJlOGNhIiwic3ViIjo0MjQ3MDU2NzY2fQ.34dfWAxL2ERsiMQISjaBFco8UNJiswNUOGMjukFF3rY",
+        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQ2NzE2LCJpYXQiOjE3NTA5NDMxMTYsImp0aSI6IjU5ZjEzY2E3OTUzZjQ1ZjdiNzVjZTVmMDdhY2QyNDc3Iiwic3ViIjo0MjQ3MDU2NzY2fQ.zaFLoabaEpdIc61GjmHdRHJhH4nCai9YpkOhvF6Zra0",
       ),
     );
   }

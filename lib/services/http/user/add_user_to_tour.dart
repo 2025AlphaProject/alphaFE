@@ -1,10 +1,10 @@
-import 'package:alpha_fe/services/dio/authorized_dio.dart';
 import 'package:flutter/material.dart';
+import '../../dio/authorized_dio.dart';
 
-Future<bool> addUserToTour({
+Future<bool> AddUserToTour({
   required BuildContext context,
-  required int tourId,
   required String sub,
+  required int tourId,
 }) async {
   try {
     final dio = await getAuthorizedDio(context);
@@ -17,6 +17,6 @@ Future<bool> addUserToTour({
     );
     return response.statusCode == 201;
   } catch (e) {
-    throw Exception('addUserToTour Error: $e');  //TODO: stack 을 사용해서 Firebase Crashlytics 아니면 Sentry 로 로그 수집을 할 수 있다.
+    throw Exception("AddUserToTour Error: $e");
   }
 }

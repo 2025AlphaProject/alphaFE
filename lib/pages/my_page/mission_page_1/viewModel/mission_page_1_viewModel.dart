@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../services/dio/authorized_dio.dart';
+import '../../../../services/http/mission/is_mission_complete.dart';
+import '../../../../services/http/mission/create_mission.dart';
 
 class MissionPage1Viewmodel extends ChangeNotifier {
   final List<Map<String, dynamic>> _missions = [];
@@ -18,25 +19,10 @@ class MissionPage1Viewmodel extends ChangeNotifier {
   }
 
   Future<void> initialize(BuildContext context, List<Map<String, dynamic>> todayPlaces) async {
-    await missionCreate(context, todayPlaces);
+    await CreateMissionService(context, todayPlaces);
     updateMissionsWithTodayPlaces(context, todayPlaces);
   }
 
-  //미션 성공여부
-  Future<bool> checkMissionComplete(BuildContext context, int tdpId) async {
-    try {
-      final dio = await getAuthorizedDio(context);
-      final response = await dio.get('http://conever.duckdns.org:8000/mission/is_complete/$tdpId');
-      if (response.statusCode == 200) {
-        return response.data['mission_success'] ?? false;
-      }
-      return false;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  //오늘의 미션 리스트 정보 주기
   void updateMissionsWithTodayPlaces(BuildContext context, List<Map<String, dynamic>> todayPlaces) {
     for (var place in todayPlaces) {
       final exists = _missions.any((m) => m['tdp_id'] == place['tdp_id']);
@@ -54,7 +40,7 @@ class MissionPage1Viewmodel extends ChangeNotifier {
           'mission_id': 1, // TODO: 실제 미션 ID 적용 필요
         });
 
-        checkMissionComplete(context, place['tdp_id']).then((completed) {
+        CheckMissionService(context, place['tdp_id']).then((completed) {
           final index = _missions.indexWhere((m) => m['tdp_id'] == place['tdp_id']);
           if (index != -1) {
             _missions[index]['isCompleted'] = completed;
@@ -63,35 +49,7 @@ class MissionPage1Viewmodel extends ChangeNotifier {
         });
       }
     }
+    _isLoading = false;
     notifyListeners();
   }
-
-  // 임의의 미션 부여하기
-  Future<void> missionCreate(BuildContext context, List<Map<String, dynamic>> todayPlaces) async {
-    final dio = await getAuthorizedDio(context);
-    try {
-      final formattedPayload = {
-        "places": todayPlaces.map((place) {
-          return {
-            "tdp_id": place["tdp_id"],
-            "image_url": place["image_url"]?.toString() ?? "",
-          };
-        }).toList()
-      };
-      final response = await dio.post(
-        'http://conever.duckdns.org:8000/mission/random/',
-        data: formattedPayload,
-      );
-      if (response.statusCode == 201) {
-        debugPrint('[DEBUG]: 미션 로드 성공');
-        _isLoading = false;
-        notifyListeners();
-      }
-    } catch (e) {
-      _isLoading = false;
-      notifyListeners();
-      debugPrint("에러 발생: $e");
-    }
-  }
-
 }

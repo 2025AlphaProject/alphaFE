@@ -1,11 +1,9 @@
 import 'package:alpha_fe/components/plan_card.dart';
+import 'package:alpha_fe/pages/plan_page/plan_page_1/viewModel/plan_sort_viewModel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
+import 'package:provider/provider.dart';
 import '../../../components/appbars/default_appbar/default_appbar.dart';
-import '../../../components/logout_by_expiration.dart';
-import '../../../services/access_token/get_access_token_from_refresh_token.dart';
-
 
 // 전역 상태 관리 클래스
 class EditState {
@@ -13,197 +11,42 @@ class EditState {
 }
 
 class PlanPage extends StatelessWidget {
-  final String? accessToken;
-  const PlanPage({Key? key, required this.accessToken}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const DefaultAppBar(title: "나의 계획"),
-      body: PlanPage_Body(accessToken: accessToken,),
+    return ChangeNotifierProvider<SortViewModel>(
+      create: (_) => SortViewModel(),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFFFFFFF),
+        appBar: const DefaultAppBar(title: "나의 계획"),
+        body: PlanPage_Body(),
+      ),
     );
   }
 }
 
 class PlanPage_Body extends StatefulWidget {
-  final String? accessToken;
-  const PlanPage_Body({Key? key, required this.accessToken}) : super(key: key);
-
   @override
   State<PlanPage_Body> createState() => _PlanPage_BodyState();
 }
 
-enum SortType { dDayAsc, dDayDesc, title }
-
 class _PlanPage_BodyState extends State<PlanPage_Body> {
-  late PageController _pageController;
+  PageController? _pageController;
   late int initialPage;
-  bool _isLoading = true;
-
-  SortType _sortType = SortType.dDayAsc;
-
-  List<Map<String, dynamic>> _cardData = [];
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _fetchTourData();
-  }
-
-  //내 여행 가져오기(리스트)
-  Future<void> _fetchTourData() async {
-    final accessToken = widget.accessToken;
-    final dio = Dio();
-    try {
-      final response = await dio.get(
-        'http://conever.duckdns.org:8000/tour/',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQyOTM5LCJpYXQiOjE3NTA5MzkzMzksImp0aSI6IjA0MGFmNzNhNGYzYjQzMTlhZDIxMDFlN2EzNjJlOGNhIiwic3ViIjo0MjQ3MDU2NzY2fQ.34dfWAxL2ERsiMQISjaBFco8UNJiswNUOGMjukFF3rY',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      // Fetch the current user
-      String? currentUsername;
-      try {
-        final userResponse = await dio.get(
-          'http://conever.duckdns.org:8000/user/me',
-          options: Options(
-            headers: {
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQyOTM5LCJpYXQiOjE3NTA5MzkzMzksImp0aSI6IjA0MGFmNzNhNGYzYjQzMTlhZDIxMDFlN2EzNjJlOGNhIiwic3ViIjo0MjQ3MDU2NzY2fQ.34dfWAxL2ERsiMQISjaBFco8UNJiswNUOGMjukFF3rY',
-              'Accept': 'application/json'
-            },
-          ),
-        );
-        if (userResponse.statusCode == 200) {
-          currentUsername = userResponse.data['username'];
-        }
-      } catch (e) {
-        // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
-        if (e is DioException && e.response?.statusCode == 403) {
-          final bool? result = await getAccessTokenFromRefreshToken();
-          if (result == false) {
-            LogoutByExpiration(context);
-          }
-          await _fetchTourData();
-          return;
-        }
-
-        // If fetching user fails, show error and stop loading
-        setState(() {
-          _isLoading = false;
-        });
-        print('Fetch user error: $e');
-        return;
-      }
-
-      if (response.statusCode == 200 && currentUsername != null) {
-        final List<dynamic> allPlans = response.data;
-        final List<dynamic> userPlans = allPlans.where((plan) {
-          final List<dynamic> users = plan['user'] ?? [];
-          return users.any((u) => u['username'] == currentUsername);
-        }).toList();
-
-        final parsedData = userPlans.map<Map<String, dynamic>>((item) => {
-          'tour_id': item['id'],
-          'title': item['tour_name'],
-          'startDate': item['start_date'],
-          'endDate': item['end_date'],
-        }).toList();
-
-        // 불필요한 여행 삭제: 코스가 없는 경우 또는 종료된 여행(endDate 지난 경우)
-        final List<int> deletedTourIds = [];
-
-        for (final plan in parsedData) {
-          final dynamic tourIdRaw = plan['tour_id'];
-          final int? tourId = tourIdRaw is int ? tourIdRaw : int.tryParse(tourIdRaw.toString());
-
-          if (tourId == null) {
-            print('Invalid tour_id: $tourIdRaw');
-            continue;
-          }
-
-          // endDate를 가져와 오늘보다 이전인지 검사
-          final endDateStr = plan['endDate'];
-          final endDate = DateTime.tryParse(endDateStr.replaceAll('.', '-'));
-          final today = DateTime.now();
-          final isExpired = endDate != null &&
-              today.isAfter(DateTime(endDate.year, endDate.month, endDate.day).add(const Duration(days: 1)));
-
-          try {
-            final courseResponse = await dio.get(
-              'http://conever.duckdns.org:8000/tour/course/$tourId/',
-              options: Options(
-                headers: {
-                  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQyOTM5LCJpYXQiOjE3NTA5MzkzMzksImp0aSI6IjA0MGFmNzNhNGYzYjQzMTlhZDIxMDFlN2EzNjJlOGNhIiwic3ViIjo0MjQ3MDU2NzY2fQ.34dfWAxL2ERsiMQISjaBFco8UNJiswNUOGMjukFF3rY',
-                  'Content-Type': 'application/json',
-                },
-              ),
-            );
-
-            if ((courseResponse.statusCode == 200 &&
-                courseResponse.data is Map &&
-                courseResponse.data['courses'] is List &&
-                (courseResponse.data['courses'] as List).isEmpty) || isExpired) {
-              await dio.delete(
-                'http://conever.duckdns.org:8000/tour/$tourId/',
-                options: Options(
-                  headers: {
-                    'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQyOTM5LCJpYXQiOjE3NTA5MzkzMzksImp0aSI6IjA0MGFmNzNhNGYzYjQzMTlhZDIxMDFlN2EzNjJlOGNhIiwic3ViIjo0MjQ3MDU2NzY2fQ.34dfWAxL2ERsiMQISjaBFco8UNJiswNUOGMjukFF3rY',
-                    'Content-Type': 'application/json',
-                  },
-                ),
-              );
-              deletedTourIds.add(tourId);
-            }
-          } catch (e) {
-            print('Error checking or deleting tour $tourIdRaw: $e');
-          }
-        }
-
-        // 삭제된 여행 제외
-        final filteredData = parsedData.where((plan) {
-          final tourId = int.tryParse(plan['tour_id'].toString()) ?? -1;
-          return !deletedTourIds.contains(tourId);
-        }).toList();
-
-        setState(() {
-          _cardData = filteredData;
-          _isLoading = false;
-          if (_cardData.isNotEmpty) {
-            _initController();
-          }
-        });
-
-        setState(() {
-          _cardData = filteredData;
-          _isLoading = false;
-          if (_cardData.isNotEmpty) {
-            _initController();
-          }
-        });
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
-        print('Error: ${response.statusCode}');
-      }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      print('Fetch error: $e');
-    }
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final viewModel = Provider.of<SortViewModel>(context, listen: false);
+      viewModel.fetchTours(context);
+    });
   }
 
   //기준별 정렬 관련들
-  void _initController() {
+  void _initController(List<Map<String, dynamic>> sortedCardData) {
     final today = DateTime.now();
     final index = sortedCardData.indexWhere((item) {
-      final end = DateTime.parse(item['endDate']!.replaceAll('.', '-'));
+      final end = DateTime.parse(item['end_date']!.replaceAll('.', '-'));
       return !end.isBefore(today);
     });
     initialPage = index != -1 ? index : 0;
@@ -221,39 +64,27 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
         .difference(today)
         .inDays;
   }
-  //정렬관련
-  List<Map<String, dynamic>> get sortedCardData {
-    final sorted = List<Map<String, dynamic>>.from(_cardData);
-    switch (_sortType) {
-      case SortType.dDayAsc:
-        sorted.sort((a, b) =>
-            calculateDday(a['endDate']!).compareTo(
-                calculateDday(b['endDate']!)));
-        break;
-      case SortType.dDayDesc:
-        sorted.sort((a, b) =>
-            calculateDday(b['endDate']!).compareTo(
-                calculateDday(a['endDate']!)));
-        break;
-      case SortType.title:
-        sorted.sort((a, b) => a['title']!.compareTo(b['title']!));
-        break;
-    }
-    return sorted;
-  }
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-    final cards = sortedCardData;
+    final viewModel = Provider.of<SortViewModel>(context);
+    final cards = viewModel.sortedCardData;
+    final isLoading = viewModel.isLoading;
+    final sortType = viewModel.sortType;
+
     if (kIsWeb) {
       width = 430;
     }
 
-    return _isLoading
+    if (!isLoading && cards.isNotEmpty && (_pageController == null || !(_pageController?.hasClients ?? false))) {
+      _initController(cards);
+    }
+
+    return isLoading
         ? const Center(child: CircularProgressIndicator())
-        : _cardData.isEmpty
+        : cards.isEmpty
             ? const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -284,7 +115,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
             border: Border.all(color: Colors.grey.shade300),
           ),
           child: DropdownButton<SortType>(
-            value: _sortType,
+            value: sortType,
             isExpanded: true,
             underline: const SizedBox(),
             icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF000000),
@@ -292,10 +123,8 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
             dropdownColor: Colors.white,
             onChanged: (value) {
               if (value != null) {
-                setState(() {
-                  _sortType = value;
-                  _initController();
-                });
+                viewModel.setSortType(value);
+                _initController(viewModel.sortedCardData);
               }
             },
             items: const [
@@ -320,20 +149,19 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
           child: PageView.builder(
             scrollDirection: Axis.horizontal,
             physics: const ClampingScrollPhysics(),
-            controller: _pageController,
+            controller: _pageController!,
             itemCount: cards.length,
             itemBuilder: (context, index) {
               final item = cards[index];
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: width * 0.02),
                 child: PlanCard(
-                  title: item['title']!,
-                  startDate: item['startDate']!,
-                  endDate: item['endDate']!,
+                  title: item['tour_name']!,
+                  startDate: item['start_date']!,
+                  endDate: item['end_date']!,
                   size_h: height * 0.5,
                   size_w: width * 0.65,
-                  tour_id: item['tour_id'],
-                  accessToken: widget.accessToken,
+                  tour_id: item['id'],
                 ),
               );
             },
@@ -344,7 +172,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
         // 페이지 인디케이터
         PlanPageIndicator(
-          controller: _pageController,
+          controller: _pageController!,
           count: cards.length,
           dotSize: width * 0.02,
           dotActiveWidth: width * 0.03,
@@ -356,7 +184,7 @@ class _PlanPage_BodyState extends State<PlanPage_Body> {
 
 //페이지 인디케이터
 class PlanPageIndicator extends StatefulWidget {
-  final PageController controller;
+  final PageController? controller;
   final int count;
   final double? dotSize;
   final double? dotActiveWidth;
@@ -379,12 +207,12 @@ class _PlanPageIndicatorState extends State<PlanPageIndicator> {
   @override
   void initState() {
     super.initState();
-    _currentPage = widget.controller.initialPage;
-    widget.controller.addListener(_pageListener);
+    _currentPage = widget.controller?.initialPage ?? 0;
+    widget.controller?.addListener(_pageListener);
   }
 
   void _pageListener() {
-    final newPage = widget.controller.page?.round() ?? 0;
+    final newPage = widget.controller?.page?.round() ?? 0;
     if (_currentPage != newPage) {
       setState(() {
         _currentPage = newPage;
@@ -394,7 +222,7 @@ class _PlanPageIndicatorState extends State<PlanPageIndicator> {
 
   @override
   void dispose() {
-    widget.controller.removeListener(_pageListener);
+    widget.controller?.removeListener(_pageListener);
     super.dispose();
   }
 

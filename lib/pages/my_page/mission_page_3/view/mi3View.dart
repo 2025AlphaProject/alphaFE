@@ -6,7 +6,7 @@ import '../../../../components/appbars/default_appbar/default_appbar.dart';
 import 'package:alpha_fe/pages/my_page/mission_loading_page.dart';
 import '../../mission_page_1/viewModel/mission_page_1_viewModel.dart';
 import '../../mission_page_2/viewModel/mission_page_2_viewModel.dart';
-import 'mission_page_3_viewModel.dart';
+import '../viewModel/mission_page_3_viewModel.dart';
 
 class missionTest extends StatefulWidget {
   final int index;
@@ -90,8 +90,8 @@ class _missionTestState extends State<missionTest> {
                     ),
                     child: _image != null
                         ? Image.file(_image, fit: BoxFit.cover)
-                        : Padding(
-                            padding: const EdgeInsets.all(20.0),
+                        : const Padding(
+                            padding: EdgeInsets.all(20.0),
                             child: Text(
                               '사진이 없습니다.',
                               textAlign: TextAlign.center,

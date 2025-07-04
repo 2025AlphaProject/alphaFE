@@ -8,7 +8,6 @@ class UpcomingPlanSection extends StatelessWidget {
   final Map<String, dynamic>? nearestPlan;
   final double width;
   final double height;
-  final String? accessToken;
 
   const UpcomingPlanSection({
     super.key,
@@ -16,7 +15,6 @@ class UpcomingPlanSection extends StatelessWidget {
     required this.nearestPlan,
     required this.width,
     required this.height,
-    required this.accessToken,
   });
 
   @override
@@ -63,7 +61,6 @@ class UpcomingPlanSection extends StatelessWidget {
         size_h: height * 0.394,
         size_w: width * 0.8,
         tour_id: nearestPlan!['id'],
-        accessToken: accessToken,
       );
     }
 

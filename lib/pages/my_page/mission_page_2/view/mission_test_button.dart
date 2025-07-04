@@ -2,18 +2,31 @@ import 'package:alpha_fe/pages/my_page/mission_page_3/mission_page_3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:alpha_fe/pages/my_page/mission_page_2/viewModel/mission_page_2_viewModel.dart';
 import '../../mission_page_1/viewModel/mission_page_1_viewModel.dart';
-import '../../mission_page_2/viewmodel/mission_page_2_viewmodel.dart';
 
-class MissionTestButton extends StatefulWidget {
+class MissionTestButton extends StatelessWidget {
   final int index;
-  const MissionTestButton({super.key,required this.index});
+  const MissionTestButton({super.key, required this.index});
 
   @override
-  State<MissionTestButton> createState() => _MissionTestButtonState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => MissionPage2Viewmodel(),
+      child: _MissionTestButtonInner(index: index),
+    );
+  }
 }
 
-class _MissionTestButtonState extends State<MissionTestButton> {
+class _MissionTestButtonInner extends StatefulWidget {
+  final int index;
+  const _MissionTestButtonInner({Key? key, required this.index}) : super(key: key);
+
+  @override
+  State<_MissionTestButtonInner> createState() => _MissionTestButtonInnerState();
+}
+
+class _MissionTestButtonInnerState extends State<_MissionTestButtonInner> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
