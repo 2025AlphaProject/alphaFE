@@ -35,8 +35,6 @@ class _SearchAppBarState extends State<SearchAppBar> {
   void dispose() {
     _focusNode.dispose();
     _removeOverlay();
-    final viewModel = Provider.of<SearchAppBarViewModel>(context, listen: false);
-    viewModel.disposeVM();
     super.dispose();
   }
 

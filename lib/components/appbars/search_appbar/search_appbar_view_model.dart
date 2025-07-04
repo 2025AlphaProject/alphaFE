@@ -24,11 +24,6 @@ class SearchAppBarViewModel extends ChangeNotifier {
     searchController.addListener(onSearchChanged);
   }
 
-  void disposeVM() {
-    searchController.removeListener(onSearchChanged);
-    searchController.dispose();
-  }
-
   void clear() {
     _searchQuery = '';
     _filteredDistricts = [];
