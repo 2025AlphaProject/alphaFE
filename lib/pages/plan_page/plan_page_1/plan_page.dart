@@ -2,8 +2,8 @@ import 'package:alpha_fe/components/plan_card.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page_1/viewModel/plan_sort_viewModel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../../components/app_bar.dart';
 import 'package:provider/provider.dart';
+import '../../../components/appbars/default_appbar/default_appbar.dart';
 
 // 전역 상태 관리 클래스
 class EditState {
@@ -25,7 +25,6 @@ class PlanPage extends StatelessWidget {
 }
 
 class PlanPage_Body extends StatefulWidget {
-
   @override
   State<PlanPage_Body> createState() => _PlanPage_BodyState();
 }

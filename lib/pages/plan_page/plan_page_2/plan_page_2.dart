@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import '../../../components/app_bar.dart';
+import '../../../components/appbars/default_appbar/default_appbar.dart';
 import 'package:dio/dio.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/components/plan_course_event.dart';
 import 'package:alpha_fe/pages/plan_page/add_user/add_user.dart';
-import 'package:alpha_fe/components/plan_loading_page.dart';
+import 'package:alpha_fe/pages/plan_page/plan_loading_page.dart';
 
 import '../../../components/logout_by_expiration.dart';
 import '../../../services/access_token/get_access_token_from_refresh_token.dart';

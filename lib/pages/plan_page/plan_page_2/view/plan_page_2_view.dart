@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import '../../../../components/app_bar.dart';
+import '../../../../components/appbars/default_appbar/default_appbar.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/components/plan_course_event.dart';
 import 'package:alpha_fe/pages/plan_page/add_user/add_user.dart';
-import 'package:alpha_fe/components/plan_loading_page.dart';
+import 'package:alpha_fe/pages/plan_page/plan_loading_page.dart';
 import 'dashed_line.dart';
 import 'traveler_list_view.dart';
 import 'plan_info_view.dart';

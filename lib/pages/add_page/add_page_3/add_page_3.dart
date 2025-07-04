@@ -1,7 +1,7 @@
 import 'package:alpha_fe/pages/add_page/add_page_3/view_model/show_final_tour_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../../components/app_bar.dart';
+import '../../../components/appbars/default_appbar/default_appbar.dart';
 import '../../../components/plan_card.dart';
 import '../../../components/proceed_button.dart';
 import 'package:provider/provider.dart';

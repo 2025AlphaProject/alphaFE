@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import '../../../components/app_bar.dart';
+import '../../../components/appbars/default_appbar/default_appbar.dart';
 import '../mission_page_1/mission_page_1.dart';
 import '../my_page_Q&A.dart';
 import 'view/state_item.dart';

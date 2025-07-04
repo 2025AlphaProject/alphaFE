@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import '../../components/app_bar.dart';
+import '../../components/appbars/search_appbar/search_appbar_view.dart';
 import '../../components/proceed_button.dart'; // 버튼 컴포넌트
 import 'home_page_view_model/home_page_view_model.dart';
 import 'widgets/greeting_header.dart';
@@ -142,7 +142,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SearchAppBar(
-              accessToken: accessToken,
             ),
           ],
         ),
