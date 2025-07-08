@@ -1,14 +1,12 @@
+import 'package:alpha_fe/pages/plan_page/plan_page_2/viewModel/plan_page_2_viewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import '../../../components/appbars/default_appbar/default_appbar.dart';
-import 'package:dio/dio.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/components/plan_course_event.dart';
 import 'package:alpha_fe/pages/plan_page/add_user/add_user.dart';
 import 'package:alpha_fe/pages/plan_page/plan_loading_page.dart';
-
-import '../../../components/logout_by_expiration.dart';
-import '../../../services/access_token/get_access_token_from_refresh_token.dart';
 
 class PlanPage2 extends StatefulWidget {
   final int tour_id;
@@ -28,17 +26,18 @@ class _PlanPage2State extends State<PlanPage2> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: const DefaultAppBar(title: "나의 계획"),
-      body: plan_page2_body(
-        tour_id: widget.tour_id,
-        onDataRefreshed: _onDataRefreshed,
-        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQ2NzE2LCJpYXQiOjE3NTA5NDMxMTYsImp0aSI6IjU5ZjEzY2E3OTUzZjQ1ZjdiNzVjZTVmMDdhY2QyNDc3Iiwic3ViIjo0MjQ3MDU2NzY2fQ.zaFLoabaEpdIc61GjmHdRHJhH4nCai9YpkOhvF6Zra0",
+      body: ChangeNotifierProvider(
+        create: (_) => PlanPage2ViewModel(tourId: widget.tour_id)..loadInitialData(context),
+        child: plan_page2_body(
+          tour_id: widget.tour_id,
+          onDataRefreshed: _onDataRefreshed,
+        ),
       ),
     );
   }
 }
 
 class plan_page2_body extends StatefulWidget {
-  final String? accessToken;
   final int tour_id;
   final VoidCallback? onDataRefreshed;
 
@@ -46,7 +45,6 @@ class plan_page2_body extends StatefulWidget {
     Key? key,
     required this.tour_id,
     this.onDataRefreshed,
-    required this.accessToken,
   }) : super(key: key);
 
   @override
@@ -67,154 +65,17 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   List<Map<String, dynamic>> courseData = [];
   bool _isLoading = true;
 
-  //여행 경로 가져오기 api
-  Future<void> fetchTourCourse() async {
-    final dio = Dio();
-    final accessToken = widget.accessToken;
-    try {
-      final response = await dio.get(
-        'http://conever.duckdns.org:80/tour/course/${widget.tour_id}/',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-      if (response.statusCode == 200) { //응답제대로 됬을때
-        final tourResponse = response;
-        final List<dynamic> allPlans = tourResponse.data is List ? tourResponse.data : [];
-        // 디버깅 출력 코드 추가
-        print("코스 데이터 이미지 URL 목록:");
-        for (final day in allPlans) {
-          for (final place in day['places']) {
-            print(" - ${place['image_url']}");
-          }
-        }
-        setState(() {
-          courseData = allPlans.map<Map<String, dynamic>>((day) {
-            final date = day['date'] ?? '';
-            final places = (day['places'] as List<dynamic>? ?? []).map<Map<String, dynamic>>((place) {
-              return {
-                'name': place['name'] ?? '',
-                'mapX': place['mapX'] != null ? place['mapX'].toDouble() : 0.0,
-                'mapY': place['mapY'] != null ? place['mapY'].toDouble() : 0.0,
-                'image_url': place['image_url'] ?? '',
-                'road_address': place['road_address'] ?? '',
-                'parcel_address': place['parcel_address'] ?? '',
-              };
-            }).toList();
-            return {
-              'date': date,
-              'places': places,
-            };
-          }).toList();
-        });
-      }
-    } catch (e) {
-
-      // 엑세스 토큰 만료 시 리프레시 토큰을 사용해 재발급
-      if (e is DioException && e.response?.statusCode == 403) {
-        final bool? result = await getAccessTokenFromRefreshToken();
-        if (result == false) {
-          LogoutByExpiration(context);
-        }
-        await fetchTourCourse();
-        return;
-      }
-      print("코스 불러오기 실패: $e");
-    }
-  }
-
-  //내 여행 가져오기(하나만) - 제목,날짜,동행자 정보 가져오기
-  Future<void> fetchTourName() async {
-    final dio = Dio();
-    final accessToken = widget.accessToken;
-    try {
-      final response = await dio.get(
-        'http://conever.duckdns.org:80/tour/${widget.tour_id}/',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-      if (response.statusCode == 200) {
-        final tourinfo = response.data;
-        setState(() {
-          tourName = tourinfo['tour_name'] ?? "";
-          startDate = tourinfo['start_date'] ?? "";
-          endDate = tourinfo['end_date'] ?? "";
-          if (tourinfo['user'] != null && tourinfo['user'] is List) {
-            travelers = (tourinfo['user'] as List).map<Map<String, String>>((user) {
-              return {
-                'name': user['username'] ?? '이름없음',
-                'imageUrl': user['profile_image_url'] ?? 'https://via.placeholder.com/150',
-              };
-            }).toList();
-          }
-        });
-      }
-    } catch (e) {
-      print("여행 불러오기 실패: $e");
-    }
-  }
-
-
   @override
   void initState() {
     super.initState();
-    _loadInitialData();
+    _isLoading = false;
   }
-
-  // 초기 데이터 로딩 및 이미지 프리캐시 처리
-  Future<void> _loadInitialData() async {
-    await fetchTourCourse(); // 먼저 코스 정보만 불러옴
-
-    // 이미지 URL 목록 수집
-    final imageUrls = courseData
-        .expand((day) => day['places'] as List<Map<String, dynamic>>)
-        .map((place) => place['image_url'] as String)
-        .where((url) => url.isNotEmpty)
-        .toList();
-
-    // 이미지 프리캐싱
-    for (final url in imageUrls) {
-      if (!mounted) return;
-      try {
-        await precacheImage(NetworkImage(url), context);
-      } catch (e) {
-        print("프리캐싱 실패: $e");
-      }
-    }
-
-    // 프리캐싱까지 완료 후 이름/날짜 등 정보 불러오기
-    await fetchTourName();
-
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     _refreshData();
-  //   });
-  // }
 
   Future<void> _refreshData() async {
     setState(() {
       _isLoading = true;
     });
-    await Future.wait([
-      fetchTourCourse(),
-      fetchTourName(),
-    ]);
+
     setState(() {
       _isLoading = false;
     });
@@ -227,6 +88,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    final viewModel = context.watch<PlanPage2ViewModel>();
     if (kIsWeb) {
       width = 430;
     }
@@ -246,8 +108,8 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                     children: [
                       Row(
                         children: [
-                          Expanded(child: Plan_Name(startDate: startDate,
-                            endDate: endDate,tourName: tourName,)),
+                          Expanded(child: Plan_Name(startDate: viewModel.startDate,
+                            endDate: viewModel.endDate,tourName: viewModel.tourName,)),
                           IconButton(
                             icon: Icon(Icons.edit, size: width * 0.07),
                             onPressed: () async {
@@ -264,12 +126,12 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                                       elevation: 10,
                                       contentPadding: EdgeInsets.zero,
                                       content: TravelEditMenu(
-                                        startDate: startDate,
-                                        endDate: endDate,
+                                        startDate: viewModel.startDate,
+                                        endDate: viewModel.endDate,
                                         tour_id: widget.tour_id,
-                                        tourName: tourName,
+                                        tourName: viewModel.tourName,
                                         onRefresh: _refreshData,
-                                        accessToken: widget.accessToken,
+                                        accessToken: "",
                                       ),
                                     ),
                                   ),
@@ -288,9 +150,9 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                       const DashedLine(),
                       travel_plan(
                         tour_id: widget.tour_id,
-                        courseData: courseData,
+                        courseData: viewModel.courseData,
                         onRefresh: _refreshData,
-                        accessToken: widget.accessToken,
+                        accessToken: "",
                       ),
                     ],
                   ),
