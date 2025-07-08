@@ -12,7 +12,7 @@ class ShowFinalTourViewModel extends ChangeNotifier {
 
     try {
       final dio = await getAuthorizedDio(context);
-      final response = await dio.get('http://conever.duckdns.org:8000/tour/$tourId/');
+      final response = await dio.get('http://conever.duckdns.org:80/tour/$tourId/');
       tourData = response.data;
     } catch (e) {
       print('🚫 tour data fetch error: $e');

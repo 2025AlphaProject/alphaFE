@@ -67,7 +67,6 @@ class travelerList extends StatelessWidget {
                     vmR.onInviteTapped(
                       context,
                       planVM.tourId,
-                      planVM.accessToken ?? '',
                       () => planVM.updateTourInfo(planVM.tourinfo),
                     );
                   },

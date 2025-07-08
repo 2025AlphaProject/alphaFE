@@ -12,7 +12,7 @@ Future<Response> MissionImageUpload(BuildContext context, String imagePath, int 
 
   try {
     final response = await dio.post(
-      'http://conever.duckdns.org:8000/mission/image_upload/',
+      'http://conever.duckdns.org:80/mission/image_upload/',
       data: formData,
     );
     return response;

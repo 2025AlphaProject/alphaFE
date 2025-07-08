@@ -7,7 +7,7 @@ Future<int> RegisterTour(BuildContext context, String title, DateTimeRange range
   final end = "${range.end.year}-${range.end.month.toString().padLeft(2, '0')}-${range.end.day.toString().padLeft(2, '0')}";
 
   final response = await dio.post(
-    'http://conever.duckdns.org:8000/tour/',
+    'http://conever.duckdns.org:80/tour/',
     data: {
       'tour_name': title,
       'start_date': start,

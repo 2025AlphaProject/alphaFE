@@ -260,7 +260,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                   final dio = Dio();
                   final accessToken = widget.accessToken;
                   final response = await dio.put(
-                    'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
+                    'http://conever.duckdns.org:80/tour/${widget.tour_id}/',
                     data: {
                       'tour_name': _nameController.text,
                     },
@@ -307,7 +307,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                     final dio = Dio();
                     final accessToken = widget.accessToken;
                     final retryResponse = await dio.put(
-                      'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
+                      'http://conever.duckdns.org:80/tour/${widget.tour_id}/',
                       data: {
                         'tour_name': _nameController.text,
                       },
@@ -439,7 +439,7 @@ class _DeleteTourState extends State<DeleteTour> {
                   final dio = Dio();
                   final accessToken = widget.accessToken;
                   final response = await dio.delete(
-                    'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
+                    'http://conever.duckdns.org:80/tour/${widget.tour_id}/',
                     options: Options(
                       headers: {
                         'Authorization': 'Bearer $accessToken',
@@ -457,7 +457,7 @@ class _DeleteTourState extends State<DeleteTour> {
                               child: Container(
                                   color: Colors.white,
                                   width: kIsWeb ? 430 : null,
-                                  child: MainScreen(accessToken: accessToken,))
+                                  child: MainScreen())
                           )
                       ),
                     );
@@ -584,7 +584,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
                   final dio = Dio();
                   final accessToken = widget.accessToken;
                   final response = await dio.delete(
-                    'http://conever.duckdns.org:8000/tour/course/${widget.tour_id}/',
+                    'http://conever.duckdns.org:80/tour/course/${widget.tour_id}/',
                     data: {
                       "target_date": widget.target_date
                     },

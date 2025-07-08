@@ -6,7 +6,7 @@ Future<Map<String, dynamic>> FetchMyInfo({
 }) async {
   try{
     final dio = await getAuthorizedDio(context);
-    final response = await dio.get('http://conever.duckdns.org:8000/user/me/');
+    final response = await dio.get('http://conever.duckdns.org:80/user/me/');
     return response.data;
   } catch (e) {
     throw Exception("FetchMyInfo Error: $e");

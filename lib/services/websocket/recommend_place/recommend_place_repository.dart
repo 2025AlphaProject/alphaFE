@@ -13,7 +13,7 @@ class RecommendPlaceRepository {
     final uniqueCode = Random().nextInt(1 << 31);
 
     final uri =
-        'ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=$randomDistrict&unique_code=$uniqueCode&days=1';
+        'ws://conever.duckdns.org:80/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=$randomDistrict&unique_code=$uniqueCode&days=1';
 
     final channel = WebSocketManager.connect(uri);
     return (channel, userId, randomDistrict);

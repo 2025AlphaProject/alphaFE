@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../../components/appbars/default_appbar/default_appbar.dart';
 import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/components/plan_course_event.dart';
-import 'package:alpha_fe/pages/plan_page/add_user/add_user.dart';
 import 'package:alpha_fe/pages/plan_page/plan_loading_page.dart';
 import 'dashed_line.dart';
 import 'traveler_list_view.dart';
@@ -91,8 +90,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                                         endDate: vm.endDate,
                                         tour_id: vm.tourId,
                                         tourName: vm.tourName,
-                                        onRefresh: () => vm.refreshData(context),
-                                        accessToken: vm.accessToken ?? "",
+                                        onRefresh: () => vm.refreshData(context), accessToken: '',
                                       ),
                                     ),
                                   ),
@@ -112,8 +110,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
                       travel_plan(
                         tour_id: vm.tourId,
                         courseData: vm.courseData,
-                        onRefresh: () => vm.refreshData(context),
-                        accessToken: vm.accessToken ?? "",
+                        onRefresh: () => vm.refreshData(context), accessToken: '',
                       ),
                     ],
                   ),

@@ -16,7 +16,7 @@ class ShowTourCourseWebsocket {
   }) {
     final uniqueCode = Random().nextInt(1 << 31);
     final wsUrl =
-        'ws://conever.duckdns.org:8000/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=$areaName&unique_code=$uniqueCode&days=$days';
+        'ws://conever.duckdns.org:80/tour/recommend/?user_id=$userId&areaCode=1&sigunguName=$areaName&unique_code=$uniqueCode&days=$days';
 
     _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
 

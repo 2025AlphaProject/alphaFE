@@ -14,7 +14,7 @@ Future<bool?> getAccessTokenFromRefreshToken() async {
     final dio = Dio();
     final formData = FormData.fromMap({'refresh_token': refreshToken});
     final response = await dio.post(
-      'http://conever.duckdns.org:8000/auth/refresh/',
+      'http://conever.duckdns.org:80/auth/refresh/',
       data: formData,
       options: Options(headers: {'Accept': 'application/json'}),
     );

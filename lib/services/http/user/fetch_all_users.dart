@@ -6,7 +6,7 @@ Future<List<Map<String, dynamic>>> FetchAllUsers ({
 }) async {
   try {
     final dio = await getAuthorizedDio(context);
-    final response = await dio.get('http://conever.duckdns.org:8000/user/');
+    final response = await dio.get('http://conever.duckdns.org:80/user/');
     return List<Map<String, dynamic>>.from(response.data);
   } catch (e) {
     throw Exception("FetchAllUsers Error: $e");

@@ -344,7 +344,7 @@ class _EventsState extends State<Events> {
     try {
       final dio = Dio();
       final response = await dio.get(
-        'http://conever.duckdns.org:8000/tour/near_event/',
+        'http://conever.duckdns.org:80/tour/near_event/',
         queryParameters: {
           'mapX': widget.mapX,
           'mapY': widget.mapY,

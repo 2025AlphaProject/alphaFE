@@ -171,7 +171,7 @@ Future<void> main() async {
                   ),
                 )
               : (accessToken?.isNotEmpty == true)
-                  ? MainScreen(accessToken: accessToken)
+                  ? MainScreen()
                   : LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey, kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,),
         ),
       ),

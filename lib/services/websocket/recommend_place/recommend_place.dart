@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../../dio/authorized_dio.dart';
 
 class RecommendPlaceService {
-  static const _baseUrl = 'http://conever.duckdns.org:8000';
+  static const _baseUrl = 'http://conever.duckdns.org:80';
 
   /// 사용자 ID를 최대 3회까지 시도해서 받아옴
   static Future<int?> fetchUserId(BuildContext context) async {

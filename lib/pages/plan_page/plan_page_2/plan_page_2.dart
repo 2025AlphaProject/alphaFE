@@ -41,9 +41,6 @@ class plan_page2_body extends StatefulWidget {
   final String? accessToken;
   final int tour_id;
   final VoidCallback? onDataRefreshed;
-  // Since widget.showaddbutton is a final variable, update logic should be managed with a separate state variable.
-  // Add a state variable:
-  // bool showAddButton = false; // This will be in State, not Widget.
 
   const plan_page2_body({
     Key? key,
@@ -65,7 +62,6 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
   String userName = "";
   String userProfileImageUrl = "";
   List<Map<String, String>> travelers = [];
-  final TextEditingController _textController = TextEditingController();
 
 
   List<Map<String, dynamic>> courseData = [];
@@ -77,7 +73,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
     final accessToken = widget.accessToken;
     try {
       final response = await dio.get(
-        'http://conever.duckdns.org:8000/tour/course/${widget.tour_id}/',
+        'http://conever.duckdns.org:80/tour/course/${widget.tour_id}/',
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',
@@ -136,7 +132,7 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
     final accessToken = widget.accessToken;
     try {
       final response = await dio.get(
-        'http://conever.duckdns.org:8000/tour/${widget.tour_id}/',
+        'http://conever.duckdns.org:80/tour/${widget.tour_id}/',
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',
@@ -452,7 +448,6 @@ class Traveler_List extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => ProfileListPage(
                           tour_id: parentState!.widget.tour_id,
-                          accessToken: parentState.widget.accessToken,
                         ),
                       ),
                     ).then((_) {

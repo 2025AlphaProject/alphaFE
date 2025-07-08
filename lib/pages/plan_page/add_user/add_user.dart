@@ -9,15 +9,14 @@ import 'package:provider/provider.dart';
 import '../../../services/http/add_user_to_tour/add_user.dart';
 
 class ProfileListPage extends StatelessWidget {
-  final String? accessToken;
   final int tour_id;
-  const ProfileListPage({super.key, required this.tour_id, required this.accessToken});
+  const ProfileListPage({super.key, required this.tour_id});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const DefaultAppBar(title: "친구추가"),
-      body: ProfileListBody(tour_id: tour_id, accessToken: accessToken,),
+      body: ProfileListBody(tour_id: tour_id),
       backgroundColor: Colors.white,
     );
   }
@@ -25,8 +24,7 @@ class ProfileListPage extends StatelessWidget {
 
 class ProfileListBody extends StatefulWidget {
   final int tour_id;
-  final String? accessToken;
-  const ProfileListBody({super.key, required this.tour_id, required this.accessToken});
+  const ProfileListBody({super.key, required this.tour_id});
 
   @override
   State<ProfileListBody> createState() => _ProfileListBodyState();
@@ -166,9 +164,7 @@ class _ProfileListBodyState extends State<ProfileListBody> {
                                                                 child: Container(
                                                                   width: kIsWeb ? 430 : null,
                                                                   color: Colors.white,
-                                                                  child: MainScreen(
-                                                                    accessToken: widget.accessToken,
-                                                                  ),
+                                                                  child: MainScreen(),
                                                                 )
                                                             )
                                                         ),

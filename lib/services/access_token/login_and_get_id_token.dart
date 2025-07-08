@@ -66,10 +66,10 @@ class KakaoLoginService {
                   child: Container(
                     width: kIsWeb ? 430 : null,
                     color: Colors.white,
-                    child: MainScreen(accessToken: token.accessToken,),
+                    child: MainScreen(),
                   ),
                 )
-              : MainScreen(accessToken: token.accessToken,),
+              : MainScreen(),
         ),
       );
     } catch (e) {
