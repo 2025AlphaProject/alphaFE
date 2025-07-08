@@ -28,7 +28,7 @@ class MyPageViewmodel extends ChangeNotifier{
   Future<void> fetchUserInfo(BuildContext context) async {
     final dio = await getAuthorizedDio(context);
     try {
-      final response = await dio.get('http://conever.duckdns.org:8000/user/me/');
+      final response = await dio.get('http://conever.duckdns.org:80/user/me/');
       final data = response.data;
       if (data is Map<String, dynamic>) {
         username = data['username'];
@@ -49,7 +49,7 @@ class MyPageViewmodel extends ChangeNotifier{
     final dio = await getAuthorizedDio(context);
     try {
       final response = await dio.get(
-        'http://conever.duckdns.org:8000/tour/',
+        'http://conever.duckdns.org:80/tour/',
       );
 
       if (response.statusCode == 200 && username != null) {
@@ -72,7 +72,7 @@ class MyPageViewmodel extends ChangeNotifier{
     final dio = await getAuthorizedDio(context);
     try {
       final response = await dio.get(
-        'http://conever.duckdns.org:8000/tour/',
+        'http://conever.duckdns.org:80/tour/',
       );
 
       if (response.statusCode == 200) {
@@ -120,7 +120,7 @@ class MyPageViewmodel extends ChangeNotifier{
       for (var tour in _cardData) {
         final tourId = tour['tour_id'];
         final response = await dio.get(
-          'http://conever.duckdns.org:8000/tour/course/$tourId/',
+          'http://conever.duckdns.org:80/tour/course/$tourId/',
         );
 
         if (response.statusCode == 200) {

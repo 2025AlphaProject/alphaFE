@@ -10,7 +10,7 @@ Future<Response> CheckMissionComplete(BuildContext context, int tourId, int plac
     "mission_id": missionId,
   };
   try {
-    return await dio.post('http://conever.duckdns.org:8000/mission/check_complete/', data: data);
+    return await dio.post('http://conever.duckdns.org:80/mission/check_complete/', data: data);
   } catch (e) {
     throw Exception('CheckMissionComplete Error: $e');
   }

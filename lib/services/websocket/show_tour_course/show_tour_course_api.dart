@@ -5,7 +5,7 @@ import '../../../pages/add_page/add_page_2/models/tour_info.dart';
 import '../../dio/authorized_dio.dart';
 class ShowTourCourseApi {
   final Dio _dio = Dio();
-  final String baseUrl = 'http://conever.duckdns.org:8000';
+  final String baseUrl = 'http://conever.duckdns.org:80';
 
   Future<int?> fetchUserId(BuildContext context) async {
     final dio = await getAuthorizedDio(context);

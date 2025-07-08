@@ -14,7 +14,7 @@ class SaveTourCourseFromAdd {
     required int tourId,
   }) async {
     final dio = await getAuthorizedDio(context);
-    const baseUrl = 'http://conever.duckdns.org:8000';
+    const baseUrl = 'http://conever.duckdns.org:80';
 
     final hasEmptyDate = placeWidgets.any((entry) => entry.value.isEmpty);
 

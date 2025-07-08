@@ -26,13 +26,12 @@ class travelersViewModel extends ChangeNotifier{
     notifyListeners();
   }
 
-  void onInviteTapped(BuildContext context, int tourId, String accessToken, VoidCallback onRefresh) async {
+  void onInviteTapped(BuildContext context, int tourId, VoidCallback onRefresh) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ProfileListPage(
           tour_id: tourId,
-          accessToken: accessToken,
         ),
       ),
     );

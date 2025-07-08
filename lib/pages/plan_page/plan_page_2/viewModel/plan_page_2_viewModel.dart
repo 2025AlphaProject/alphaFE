@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
+
+import '../../../../services/http/tour/fetch_tour_courses.dart';
+import '../../../../services/http/tour/fetch_tours.dart';
 
 
 class PlanPage2ViewModel extends ChangeNotifier {
-  final String? accessToken;
   final int tourId;
 
-  PlanPage2ViewModel({required this.accessToken, required this.tourId});
+  PlanPage2ViewModel({required this.tourId});
 
   bool isLoading = true;
   Map<String, dynamic> _tourinfo = {};
@@ -25,10 +26,9 @@ class PlanPage2ViewModel extends ChangeNotifier {
   Future<void> loadInitialData(BuildContext context) async {
     isLoading = true;
     notifyListeners();
-    //TODO api 연동
-    //await fetchTourCourse(context);
+    await fetchTourCourseApi(context, tourId);
     await _precacheImages(context);
-    //await fetchTourName(context);
+    await fetchTourNameApi(context, tourId);
 
     isLoading = false;
     notifyListeners();
@@ -59,6 +59,46 @@ class PlanPage2ViewModel extends ChangeNotifier {
      //TODO api 연동
     ]);
     isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> fetchTourCourseApi(BuildContext context, int tourId) async {
+    final List<dynamic> data = await fetchTourCourses(context, tourId);
+    courseData = data.map<Map<String, dynamic>>((day) {
+      final date = day['date'] ?? '';
+      final places = (day['places'] as List<dynamic>? ?? []).map<Map<String, dynamic>>((place) {
+        return {
+          'name': place['name'] ?? '',
+          'mapX': place['mapX'] != null ? place['mapX'].toDouble() : 0.0,
+          'mapY': place['mapY'] != null ? place['mapY'].toDouble() : 0.0,
+          'image_url': place['image_url'] ?? '',
+          'road_address': place['road_address'] ?? '',
+          'parcel_address': place['parcel_address'] ?? '',
+        };
+      }).toList();
+      return {
+        'date': date,
+        'places': places,
+      };
+    }).toList();
+    notifyListeners();
+  }
+
+  Future<void> fetchTourNameApi(BuildContext context, int tourId) async {
+    final Map<String, dynamic> data = await fetchTours(context, tourId);
+    _tourinfo = {
+      'tour_name': data['tour_name'] ?? "",
+      'start_date': data['start_date'] ?? "",
+      'end_date': data['end_date'] ?? "",
+      "travelers": (data['user'] is List)
+          ? (data['user'] as List).map<Map<String, String>>((user) {
+        return {
+          'name': user['username'] ?? "이름 없음",
+          "image_url": user['profile_image_url'] ?? "https://via.placeholder.com/150",
+        };
+      }).toList()
+          : <Map<String, String>>[],
+    };
     notifyListeners();
   }
 }

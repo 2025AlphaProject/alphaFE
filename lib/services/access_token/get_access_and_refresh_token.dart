@@ -12,7 +12,7 @@ Future<void> getAccessAndRefreshToken(BuildContext context, OAuthToken token) as
     final formData = FormData.fromMap({'id_token': token.idToken});
 
     final response = await dio.post(
-      'http://conever.duckdns.org:8000/auth/login/',
+      'http://conever.duckdns.org:80/auth/login/',
       data: formData,
       options: Options(headers: {'Accept': 'application/json'}),
     );
