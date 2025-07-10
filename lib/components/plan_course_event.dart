@@ -7,16 +7,16 @@ import 'package:alpha_fe/components/plan_edit.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page_1/plan_page.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page_2/plan_page_2.dart';
 
+import '../services/http/events/fetch_events.dart';
 import 'date_dropdown.dart';
 //여행 코스
 
 class travel_plan extends StatelessWidget {
-  final String? accessToken;
   final List<Map<String, dynamic>> courseData;
   final int tour_id;
   final VoidCallback? onRefresh;
 
-  const travel_plan({super.key, required this.courseData, required this.tour_id, this.onRefresh, required this.accessToken});
+  const travel_plan({super.key, required this.courseData, required this.tour_id, this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +107,7 @@ class travel_plan extends StatelessWidget {
                                       onPressed: () async {
                                         final result = await showDialog(
                                           context: context,
-                                          builder: (context) => Center(child: DeleteCourse(tour_id: tour_id, target_date: date,onRefresh: onRefresh, accessToken: accessToken,)),
+                                          builder: (context) => Center(child: DeleteCourse(tour_id: tour_id, target_date: date,onRefresh: onRefresh)),
                                         );
                                       },
                                       style: ElevatedButton.styleFrom(
@@ -315,7 +315,6 @@ class place_card extends StatelessWidget {
 }
 
 
-//장소별 문화행사
 class Events extends StatefulWidget {
   final double mapX;
   final double mapY;
@@ -328,7 +327,7 @@ class Events extends StatefulWidget {
   @override
   State<Events> createState() => _EventsState();
 }
-//이부분 리스트 받아오는거 수정해야지
+
 class _EventsState extends State<Events> {
   bool _isExpanded = false;
   List<Map<String, dynamic>> events = [];
@@ -339,33 +338,11 @@ class _EventsState extends State<Events> {
     fetchEvents();
   }
 
-  // 장소 주변 행사정보 가져오기
   Future<void> fetchEvents() async {
-    try {
-      final dio = Dio();
-      final response = await dio.get(
-        'http://conever.duckdns.org:80/tour/near_event/',
-        queryParameters: {
-          'mapX': widget.mapX,
-          'mapY': widget.mapY,
-        },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-      if (response.statusCode == 200) {
-        final List data = response.data;
-        setState(() {
-          events = List<Map<String, dynamic>>.from(data);
-        });
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('오류 발생: $e')),
-      );
-    }
+    final data = await fetchEventsFromApi(widget.mapX, widget.mapY);
+    print("fetchEvents data: $data");
+    events = List<Map<String, dynamic>>.from(data['events']);
+    print("fetchEvents events: $events");
   }
 
   @override

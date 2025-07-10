@@ -53,36 +53,7 @@ class plan_page2_body extends StatefulWidget {
 
 class _plan_page2_bodyState extends State<plan_page2_body> {
   bool showEditButton = false;
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-  String tourName = "";
-  String startDate = "";
-  String endDate = "";
-  String userName = "";
-  String userProfileImageUrl = "";
   List<Map<String, String>> travelers = [];
-
-
-  List<Map<String, dynamic>> courseData = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _isLoading = false;
-  }
-
-  Future<void> _refreshData() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    setState(() {
-      _isLoading = false;
-    });
-    if (widget.onDataRefreshed != null) {
-      widget.onDataRefreshed!();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,68 +65,57 @@ class _plan_page2_bodyState extends State<plan_page2_body> {
     }
     return WillPopScope(
       onWillPop: () async => true,
-      child: _isLoading
+      child: viewModel.isLoading
           ? const PlanLoadingView() // 이미지가 로딩 중일 때 로딩 페이지 표시
           : Padding(
               padding: EdgeInsets.all(width * 0.02),
-              child: RefreshIndicator(
-                key: _refreshIndicatorKey,
-                onRefresh: _refreshData,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(child: Plan_Name(startDate: viewModel.startDate,
-                            endDate: viewModel.endDate,tourName: viewModel.tourName,)),
-                          IconButton(
-                            icon: Icon(Icons.edit, size: width * 0.07),
-                            onPressed: () async {
-                              final result = await showDialog(
-                                context: context,
-                                builder: (context) => Center(
-                                  child: SizedBox(
-                                    width: kIsWeb ? width * 0.95: null,
-                                    child: AlertDialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      backgroundColor: const Color(0xFFF5F5F5),
-                                      elevation: 10,
-                                      contentPadding: EdgeInsets.zero,
-                                      content: TravelEditMenu(
-                                        startDate: viewModel.startDate,
-                                        endDate: viewModel.endDate,
-                                        tour_id: widget.tour_id,
-                                        tourName: viewModel.tourName,
-                                        onRefresh: _refreshData,
-                                        accessToken: "",
-                                      ),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(child: Plan_Name(startDate: viewModel.startDate,
+                          endDate: viewModel.endDate,tourName: viewModel.tourName,)),
+                        IconButton(
+                          icon: Icon(Icons.edit, size: width * 0.07),
+                          onPressed: () async {
+                            final result = await showDialog(
+                              context: context,
+                              builder: (context) => Center(
+                                child: SizedBox(
+                                  width: kIsWeb ? width * 0.95: null,
+                                  child: AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    backgroundColor: const Color(0xFFF5F5F5),
+                                    elevation: 10,
+                                    contentPadding: EdgeInsets.zero,
+                                    content: TravelEditMenu(
+                                      startDate: viewModel.startDate,
+                                      endDate: viewModel.endDate,
+                                      tour_id: widget.tour_id,
+                                      tourName: viewModel.tourName,
                                     ),
                                   ),
                                 ),
-                              );
-                              if (result == true) {
-                                await _refreshData(); // Refresh data after dialog is popped with result true
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: height * 0.005),
-                      const Traveler_List(),
-                      SizedBox(height: height * 0.02),
-                      const DashedLine(),
-                      travel_plan(
-                        tour_id: widget.tour_id,
-                        courseData: viewModel.courseData,
-                        onRefresh: _refreshData,
-                        accessToken: "",
-                      ),
-                    ],
-                  ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: height * 0.005),
+                    const Traveler_List(),
+                    SizedBox(height: height * 0.02),
+                    const DashedLine(),
+                    travel_plan(
+                      tour_id: widget.tour_id,
+                      courseData: viewModel.courseData,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -312,9 +272,7 @@ class Traveler_List extends StatelessWidget {
                           tour_id: parentState!.widget.tour_id,
                         ),
                       ),
-                    ).then((_) {
-                      parentState?._refreshData();
-                    });
+                    );
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
