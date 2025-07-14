@@ -2,12 +2,9 @@ import 'package:alpha_fe/services/http/mission/check_mission_complete.dart';
 import 'package:alpha_fe/services/http/mission/mission_image_upload.dart';
 import 'package:alpha_fe/services/http/mission/save_mission_complete.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/dio/authorized_dio.dart';
 import '../../../../components/gps.dart';
 import '../../../../components/mission_gps.dart';
-import 'package:alpha_fe/providers/auth_provider.dart';
 import '../../mission_page_1/viewModel/mission_page_1_viewModel.dart';
 import '../../mission_page_2/viewModel/mission_page_2_viewModel.dart';
 

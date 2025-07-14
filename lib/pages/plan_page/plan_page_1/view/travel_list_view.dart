@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import '../viewModel/plan_sort_viewModel.dart';
 import 'package:provider/provider.dart';
-import 'package:alpha_fe/providers/auth_provider.dart';
 import 'page_indicator.dart';
 import '../../../../components/plan_card.dart';
 

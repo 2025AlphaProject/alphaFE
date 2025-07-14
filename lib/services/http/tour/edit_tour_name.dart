@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 Future<void> editTourName(BuildContext context, int id, String editedTourName) async {
   try {
-    final dio = await getAuthorizedDio(context);
+    final dio = await getAuthorizedDio();
     await dio.put(
-        'http://conever.duckdns.org:80/tour/$id/',
+        'http://3.34.125.36:80/tour/$id/',
       data: {
           'tour_name': editedTourName,
       }

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 Future<void> deleteTourById(BuildContext context, int id) async {
   try {
-    final dio = await getAuthorizedDio(context);
-    await dio.delete('http://conever.duckdns.org:80/tour/$id/');
+    final dio = await getAuthorizedDio();
+    await dio.delete('http://3.34.125.36:80/tour/$id/');
   } catch (e) {
     throw Exception("deleteTourById Error: $e");
   }

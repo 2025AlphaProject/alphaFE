@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 Future<void> deleteTourCourse(BuildContext context, int id, String targetDate) async {
   try {
-    final dio = await getAuthorizedDio(context);
+    final dio = await getAuthorizedDio();
     await dio.delete(
-        'http://conever.duckdns.org:80/tour/course/$id/',
+        'http://3.34.125.36:80/tour/course/$id/',
       data: {
           "target_date": targetDate
       }

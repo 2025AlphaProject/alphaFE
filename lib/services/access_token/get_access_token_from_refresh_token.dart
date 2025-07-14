@@ -1,30 +1,23 @@
-import 'package:alpha_fe/services/access_token/refresh_token_storage_save.dart';
-import 'package:provider/provider.dart';
-import 'package:alpha_fe/providers/auth_provider.dart';
-import 'package:dio/dio.dart';
+import 'package:alpha_fe/services/access_token/save_access_and_refresh_token.dart';
+import 'package:alpha_fe/services/dio/unauthorized_dio.dart';
 import 'package:logger/logger.dart';
-import '../global_context/global_context.dart';
 
 final logger = Logger();
 
-Future<bool?> getAccessTokenFromRefreshToken() async {
+Future<void> getAccessTokenFromRefreshToken() async {
   final refreshToken = await getRefreshToken();
-
+  print("refreshToken: $refreshToken");
   try {
-    final dio = Dio();
-    final formData = FormData.fromMap({'refresh_token': refreshToken});
+    final dio = await getUnauthorizedDio();
     final response = await dio.post(
-      'http://conever.duckdns.org:80/auth/refresh/',
-      data: formData,
-      options: Options(headers: {'Accept': 'application/json'}),
+      'http://3.34.125.36:80/auth/refresh/',
+      data: {
+        'refresh_token': refreshToken,
+      },
     );
-    final accessToken = response.data['access_token'];
-    Provider.of<AuthProvider>(globalContext.currentContext!, listen: false).setAccessToken(accessToken: accessToken);
-
+    saveAccessToken(response.data['access_token']);
+    saveRefreshToken(response.data['refresh_token']);
   } catch (e) {
-    logger.e('🔁 accessToken 발급 실패: $e');
-    return false;
+    throw Exception("getAccessTokenFromRefresh Token Error: $e");
   }
-  logger.e('🔁 accessToken 발급 성공!');
-  return true;
 }

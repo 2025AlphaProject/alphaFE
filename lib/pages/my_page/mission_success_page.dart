@@ -13,7 +13,7 @@ class MissionSuccessPage extends StatelessWidget {
   Future<String?> fetchMissionImage(int tdpId) async {
     final dio = Dio();
     try {
-      final response = await dio.get('http://conever.duckdns.org:80/mission/get_mission_img/$tdpId');
+      final response = await dio.get('http://3.34.125.36:80/mission/get_mission_img/$tdpId');
       return response.data['mission_image'] as String?;
     } catch (e) {
       print('이미지 요청 실패: $e');

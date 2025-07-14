@@ -11,8 +11,8 @@ Future<void> SaveTourCourse({
   required List<MapEntry<String, List<PlaceInfo>>> placeWidgets,
   required int tourId,
 }) async {
-  final dio = await getAuthorizedDio(context);
-  const baseUrl = 'http://conever.duckdns.org:80';
+  final dio = await getAuthorizedDio();
+  const baseUrl = 'http://3.34.125.36:80';
 
   final hasEmptyDate = placeWidgets.any((entry) => entry.value.isEmpty);
 

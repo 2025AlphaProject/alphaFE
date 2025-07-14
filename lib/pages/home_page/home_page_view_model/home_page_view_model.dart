@@ -35,7 +35,7 @@ class HomePageViewModel extends ChangeNotifier {
   }
 
   /// 트렌딩 버튼 탭 시 AddPage_0으로 이동
-  void handleTrendingPlaceTap(BuildContext context, String? accessToken) {
+  void handleTrendingPlaceTap(BuildContext context) {
     Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (_) => AddPage_0(

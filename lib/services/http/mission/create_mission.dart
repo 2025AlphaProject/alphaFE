@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../dio/authorized_dio.dart';
 
 Future<bool> CreateMissionService(BuildContext context, List<Map<String, dynamic>> todayPlaces) async {
-  final dio = await getAuthorizedDio(context);
+  final dio = await getAuthorizedDio();
   final payload = {
     "places": todayPlaces.map((place) {
       return {
@@ -13,7 +13,7 @@ Future<bool> CreateMissionService(BuildContext context, List<Map<String, dynamic
   };
 
   try {
-    final response = await dio.post('http://conever.duckdns.org:80/mission/random/', data: payload);
+    final response = await dio.post('http://3.34.125.36:80/mission/random/', data: payload);
     return response.statusCode == 201;
   } catch (e) {
     throw Exception("CreateMissionService Error: $e");

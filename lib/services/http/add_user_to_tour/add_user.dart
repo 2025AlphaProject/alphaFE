@@ -7,9 +7,9 @@ Future<bool> addUserToTour({
   required String sub,
 }) async {
   try {
-    final dio = await getAuthorizedDio(context);
+    final dio = await getAuthorizedDio();
     final response = await dio.post(
-      'http://conever.duckdns.org:80/tour/add_traveler/',
+      'http://3.34.125.36:80/tour/add_traveler/',
       data: {
         'add_traveler_sub': sub,
         'travel_id': tourId,

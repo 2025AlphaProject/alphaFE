@@ -4,7 +4,7 @@ Future<Map<String, dynamic>> fetchEventsFromApi(double mapX, double mapY) async 
   final dio = await getUnauthorizedDio();
   try {
     final response = await dio.get(
-        'http://conever.duckdns.org:80/tour/near_event/',
+        'http://3.34.125.36:80/tour/near_event/',
         queryParameters: {
         'mapX': mapX,
         'mapY': mapY,

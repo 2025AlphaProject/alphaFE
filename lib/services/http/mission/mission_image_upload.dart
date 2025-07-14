@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 Future<Response> MissionImageUpload(BuildContext context, String imagePath, int tdpId) async {
-  final dio = await getAuthorizedDio(context);
+  final dio = await getAuthorizedDio();
 
   final formData = FormData.fromMap({
     'travel_days_id': tdpId.toString(),
@@ -12,7 +12,7 @@ Future<Response> MissionImageUpload(BuildContext context, String imagePath, int 
 
   try {
     final response = await dio.post(
-      'http://conever.duckdns.org:80/mission/image_upload/',
+      'http://3.34.125.36:80/mission/image_upload/',
       data: formData,
     );
     return response;

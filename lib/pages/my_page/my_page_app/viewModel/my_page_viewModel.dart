@@ -26,9 +26,9 @@ class MyPageViewmodel extends ChangeNotifier{
 
   //프로필 사진 및 이름 - [GET] 유저 정보 가져오기
   Future<void> fetchUserInfo(BuildContext context) async {
-    final dio = await getAuthorizedDio(context);
+    final dio = await getAuthorizedDio();
     try {
-      final response = await dio.get('http://conever.duckdns.org:80/user/me/');
+      final response = await dio.get('http://3.34.125.36:80/user/me/');
       final data = response.data;
       if (data is Map<String, dynamic>) {
         username = data['username'];
@@ -46,10 +46,10 @@ class MyPageViewmodel extends ChangeNotifier{
 
   //여행 수 표시 - [GET] 내 여행 가져오기(리스트)
   Future<void> fetchTourCount(BuildContext context) async {
-    final dio = await getAuthorizedDio(context);
+    final dio = await getAuthorizedDio();
     try {
       final response = await dio.get(
-        'http://conever.duckdns.org:80/tour/',
+        'http://3.34.125.36:80/tour/',
       );
 
       if (response.statusCode == 200 && username != null) {
@@ -69,10 +69,10 @@ class MyPageViewmodel extends ChangeNotifier{
 
   // 내여행 가져오기
   Future<void> todayTours(BuildContext context, String username) async {
-    final dio = await getAuthorizedDio(context);
+    final dio = await getAuthorizedDio();
     try {
       final response = await dio.get(
-        'http://conever.duckdns.org:80/tour/',
+        'http://3.34.125.36:80/tour/',
       );
 
       if (response.statusCode == 200) {
@@ -109,7 +109,7 @@ class MyPageViewmodel extends ChangeNotifier{
 
   //오늘의 미션 개수 가져오기
   Future<void> loadTodayPlaces(BuildContext context) async {
-    final dio = await getAuthorizedDio(context);
+    final dio = await getAuthorizedDio();
 
     final todayDateString = DateTime.now().toIso8601String().substring(0, 10);
 
@@ -120,7 +120,7 @@ class MyPageViewmodel extends ChangeNotifier{
       for (var tour in _cardData) {
         final tourId = tour['tour_id'];
         final response = await dio.get(
-          'http://conever.duckdns.org:80/tour/course/$tourId/',
+          'http://3.34.125.36:80/tour/course/$tourId/',
         );
 
         if (response.statusCode == 200) {

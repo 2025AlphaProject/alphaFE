@@ -9,7 +9,6 @@ import 'package:alpha_fe/pages/my_page/mission_page_2/viewModel/mission_page_2_v
 import 'package:alpha_fe/pages/my_page/mission_page_3/viewModel/mission_page_3_viewModel.dart';
 import 'package:alpha_fe/pages/my_page/my_page_app/viewModel/my_page_viewModel.dart';
 import 'package:alpha_fe/pages/plan_page/add_user/viewModel/add_user_view_model.dart';
-import 'package:alpha_fe/providers/auth_provider.dart';
 import 'package:alpha_fe/services/websocket/show_tour_course/show_tour_course_api.dart';
 import 'package:alpha_fe/services/websocket/show_tour_course/show_tour_course_websocket.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +22,6 @@ import 'package:alpha_fe/pages/add_page/add_page_2/searchplace_page/searchplace_
 List<SingleChildWidget> appProviders = [
   ChangeNotifierProvider(create: (_) => HomePageViewModel()),
   ChangeNotifierProvider(create: (_) => AddPage0ViewModel()),
-  ChangeNotifierProvider(create: (_) => AuthProvider()),
   ChangeNotifierProvider(create: (_) => PlanViewModel()),
   ChangeNotifierProvider(create: (_) => LoadingViewModel()),
   ChangeNotifierProvider(create: (_) => TourCreateViewModel()),

@@ -7,7 +7,6 @@ class TrendingPlaceSection extends StatelessWidget {
   final String? username;
   final double width;
   final double height;
-  final String? accessToken;
   final VoidCallback onTap;
 
   const TrendingPlaceSection({
@@ -17,7 +16,6 @@ class TrendingPlaceSection extends StatelessWidget {
     required this.username,
     required this.width,
     required this.height,
-    required this.accessToken,
     required this.onTap,
   });
 

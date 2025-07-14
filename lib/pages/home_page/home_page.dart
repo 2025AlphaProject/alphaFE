@@ -8,7 +8,6 @@ import 'home_page_view_model/home_page_view_model.dart';
 import 'widgets/greeting_header.dart';
 import 'widgets/upcoming_plan_section.dart';
 import 'widgets/trending_place_section.dart';
-import '../../providers/auth_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -34,7 +33,6 @@ class _HomePageState extends State<HomePage> {
     final username = viewModel.username(context);
     final sigunguText = viewModel.sigunguText(context);
     final isLoading = viewModel.isLoading(context);
-    final accessToken = context.read<AuthProvider>().accessToken;
     final height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
@@ -101,9 +99,8 @@ class _HomePageState extends State<HomePage> {
                               username: username,
                               width: width,
                               height: height,
-                              accessToken: accessToken,
                               onTap: () {
-                                viewModel.handleTrendingPlaceTap(context, accessToken);
+                                viewModel.handleTrendingPlaceTap(context);
                               },
                             ),
                             SizedBox(height: height * 0.01),

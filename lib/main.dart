@@ -29,7 +29,7 @@
 
 import 'package:alpha_fe/pages/loading_page/page_controller.dart';
 import 'package:alpha_fe/services/access_token/get_access_token_from_refresh_token.dart';
-import 'package:alpha_fe/services/global_context/global_context.dart';
+import 'package:alpha_fe/services/access_token/test_access_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'mainscreen.dart';
@@ -40,7 +40,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:alpha_fe/components/custom_alert_dialog.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'provider.dart';
@@ -97,18 +96,7 @@ Future<void> main() async {
     }
   }
 
-  String? accessToken;
-  if (!kIsWeb) {
-    try {
-      await getAccessTokenFromRefreshToken();
-      // accessToken = await getAccessToken();
-    } catch (e) {
-      final storage = FlutterSecureStorage();
-      await storage.deleteAll(); // 복호화 오류로 인한 SecureStorage 초기화
-      logger.e('❌ SecureStorage 복호화 오류. 모든 토큰 초기화됨: $e');
-      accessToken = null;
-    }
-  }
+  final bool accessTokenVaild = await testAccessToken();
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -122,7 +110,6 @@ Future<void> main() async {
       child: MultiProvider(
         providers: appProviders,
         child: MaterialApp(
-          navigatorKey: globalContext,
           debugShowCheckedModeBanner: false,
           locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
           supportedLocales: const [
@@ -170,7 +157,7 @@ Future<void> main() async {
                     child: LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey, kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,),
                   ),
                 )
-              : (accessToken?.isNotEmpty == true)
+              : (accessTokenVaild)
                   ? MainScreen()
                   : LoginPageController(kakaoNativeAppKey: kakaoNativeAppKey, kakaoJavaScriptAppKey: kakaoJavaScriptAppKey,),
         ),
