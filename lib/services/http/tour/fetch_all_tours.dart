@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import '../../dio/authorized_dio.dart';
 
-Future<List<dynamic>> fetchAllTours(BuildContext context) async {
+Future<List<dynamic>> fetchAllTours() async {
   try {
     final dio = await getAuthorizedDio();
     final response = await dio.get('http://3.34.125.36:80/tour/');

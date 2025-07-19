@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import '../../dio/authorized_dio.dart';
 
-Future<Response> SaveMissionComplete(BuildContext context, int tdpId, bool isSuccess) async {
+Future<Response> SaveMissionComplete(int tdpId, bool isSuccess) async {
   final dio = await getAuthorizedDio();
   final data = {
     "tdp_id": tdpId,

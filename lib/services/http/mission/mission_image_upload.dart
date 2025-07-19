@@ -1,8 +1,7 @@
 import 'package:alpha_fe/services/dio/authorized_dio.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 
-Future<Response> MissionImageUpload(BuildContext context, String imagePath, int tdpId) async {
+Future<Response> MissionImageUpload(String imagePath, int tdpId) async {
   final dio = await getAuthorizedDio();
 
   final formData = FormData.fromMap({

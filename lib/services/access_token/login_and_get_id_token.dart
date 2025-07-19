@@ -39,7 +39,7 @@ class KakaoLoginService {
         user = await UserApi.instance.me();
       }
 
-      await getAccessAndRefreshToken(context, token);
+      await getAccessAndRefreshToken(token);
 
       Navigator.push(
         context,

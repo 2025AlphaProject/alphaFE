@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import '../../dio/authorized_dio.dart';
 
-Future<Response> CheckMissionComplete(BuildContext context, int tourId, int placeId, int missionId) async {
+Future<Response> CheckMissionComplete(int tourId, int placeId, int missionId) async {
   final dio = await getAuthorizedDio();
   final data = {
     "travel_id": tourId,

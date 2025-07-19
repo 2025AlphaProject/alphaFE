@@ -1,12 +1,11 @@
 import 'dart:math';
 import 'package:alpha_fe/services/websocket/recommend_place/recommend_place.dart';
-import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:alpha_fe/services/websocket/socket_manager.dart';
 
 class RecommendPlaceRepository {
-  Future<(WebSocketChannel?, int?, String)> createRecommendationChannel(BuildContext context) async {
-    final userId = await RecommendPlaceService.fetchUserId(context);
+  Future<(WebSocketChannel?, int?, String)> createRecommendationChannel() async {
+    final userId = await RecommendPlaceService.fetchUserId();
     if (userId == null) return (null, null, '');
 
     final randomDistrict = RecommendPlaceService.getRandomDistrict();

@@ -1,7 +1,6 @@
 import 'package:alpha_fe/services/dio/authorized_dio.dart';
-import 'package:flutter/material.dart';
 
-Future<void> deleteTourCourse(BuildContext context, int id, String targetDate) async {
+Future<void> deleteTourCourse(int id, String targetDate) async {
   try {
     final dio = await getAuthorizedDio();
     await dio.delete(

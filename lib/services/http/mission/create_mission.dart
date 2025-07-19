@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../dio/authorized_dio.dart';
 
-Future<bool> CreateMissionService(BuildContext context, List<Map<String, dynamic>> todayPlaces) async {
+Future<bool> CreateMissionService(List<Map<String, dynamic>> todayPlaces) async {
   final dio = await getAuthorizedDio();
   final payload = {
     "places": todayPlaces.map((place) {

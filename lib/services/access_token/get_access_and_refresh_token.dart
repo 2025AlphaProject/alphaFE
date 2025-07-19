@@ -1,9 +1,8 @@
 import 'package:alpha_fe/services/access_token/save_access_and_refresh_token.dart';
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-Future<void> getAccessAndRefreshToken(BuildContext context, OAuthToken token) async {
+Future<void> getAccessAndRefreshToken(OAuthToken token) async {
   try {
     final dio = Dio();
     final formData = FormData.fromMap({'id_token': token.idToken});

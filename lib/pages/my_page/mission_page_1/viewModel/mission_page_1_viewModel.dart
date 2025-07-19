@@ -19,7 +19,7 @@ class MissionPage1Viewmodel extends ChangeNotifier {
   }
 
   Future<void> initialize(BuildContext context, List<Map<String, dynamic>> todayPlaces) async {
-    await CreateMissionService(context, todayPlaces);
+    await CreateMissionService(todayPlaces);
     updateMissionsWithTodayPlaces(context, todayPlaces);
   }
 
@@ -40,7 +40,7 @@ class MissionPage1Viewmodel extends ChangeNotifier {
           'mission_id': 1, // TODO: 실제 미션 ID 적용 필요
         });
 
-        CheckMissionService(context, place['tdp_id']).then((completed) {
+        CheckMissionService(place['tdp_id']).then((completed) {
           final index = _missions.indexWhere((m) => m['tdp_id'] == place['tdp_id']);
           if (index != -1) {
             _missions[index]['isCompleted'] = completed;

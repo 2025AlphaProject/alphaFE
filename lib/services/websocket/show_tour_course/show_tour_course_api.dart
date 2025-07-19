@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 
 import '../../../pages/add_page/add_page_2/models/tour_info.dart';
 import '../../dio/authorized_dio.dart';
 class ShowTourCourseApi {
-  final Dio _dio = Dio();
   final String baseUrl = 'http://3.34.125.36:80';
 
-  Future<int?> fetchUserId(BuildContext context) async {
+  Future<int?> fetchUserId() async {
     final dio = await getAuthorizedDio();
     for (int i = 0; i < 3; i++) {
       try {

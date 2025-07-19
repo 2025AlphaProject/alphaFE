@@ -238,7 +238,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                 ),
               ),
               onPressed: () async {
-                await editTourName(context, widget.tour_id, _nameController.text);
+                await editTourName(widget.tour_id, _nameController.text);
               },
               child: const Text(
                 "확인",
@@ -321,7 +321,7 @@ class _DeleteTourState extends State<DeleteTour> {
                 ),
               ),
               onPressed: () async {
-                await deleteTourById(context, widget.tour_id);
+                await deleteTourById(widget.tour_id);
               },
               child: const Text(
                 '삭제',
@@ -417,7 +417,7 @@ class _DeleteCourseState extends State<DeleteCourse> {
                 ),
               ),
               onPressed: () async {
-                deleteTourCourse(context, widget.tour_id, widget.target_date);
+                deleteTourCourse(widget.tour_id, widget.target_date);
               },
               child: const Text(
                 '삭제',

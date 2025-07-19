@@ -10,7 +10,7 @@ class PlanViewModel extends ChangeNotifier {
   String? currentUsername;
   Map<String, dynamic>? nearestPlan;
   Future<void> fetchPlans(BuildContext context) async {
-    final userInfo = await FetchMyInfo(context: context);
+    final userInfo = await FetchMyInfo();
     currentUsername = userInfo['username'];
     final userPlans = await GetUserTours(context: context, username: currentUsername!);
     final validPlans = await FilterValidTours(context: context, plans: userPlans);
@@ -70,7 +70,7 @@ Future<List<dynamic>> GetUserTours({
   required BuildContext context,
   required String username,
 }) async {
-  final allTours = await fetchAllTours(context);
+  final allTours = await fetchAllTours();
   return filterToursByUsername(allTours, username);
 }
 
@@ -93,11 +93,11 @@ Future<bool> isValidPlan({
   final expired = isTourExpired(plan['end_date']);
 
   try {
-    final courseData = await fetchTourCourses(context, id);
+    final courseData = await fetchTourCourses(id);
     final empty = hasNoCourse(courseData);
 
     if (expired || empty) {
-      await deleteTourById(context, id);
+      await deleteTourById(id);
       return false;
     }
     return true;

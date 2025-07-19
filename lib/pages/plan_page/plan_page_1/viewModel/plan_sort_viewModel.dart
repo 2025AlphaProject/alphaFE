@@ -56,8 +56,8 @@ class SortViewModel extends ChangeNotifier{
     notifyListeners();
 
     try {
-      final allTours = await fetchAllTours(context);
-      final userInfo = await FetchMyInfo(context: context);
+      final allTours = await fetchAllTours();
+      final userInfo = await FetchMyInfo();
       final String username = userInfo['username'];
       final filtered = filterToursByUsername(allTours, username);
 

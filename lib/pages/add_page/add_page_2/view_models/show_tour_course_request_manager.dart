@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 
 import '../../../../services/websocket/show_tour_course/show_tour_course_api.dart';
 import '../../../../services/websocket/show_tour_course/show_tour_course_websocket.dart';
-import '../models/tour_info.dart';
 
 class ShowTourCourseRequestManager {
   final ShowTourCourseApi apiService;
@@ -28,7 +27,7 @@ class ShowTourCourseRequestManager {
   }) async {
     state.reset();
 
-    final userId = await apiService.fetchUserId(context);
+    final userId = await apiService.fetchUserId();
     if (userId == null) return onError('사용자 정보를 불러올 수 없습니다.');
 
     final tourInfo = await apiService.fetchTourInfo(context, tourId, userId);

@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import '../../dio/authorized_dio.dart';
 
-Future<bool> CheckMissionService(BuildContext context, int tdpId) async {
+Future<bool> CheckMissionService(int tdpId) async {
   try {
     final dio = await getAuthorizedDio();
     final response = await dio.get(

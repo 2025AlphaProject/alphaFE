@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
 import '../../dio/authorized_dio.dart';
 
-Future<List<Map<String, dynamic>>> FetchAllUsers ({
-  required BuildContext context,
-}) async {
+Future<List<Map<String, dynamic>>> FetchAllUsers() async {
   try {
     final dio = await getAuthorizedDio();
     final response = await dio.get('http://3.34.125.36:80/user/');

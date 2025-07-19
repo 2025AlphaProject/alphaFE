@@ -1,8 +1,6 @@
 import 'package:alpha_fe/services/dio/authorized_dio.dart';
-import 'package:flutter/material.dart';
 
 Future<bool> addUserToTour({
-  required BuildContext context,
   required int tourId,
   required String sub,
 }) async {

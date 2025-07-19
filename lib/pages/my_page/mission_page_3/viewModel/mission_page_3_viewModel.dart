@@ -34,7 +34,6 @@ class MissionPage3Viewmodel extends ChangeNotifier {
   Future<void>sendMissionEntry(BuildContext context) async {
     try {
       final response = await CheckMissionComplete(
-        context,
         mission['tour_id'],
         mission['place_id'],
         mission['mission_id'],
@@ -72,7 +71,6 @@ class MissionPage3Viewmodel extends ChangeNotifier {
     }
     try {
       final response = await SaveMissionComplete(
-        context,
         mission['tdp_id'],
         _mission_success,
       );
@@ -97,7 +95,7 @@ class MissionPage3Viewmodel extends ChangeNotifier {
       return;
     }
 
-    final response = await MissionImageUpload(context, image.path, mission['tdp_id']);
+    final response = await MissionImageUpload(image.path, mission['tdp_id']);
     if (response?.statusCode == 201) {
       print('미션 이미지 업로드 성공');
       sendMissionEntry(context);

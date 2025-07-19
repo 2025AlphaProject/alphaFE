@@ -7,7 +7,7 @@ class RecommendPlaceService {
   static const _baseUrl = 'http://3.34.125.36:80';
 
   /// 사용자 ID를 최대 3회까지 시도해서 받아옴
-  static Future<int?> fetchUserId(BuildContext context) async {
+  static Future<int?> fetchUserId() async {
     final dio = await getAuthorizedDio();
     for (int i = 0; i < 3; i++) {
       try {

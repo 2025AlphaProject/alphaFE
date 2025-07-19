@@ -32,7 +32,6 @@ class AddPage0ViewModel with ChangeNotifier {
     final dateRange = selectedDateRange!;
 
     context.read<TourCreateViewModel>().registerTour(
-      context,
       title,
       dateRange,
       onSuccess: (tourId) {

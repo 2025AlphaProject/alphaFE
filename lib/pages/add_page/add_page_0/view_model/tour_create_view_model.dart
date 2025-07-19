@@ -8,7 +8,6 @@ class TourCreateViewModel with ChangeNotifier {
   String? errorMessage;
 
   Future<void> registerTour(
-    BuildContext context,
     String title,
     DateTimeRange range, {
     Function(int)? onSuccess,
@@ -17,7 +16,7 @@ class TourCreateViewModel with ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await RegisterTour(context, title, range);
+      final result = await RegisterTour(title, range);
       if (result != null) {
         isSuccess = true;
         onSuccess?.call(result); // Pass tourId if needed
