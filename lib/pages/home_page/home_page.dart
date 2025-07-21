@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
+
 import '../../components/appbars/search_appbar/search_appbar_view.dart';
-import '../../components/proceed_button.dart'; // 버튼 컴포넌트
-import 'home_page_view_model/home_page_view_model.dart';
+import '../../components/proceed_button.dart';
+import '../../controllers/home_page_controller.dart';
+import '../../controllers/recommended_place_controller.dart';
 import 'widgets/greeting_header.dart';
 import 'widgets/upcoming_plan_section.dart';
 import 'widgets/trending_place_section.dart';
@@ -17,32 +18,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final homePageController = Get.find<HomePageController>();
+  final recommendPlaceController = Get.find<RecommendedPlaceController>();
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      context.read<HomePageViewModel>().initialize(context);
-    });
+    recommendPlaceController.fetchRecommendation();  // 페이지 접근 할 때 마다 랜덤 장소 생성
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<HomePageViewModel>();
-    final recommendedPlace = viewModel.recommendedPlace(context);
-    final nearestPlan = viewModel.nearestPlan(context);
-    final username = viewModel.username(context);
-    final sigunguText = viewModel.sigunguText(context);
-    final isLoading = viewModel.isLoading(context);
     final height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {
       width = 430;
     }
 
-    return Scaffold(
+    return Obx(() => Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
-        child: Stack(
+        child: homePageController.isLoading.value
+            ? const Center(child: CircularProgressIndicator())  // TODO: 정보를 불러오는 중입니다! 페이지 필요하다면?
+            : Stack(
           children: [
             Positioned.fill(
               top: height * 0.1,
@@ -50,7 +47,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
-                      controller: viewModel.scrollController,
+                      controller: homePageController.scrollController,
                       physics: const NeverScrollableScrollPhysics(),
                       child: Padding(
                         padding: EdgeInsets.symmetric(
@@ -60,30 +57,48 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(height: height * 0.024),
-                            GreetingHeader(username: username),
+                            GreetingHeader(
+                              username:
+                              homePageController.username.value,
+                            ),
                             SizedBox(height: height * 0.024),
                             UpcomingPlanSection(
-                              isLoading: isLoading,
-                              nearestPlan: nearestPlan,
+                              isLoading:
+                              homePageController.isLoading.value,
+                              nearestPlan:
+                              homePageController.nearestPlan.value,
                               width: width,
                               height: height,
                             ),
                             SizedBox(height: height * 0.06),
                             Center(
-                              child: ProceedButton(
-                                size_w: width * 0.586,
-                                size_h: height * 0.055,
-                                text: "✨ 새로운 장소 탐험하기",
-                                fontSize_: 15,
-                                fontWeight_: FontWeight.bold,
-                                onTap: () {
-                                  viewModel.scrollToBottom();
-                                },
-                              ),
+                              child: Obx(() =>
+                                recommendPlaceController.isLoading.value
+                                  ? ProceedButton(
+                                  size_w: width * 0.586,
+                                  size_h: height * 0.055,
+                                  text: "정보를 불러오는 중입니다!",
+                                  fontSize_: 15,
+                                  fontWeight_: FontWeight.bold,
+                                  onTap: () {
+                                  },
+                                )
+                                  : ProceedButton(
+                                  size_w: width * 0.586,
+                                  size_h: height * 0.055,
+                                  text: "✨ 새로운 장소 탐험하기",
+                                  fontSize_: 15,
+                                  fontWeight_: FontWeight.bold,
+                                  onTap: () {
+                                    homePageController.scrollToBottom();
+                                  },
+                                ),
+                              )
                             ),
                             SizedBox(height: height * 0.11),
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: width * 0.02),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: width * 0.02),
                               child: const Text(
                                 "오늘\n이런 곳은 어떤가요?",
                                 style: TextStyle(
@@ -94,20 +109,25 @@ class _HomePageState extends State<HomePage> {
                             ),
                             SizedBox(height: height * 0.04),
                             TrendingPlaceSection(
-                              recommendedPlace: recommendedPlace,
-                              sigunguText: sigunguText,
-                              username: username,
+                              recommendedPlace:
+                              recommendPlaceController
+                                  .recommendedPlace.value,
+                              sigunguText: recommendPlaceController
+                                  .sigunguText.value,
+                              username: homePageController
+                                  .username.value,
                               width: width,
                               height: height,
                               onTap: () {
-                                viewModel.handleTrendingPlaceTap(context);
+                                homePageController
+                                    .handleTrendingPlaceTap();
                               },
                             ),
                             SizedBox(height: height * 0.01),
                             Center(
                               child: TextButton.icon(
                                 onPressed: () {
-                                  viewModel.scrollToTop();
+                                  homePageController.scrollToTop();
                                 },
                                 icon: Icon(
                                   Icons.arrow_drop_up,
@@ -125,7 +145,8 @@ class _HomePageState extends State<HomePage> {
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
                                   minimumSize: Size.zero,
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  tapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
                                 ),
                               ),
                             ),
@@ -138,11 +159,10 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            SearchAppBar(
-            ),
+            const SearchAppBar(),
           ],
         ),
       ),
-    );
+    ));
   }
 }

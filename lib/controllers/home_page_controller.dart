@@ -1,25 +1,22 @@
-import 'package:alpha_fe/services/http/user/fetch_my_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../helpers/tour/filter_valid_tour.dart';
+import '../helpers/tour/get_user_tours.dart';
+import '../helpers/tour/pick_nearest_tour.dart';
 import '../pages/add_page/add_page_0/add_page_0.dart';
+import '../services/http/user/fetch_my_info.dart';
 
 class HomePageController extends GetxController {
   final ScrollController scrollController = ScrollController();
-  RxMap<String, dynamic> recommendedPlace = <String, dynamic>{}.obs;
   RxMap<String, dynamic> nearestPlan = <String, dynamic>{}.obs;
   Rx<String> username = "".obs;
   Rx<bool> isLoading = false.obs;
-  Rx<String> sigunguText = "".obs;
-  Rx<String> currentUsername = "".obs;
 
-  void changeSigunguText(String address) async {
-    final address  = recommendedPlace.value['address'] as String;
-    if (address.split(" ").length > 1) {
-      sigunguText.value = address.split(" ")[1];
-    } else {
-      sigunguText.value = "";
-    }
+  @override
+  void onInit() {
+    super.onInit();
+    fetchPlans();
   }
 
   void handleTrendingPlaceTap() {
@@ -42,7 +39,15 @@ class HomePageController extends GetxController {
   }
 
   Future<void> fetchPlans() async {
-
+    isLoading.value = true;
+    final userInfo = await FetchMyInfo();
+    username.value = userInfo['username'];
+    final userPlans = await getUserTours(username: username.value);
+    final validPlans = await filterValidTours(plans: userPlans);
+    if (validPlans.isNotEmpty) {
+      nearestPlan.value = pickNearestTour(validPlans: validPlans);
+    }
+    isLoading.value = false;
   }
 
  @override

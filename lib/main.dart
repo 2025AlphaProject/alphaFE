@@ -27,11 +27,13 @@
 *   9. gps.dart
 * */
 
+import 'package:alpha_fe/init_controllers.dart';
 import 'package:alpha_fe/pages/loading_page/page_controller.dart';
 import 'package:alpha_fe/services/access_token/get_access_token_from_refresh_token.dart';
 import 'package:alpha_fe/services/access_token/test_access_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'mainscreen.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:logger/logger.dart';
@@ -105,11 +107,12 @@ Future<void> main() async {
   // 네이버맵 초기화 - 현재 안드로이드 환경에서만 사용 가능
   // await initNaverMapSdk();
 
+  initControllers();
   runApp(
     Phoenix(
       child: MultiProvider(
         providers: appProviders,
-        child: MaterialApp(
+        child: GetMaterialApp(
           debugShowCheckedModeBanner: false,
           locale: const Locale('ko', 'KR'), // 앱 전체에 한국어 설정
           supportedLocales: const [
