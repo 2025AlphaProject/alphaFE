@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../helpers/tour/filter_tours_by_username.dart';
+import '../../../../helpers/tour/is_valid_plan.dart';
 import '../../../../services/http/tour/fetch_all_tours.dart';
 import '../../../../services/http/user/fetch_my_info.dart';
-import '../../../home_page/home_page_view_model/plan_view_model.dart';
 
 enum SortType { dDayAsc, dDayDesc, title }
 
@@ -63,7 +64,7 @@ class SortViewModel extends ChangeNotifier{
 
       final validTours = <Map<String, dynamic>>[];
       for (var plan in filtered) {
-        final isValid = await isValidPlan(context: context, plan: plan);
+        final isValid = await isValidPlan(plan: plan);
         if (isValid) validTours.add(plan);
       }
 

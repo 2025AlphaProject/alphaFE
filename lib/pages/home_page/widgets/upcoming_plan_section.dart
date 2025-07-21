@@ -53,7 +53,7 @@ class UpcomingPlanSection extends StatelessWidget {
       );
     }
 
-    if (nearestPlan != null) {
+    if (nearestPlan!.isNotEmpty) {
       return PlanCard(
         title: nearestPlan!['title'],
         startDate: nearestPlan!['start_date'],
