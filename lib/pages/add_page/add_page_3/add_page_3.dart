@@ -5,7 +5,6 @@ import '../../../components/appbars/default_appbar/default_appbar.dart';
 import '../../../components/plan_card.dart';
 import '../../../components/proceed_button.dart';
 import 'package:provider/provider.dart';
-import 'package:alpha_fe/providers/auth_provider.dart';
 
 import '../../plan_page/plan_page_1/plan_page.dart';
 
@@ -36,7 +35,6 @@ class _AddPage_3State extends State<AddPage_3> {
   // "이 코스로 할게요!" 버튼 탭할 시 연결되어야 할 페이지, 경로 확정됨
   @override
   Widget build(BuildContext context) {
-    final accessToken = context.read<AuthProvider>().accessToken;
     final height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     if (kIsWeb) {

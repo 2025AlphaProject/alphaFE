@@ -1,11 +1,9 @@
+import 'package:alpha_fe/services/access_token/save_access_and_refresh_token.dart';
 import 'package:dio/dio.dart';
-import 'package:alpha_fe/providers/auth_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-Future<Dio> getAuthorizedDio(BuildContext context) async {
-  final accessToken = context.read<AuthProvider>().accessToken;
+Future<Dio> getAuthorizedDio() async {
   final dio = Dio();
+  final accessToken = await getAccessToken();
   dio.options.headers = {
     'Authorization': 'Bearer $accessToken',
     'Accept': 'application/json',

@@ -63,7 +63,7 @@ class PlanPage2ViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchTourCourseApi(BuildContext context, int tourId) async {
-    final List<dynamic> data = await fetchTourCourses(context, tourId);
+    final List<dynamic> data = await fetchTourCourses(tourId);
     courseData = data.map<Map<String, dynamic>>((day) {
       final date = day['date'] ?? '';
       final places = (day['places'] as List<dynamic>? ?? []).map<Map<String, dynamic>>((place) {
@@ -85,7 +85,7 @@ class PlanPage2ViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchTourNameApi(BuildContext context, int tourId) async {
-    final Map<String, dynamic> data = await fetchTours(context, tourId);
+    final Map<String, dynamic> data = await fetchTours(tourId);
     _tourinfo = {
       'tour_name': data['tour_name'] ?? "",
       'start_date': data['start_date'] ?? "",

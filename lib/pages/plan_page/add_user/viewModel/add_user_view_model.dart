@@ -12,8 +12,8 @@ class AddUserViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final myInfo = await FetchMyInfo(context: context);
-    final rawUsers = await FetchAllUsers(context: context);
+    final myInfo = await FetchMyInfo();
+    final rawUsers = await FetchAllUsers();
     print(rawUsers);
 
     allUsers = rawUsers

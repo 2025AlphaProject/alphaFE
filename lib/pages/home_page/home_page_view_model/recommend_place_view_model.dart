@@ -14,7 +14,7 @@ class RecommendPlaceViewModel extends ChangeNotifier {
     notifyListeners();
 
     final repo = RecommendPlaceRepository();
-    final (channel, userId, district) = await repo.createRecommendationChannel(context);
+    final (channel, userId, district) = await repo.createRecommendationChannel();
 
     if (channel == null) {
       _showErrorDialog(context);

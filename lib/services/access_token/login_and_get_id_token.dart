@@ -11,52 +11,35 @@ class KakaoLoginService {
   }) async {
     if (kIsWeb) {
       KakaoSdk.init(javaScriptAppKey: kakaoJavaScriptAppKey);
-      print(kakaoJavaScriptAppKey);
     } else {
       KakaoSdk.init(nativeAppKey: kakaoNativeAppKey);
     }
     try {
       OAuthToken token;
-
       if (kIsWeb) {
         token = await UserApi.instance.loginWithKakaoAccount();
-        print('✅ 웹 로그인 성공');
       } else if (await isKakaoTalkInstalled()) {
         try {
           token = await UserApi.instance.loginWithKakaoTalk();
-          print('✅ 카카오톡 로그인 성공');
         } catch (error) {
-          print('⚠️ 카카오톡 로그인 실패: $error');
-          print('👉 카카오 계정 로그인으로 대체합니다');
           token = await UserApi.instance.loginWithKakaoAccount();
-          print('✅ 로그인 성공');
         }
       } else {
         token = await UserApi.instance.loginWithKakaoAccount();
-        print('✅ 로그인 성공');
       }
-
-      print('✅ ID Token: ${token.idToken}');
-
-      print("📌 사용자 정보 요청 중...");
       User user = await UserApi.instance.me();
-      print("✅ 사용자 정보 획득: ${user.id}");
-
       List<String> scopes = [];
 
       if (user.kakaoAccount?.profileNeedsAgreement == true) {
-        print("ℹ️ profile_nickname 동의 필요 → scopes 추가");
         scopes.add('profile_nickname');
       }
 
       if (scopes.isNotEmpty) {
-        print("📌 추가 scopes 요청 중: $scopes");
         token = await UserApi.instance.loginWithNewScopes(scopes);
         user = await UserApi.instance.me();
-        print("✅ scopes 동의 후 사용자 정보 재획득 완료");
       }
 
-      await getAccessAndRefreshToken(context, token);
+      await getAccessAndRefreshToken(token);
 
       Navigator.push(
         context,
@@ -73,7 +56,7 @@ class KakaoLoginService {
         ),
       );
     } catch (e) {
-      print('❌ 로그인 전체 실패: $e');
+      throw Exception("KakaoLoginService error: $e");
     }
   }
 }

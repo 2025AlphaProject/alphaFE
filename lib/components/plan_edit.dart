@@ -1,23 +1,16 @@
-import 'package:alpha_fe/mainscreen.dart';
 import 'package:alpha_fe/pages/plan_page/plan_page_1/plan_page.dart';
-import 'package:alpha_fe/pages/plan_page/plan_page_2/plan_page_2.dart';
+import 'package:alpha_fe/services/http/tour/edit_tour_name.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:alpha_fe/pages/plan_page/plan_edit_date.dart';
-import 'package:dio/dio.dart';
-import 'package:alpha_fe/main.dart';
-
-import '../services/access_token/get_access_token_from_refresh_token.dart';
-import 'logout_by_expiration.dart';
+import '../services/http/tour/delete_tour_by_id.dart';
+import '../services/http/tour/delete_tour_course.dart';
 
 // 전체적인 편집관련
 class TravelEditMenu extends StatelessWidget {
-  final String? accessToken;
   final String startDate;
   final String endDate;
   final int tour_id;
   final String tourName;
-  final VoidCallback? onRefresh;
 
   const TravelEditMenu({
     super.key,
@@ -25,8 +18,6 @@ class TravelEditMenu extends StatelessWidget {
     required this.endDate,
     required this.tour_id,
     required this.tourName,
-    required this.onRefresh,
-    required this.accessToken,
   });
 
   @override
@@ -59,8 +50,6 @@ class TravelEditMenu extends StatelessWidget {
                     child: EditTourNameDialog(
                       tourName: tourName,
                       tour_id: tour_id,
-                      onRefresh: onRefresh,
-                      accessToken: accessToken,
                     ),
                   ),
                 );
@@ -72,9 +61,6 @@ class TravelEditMenu extends StatelessWidget {
               onTap: () {
                 EditState.showEditButton = true;
                 print(EditState.showEditButton);
-                if ( onRefresh != null) {
-                  onRefresh!(); // 콜백 호출
-                }
                 Navigator.pop(context,true);
               },
             ),
@@ -87,7 +73,9 @@ class TravelEditMenu extends StatelessWidget {
                 Navigator.pop(context);
                 showDialog(
                   context: context,
-                  builder: (context) => Center(child: DeleteTour(tour_id: tour_id, accessToken: accessToken,))
+                  builder: (context) => Center(child: DeleteTour(
+                    tour_id: tour_id,
+                  ))
                 );
               },
             ),
@@ -156,14 +144,12 @@ class EditTourNameDialog extends StatefulWidget {
   final String tourName;
   final int tour_id;
   final VoidCallback? onRefresh;
-  final String? accessToken;
 
   const EditTourNameDialog({
     Key? key,
     required this.tourName,
     required this.tour_id,
     this.onRefresh,
-    required this.accessToken,
   }) : super(key: key);
 
   @override
@@ -252,106 +238,7 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
                 ),
               ),
               onPressed: () async {
-                setState(() {
-                  _isLoading = true;
-                });
-
-                try {
-                  final dio = Dio();
-                  final accessToken = widget.accessToken;
-                  final response = await dio.put(
-                    'http://conever.duckdns.org:80/tour/${widget.tour_id}/',
-                    data: {
-                      'tour_name': _nameController.text,
-                    },
-                    options: Options(
-                      headers: {
-                        'Authorization': 'Bearer $accessToken',
-                        'Content-Type': 'application/json',
-                      },
-                    ),
-                  );
-                  if (!mounted) return;
-                  setState(() {
-                    _isLoading = false;
-                  });
-
-                  if (response.statusCode == 200) {
-                    if (!mounted) return; // 안전 체크 추가
-                    EditState.showEditButton = false;
-                    widget.onRefresh?.call();
-                    Navigator.pop(context,true); // 다이얼로그 닫기
-                  }
-
-                  else if (response.statusCode == 401) {
-                    LogoutByExpiration(context);
-                  }
-
-                  else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '수정 실패: ${response.statusCode}',
-                          style: const TextStyle(fontSize: 16.5),
-                        ),
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  if (e is DioException && e.response?.statusCode == 403) {
-                    final bool? result = await getAccessTokenFromRefreshToken();
-                    if (result == false) {
-                      LogoutByExpiration(context);
-                    }
-                    // Retry the request after refreshing the token
-                    final dio = Dio();
-                    final accessToken = widget.accessToken;
-                    final retryResponse = await dio.put(
-                      'http://conever.duckdns.org:80/tour/${widget.tour_id}/',
-                      data: {
-                        'tour_name': _nameController.text,
-                      },
-                      options: Options(
-                        headers: {
-                          'Authorization': 'Bearer $accessToken',
-                          'Content-Type': 'application/json',
-                        },
-                      ),
-                    );
-
-                    if (!mounted) return;
-                    setState(() {
-                      _isLoading = false;
-                    });
-
-                    if (retryResponse.statusCode == 200) {
-                      Navigator.of(context).pop();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '재시도 실패: ${retryResponse.statusCode}',
-                            style: const TextStyle(fontSize: 16.5),
-                          ),
-                        ),
-                      );
-                    }
-                    return;
-                  }
-                  if (!mounted) return;
-                  setState(() {
-                    _isLoading = false;
-                  });
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        '오류 발생: $e',
-                        style: const TextStyle(fontSize: 16.5),
-                      ),
-                    ),
-                  );
-                }
+                await editTourName(widget.tour_id, _nameController.text);
               },
               child: const Text(
                 "확인",
@@ -372,11 +259,10 @@ class _EditTourNameDialogState extends State<EditTourNameDialog> {
 
 // 여행 삭제
 class DeleteTour extends StatefulWidget {
-  final String? accessToken;
   final int tour_id;
 
   const DeleteTour({Key? key,
-    required this.tour_id, required this.accessToken,
+    required this.tour_id,
   }) : super(key: key);
 
   @override
@@ -435,54 +321,7 @@ class _DeleteTourState extends State<DeleteTour> {
                 ),
               ),
               onPressed: () async {
-                try {
-                  final dio = Dio();
-                  final accessToken = widget.accessToken;
-                  final response = await dio.delete(
-                    'http://conever.duckdns.org:80/tour/${widget.tour_id}/',
-                    options: Options(
-                      headers: {
-                        'Authorization': 'Bearer $accessToken',
-                        'Content-Type': 'application/json',
-                      },
-                    ),
-                  );
-
-                  if (response.statusCode == 204) {
-                    if (!mounted) return;
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) =>
-                          Center(
-                              child: Container(
-                                  color: Colors.white,
-                                  width: kIsWeb ? 430 : null,
-                                  child: MainScreen())
-                          )
-                      ),
-                    );
-                  } else if (response.statusCode == 401) {
-                    LogoutByExpiration(context);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '수정 실패: ${response.statusCode}',
-                          style: const TextStyle(fontSize: 16.5),
-                        ),
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        '오류 발생: $e',
-                        style: const TextStyle(fontSize: 16.5),
-                      ),
-                    ),
-                  );
-                }
+                await deleteTourById(widget.tour_id);
               },
               child: const Text(
                 '삭제',
@@ -501,9 +340,7 @@ class _DeleteTourState extends State<DeleteTour> {
 }
 
 
-// 여행 경로 삭제(건들ㄴㄴ)
 class DeleteCourse extends StatefulWidget {
-  final String? accessToken;
   final int tour_id;
   final String target_date;
   final VoidCallback? onRefresh;
@@ -511,7 +348,7 @@ class DeleteCourse extends StatefulWidget {
   const DeleteCourse({Key? key,
     required this.tour_id,
     required this.target_date,
-    this.onRefresh, required this.accessToken
+    this.onRefresh,
   }) : super(key: key);
 
   @override
@@ -579,53 +416,8 @@ class _DeleteCourseState extends State<DeleteCourse> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
-              onPressed: () async { //여행경로 삭제하기
-                try {
-                  final dio = Dio();
-                  final accessToken = widget.accessToken;
-                  final response = await dio.delete(
-                    'http://conever.duckdns.org:80/tour/course/${widget.tour_id}/',
-                    data: {
-                      "target_date": widget.target_date
-                    },
-                    options: Options(
-                      headers: {
-                        'Authorization': 'Bearer $accessToken',
-                        'Content-Type': 'application/json',
-                      },
-                    ),
-                  );
-                  if (response.statusCode == 204) {
-                    if (!mounted) return; // 안전 체크 추가
-                    EditState.showEditButton = false;
-                    widget.onRefresh?.call();
-                    Navigator.pop(context,true); // 다이얼로그 닫기
-                  }
-
-                  else if (response.statusCode == 401) {
-                    LogoutByExpiration(context);
-                  }
-
-                  else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '수정 실패: ${response.statusCode}',
-                          style: const TextStyle(fontSize: 16.5),
-                        ),
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        '오류 발생: $e',
-                        style: const TextStyle(fontSize: 16.5),
-                      ),
-                    ),
-                  );
-                }
+              onPressed: () async {
+                deleteTourCourse(widget.tour_id, widget.target_date);
               },
               child: const Text(
                 '삭제',
